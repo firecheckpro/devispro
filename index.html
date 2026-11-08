@@ -40,7 +40,7 @@
       --border: #e2e8f0;
       --text: #0f172a;
       --text-muted: #64748b;
-      --text-light: #94a3b8;
+      --text-light: #64748b;
       --touch: 44px;
       --radius: 16px;
       --pad: clamp(0.75rem, 2.5vw, 1.75rem);
@@ -61,7 +61,7 @@
       --border: #1f2937;
       --text: #f1f5f9;
       --text-muted: #94a3b8;
-      --text-light: #64748b;
+      --text-light: #94a3b8;
     }
 
     body {
@@ -70,8 +70,7 @@
       color: var(--text);
       min-height: 100vh;
       min-height: 100dvh;
-      /* Padding safe-area pour ne jamais passer sous l'encoche / la barre de statut iOS */
-      padding-top: calc(var(--pad) + var(--safe-top));
+      padding-top: calc(var(--pad) + var(--safe-top) + 1rem);
       padding-bottom: calc(var(--pad) + var(--safe-bottom));
       padding-left: calc(var(--pad) + var(--safe-left));
       padding-right: calc(var(--pad) + var(--safe-right));
@@ -98,8 +97,8 @@
       display: grid;
       grid-template-columns: 260px minmax(0, 1fr);
       gap: var(--gap);
-      min-height: calc(100vh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom));
-      min-height: calc(100dvh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom));
+      min-height: calc(100vh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
+      min-height: calc(100dvh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
     }
 
     .sidebar {
@@ -111,9 +110,9 @@
       flex-direction: column;
       height: fit-content;
       position: sticky;
-      top: calc(var(--pad) + var(--safe-top));
-      max-height: calc(100vh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom));
-      max-height: calc(100dvh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom));
+      top: calc(var(--pad) + var(--safe-top) + 1rem);
+      max-height: calc(100vh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
+      max-height: calc(100dvh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
       overflow-y: auto;
       min-width: 0;
     }
@@ -636,6 +635,7 @@
     .toast.success { background: var(--success); }
     .toast.error { background: var(--danger); }
     .toast.warning { background: var(--warning); }
+    .toast.info { background: var(--accent); }
     .toast-undo {
       background: transparent;
       border: 1.5px solid rgba(255,255,255,0.5);
@@ -798,13 +798,13 @@
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: var(--radius);
       padding: clamp(1.5rem, 5vw, 2.5rem);
-      max-width: 380px;
+      max-width: 420px;
       width: 100%;
       text-align: center;
       color: white;
     }
     .lock-box h2 { font-size: clamp(1.1rem, 3vw, 1.4rem); margin-bottom: 0.4rem; }
-    .lock-box p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 1.25rem; }
+    .lock-box p { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 1.25rem; line-height: 1.5; }
     .lock-box input {
       background: rgba(255,255,255,0.08);
       border: 1.5px solid rgba(255,255,255,0.15);
@@ -821,7 +821,13 @@
       min-height: 48px;
     }
     .lock-box input:focus { border-color: var(--accent); }
-    .lock-box .btn { width: 100%; justify-content: center; }
+    .lock-box .btn { width: 100%; justify-content: center; margin-bottom: 0.5rem; }
+    .lock-box .lock-secondary {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.85);
+    }
+    .lock-box .lock-secondary:hover { background: rgba(255,255,255,0.1); }
 
     .validity-info {
       font-size: 0.72rem;
@@ -846,7 +852,67 @@
       color: #93c5fd;
     }
 
-    /* Barre d'action sticky en bas de la vue Paramètres */
+    .warn-note {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: 10px;
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    body.dark .warn-note {
+      background: #422006;
+      border-color: #78350f;
+      color: #fcd34d;
+    }
+
+    .export-reminder {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1.5px solid #f59e0b;
+      border-radius: 12px;
+      padding: 0.85rem;
+      margin-bottom: var(--gap);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      color: #78350f;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    body.dark .export-reminder {
+      background: linear-gradient(135deg, #422006, #78350f);
+      border-color: #b45309;
+      color: #fde68a;
+    }
+    .export-reminder i { font-size: 1.2rem; flex-shrink: 0; }
+    .export-reminder .txt { flex: 1 1 200px; min-width: 0; }
+    .export-reminder .btn { flex-shrink: 0; }
+
+    .filters-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .storage-bar {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+      border: 1px solid var(--border);
+    }
+    .storage-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), var(--warning));
+      transition: width 0.3s;
+    }
+    .storage-bar-fill.danger { background: var(--danger); }
+
     .settings-actionbar {
       position: sticky;
       bottom: calc(var(--safe-bottom) + 0.5rem);
@@ -867,9 +933,7 @@
     }
 
     @media (max-width: 1100px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
+      .app { grid-template-columns: 1fr; }
       .sidebar {
         position: relative;
         top: 0;
@@ -877,10 +941,7 @@
         padding: 0.75rem;
         overflow: visible;
       }
-      .logo {
-        padding: 0 0.25rem 0.75rem;
-        margin-bottom: 0.5rem;
-      }
+      .logo { padding: 0 0.25rem 0.75rem; margin-bottom: 0.5rem; }
       .sidebar nav {
         display: flex;
         flex-direction: row;
@@ -914,7 +975,7 @@
 
     @media (max-width: 640px) {
       body {
-        padding-top: calc(0.5rem + var(--safe-top));
+        padding-top: calc(0.5rem + var(--safe-top) + 1rem);
         padding-bottom: calc(0.5rem + var(--safe-bottom));
         padding-left: calc(0.5rem + var(--safe-left));
         padding-right: calc(0.5rem + var(--safe-right));
@@ -967,7 +1028,6 @@
 
       .input-inline { font-size: 0.85rem; }
       .input-inline.small { max-width: 100%; }
-
       .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
 
       .devis-item { flex-direction: column; align-items: flex-start; }
@@ -979,7 +1039,6 @@
       .modal-actions .btn { width: 100%; justify-content: center; }
 
       .client-actions { opacity: 1; }
-
       .toast { font-size: 0.8rem; padding: 0.7rem 1rem; }
 
       .settings-actionbar {
@@ -991,7 +1050,7 @@
 
     @media (max-width: 380px) {
       body {
-        padding-top: calc(0.35rem + var(--safe-top));
+        padding-top: calc(0.35rem + var(--safe-top) + 1rem);
         padding-bottom: calc(0.35rem + var(--safe-bottom));
         padding-left: calc(0.35rem + var(--safe-left));
         padding-right: calc(0.35rem + var(--safe-right));
@@ -1016,9 +1075,10 @@
     <div class="lock-box">
       <div style="font-size:2.5rem; margin-bottom:1rem;"><i class="fas fa-lock"></i></div>
       <h2>DevisPro verrouillé</h2>
-      <p>Entrez votre code PIN pour accéder à vos données</p>
-      <input type="password" id="lockPinInput" maxlength="8" placeholder="••••" inputmode="numeric">
+      <p id="lockSubtitle">Entrez votre code PIN pour accéder à vos données</p>
+      <input type="password" id="lockPinInput" maxlength="8" placeholder="••••" inputmode="numeric" aria-label="Code PIN">
       <button class="btn btn-accent" id="unlockBtn"><i class="fas fa-unlock"></i> Déverrouiller</button>
+      <button class="btn lock-secondary" id="resetFromLockBtn" style="display:none;"><i class="fas fa-triangle-exclamation"></i> Réinitialiser l'application</button>
     </div>
   </div>
 
@@ -1028,7 +1088,7 @@
         <div class="logo-icon"><i class="fas fa-file-invoice-dollar"></i></div>
         <div class="logo-text-wrap">
           <div class="logo-text">Devis<span>Pro</span></div>
-          <span class="app-version" id="appVersion">v2.0</span>
+          <span class="app-version" id="appVersion">v2.3</span>
         </div>
       </div>
 
@@ -1057,7 +1117,7 @@
       </nav>
 
       <button class="lock-btn" id="lockNowBtn"><i class="fas fa-lock"></i> Verrouiller</button>
-      <div class="sidebar-footer"><i class="fas fa-shield-alt"></i> Chiffré AES-256</div>
+      <div class="sidebar-footer"><i class="fas fa-shield-alt"></i> <span id="sidebarSecurityLabel">Chiffrement local</span></div>
     </aside>
 
     <main class="main">
@@ -1067,7 +1127,7 @@
           <p id="pageSubtitle">Consultez et gérez tous vos devis</p>
         </div>
         <div class="topbar-actions">
-          <button class="search-hint" id="searchHintBtn" title="Rechercher">
+          <button class="search-hint" id="searchHintBtn" title="Rechercher" aria-label="Rechercher">
             <i class="fas fa-search"></i>
             <span>Rechercher…</span>
             <kbd>⌘K</kbd>
@@ -1080,10 +1140,28 @@
       </div>
 
       <div class="view active" id="view-devis-list">
+        <div id="exportReminder"></div>
+
         <div class="card">
-          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
-            <div class="section-title" style="margin:0;"><i class="fas fa-list"></i> Tous les devis</div>
-            <input type="text" id="devisSearch" class="input" placeholder="🔍 Rechercher un devis..." style="max-width: 300px;">
+          <div class="section-title" style="margin:0 0 0.5rem;"><i class="fas fa-list"></i> Tous les devis</div>
+          <div class="filters-bar">
+            <input type="text" id="devisSearch" class="input" placeholder="🔍 Rechercher…" aria-label="Rechercher un devis">
+            <select id="devisFilterStatus" class="input" aria-label="Filtrer par statut">
+              <option value="">Tous statuts</option>
+              <option value="brouillon">Brouillon</option>
+              <option value="envoye">Envoyé</option>
+              <option value="accepte">Accepté</option>
+              <option value="refuse">Refusé</option>
+            </select>
+            <input type="date" id="devisFilterFrom" class="input" placeholder="Du" aria-label="Date de début">
+            <input type="date" id="devisFilterTo" class="input" placeholder="Au" aria-label="Date de fin">
+            <select id="devisSortBy" class="input" aria-label="Trier par">
+              <option value="date-desc">Date ↓</option>
+              <option value="date-asc">Date ↑</option>
+              <option value="amount-desc">Montant ↓</option>
+              <option value="amount-asc">Montant ↑</option>
+              <option value="client-asc">Client A-Z</option>
+            </select>
           </div>
           <div class="devis-list" id="devisList"></div>
         </div>
@@ -1108,7 +1186,7 @@
               <button class="btn btn-accent btn-sm" id="newCatalogBtn"><i class="fas fa-plus"></i> Nouveau</button>
             </div>
           </div>
-          <input type="text" id="catalogSearch" class="input" placeholder="🔍 Filtrer le catalogue..." style="margin-bottom:0.75rem;">
+          <input type="text" id="catalogSearch" class="input" placeholder="🔍 Filtrer le catalogue..." style="margin-bottom:0.75rem;" aria-label="Filtrer le catalogue">
           <div class="table-wrap">
             <table>
               <thead>
@@ -1130,14 +1208,8 @@
         <div class="card" style="margin-bottom:var(--gap);">
           <div class="section-title"><i class="fas fa-calendar"></i> Période</div>
           <div class="grid-3">
-            <div class="field-group">
-              <label>Du</label>
-              <input type="date" id="reportFrom" class="input">
-            </div>
-            <div class="field-group">
-              <label>Au</label>
-              <input type="date" id="reportTo" class="input">
-            </div>
+            <div class="field-group"><label>Du</label><input type="date" id="reportFrom" class="input"></div>
+            <div class="field-group"><label>Au</label><input type="date" id="reportTo" class="input"></div>
             <div class="field-group">
               <label>Statut</label>
               <select id="reportStatus" class="input">
@@ -1209,18 +1281,15 @@
               <div class="grid-2">
                 <div class="field-group">
                   <label>Client</label>
-                  <select id="clientSelect" class="input">
-                    <option value="">— Sélectionner un client —</option>
-                  </select>
+                  <div style="display:flex; gap:0.35rem; align-items:stretch;">
+                    <select id="clientSelect" class="input" style="flex:1;">
+                      <option value="">— Sélectionner un client —</option>
+                    </select>
+                    <button class="btn btn-outline btn-icon" id="quickNewClientBtn" title="Nouveau client" aria-label="Nouveau client"><i class="fas fa-user-plus"></i></button>
+                  </div>
                 </div>
-                <div class="field-group">
-                  <label>N° de devis</label>
-                  <input type="text" id="invoiceNumber" class="input" placeholder="DEV-2025-001">
-                </div>
-                <div class="field-group">
-                  <label>Date</label>
-                  <input type="date" id="invoiceDate" class="input">
-                </div>
+                <div class="field-group"><label>N° de devis</label><input type="text" id="invoiceNumber" class="input" placeholder="DEV-2025-001"></div>
+                <div class="field-group"><label>Date</label><input type="date" id="invoiceDate" class="input"></div>
                 <div class="field-group">
                   <label>Statut</label>
                   <select id="invoiceStatus" class="input">
@@ -1282,11 +1351,12 @@
                 <div class="field-group">
                   <label>Acompte demandé (%)</label>
                   <input type="number" id="depositPercent" class="input" min="0" max="100" step="1" value="30">
+                  <div class="validity-info" id="depositInfo"></div>
                 </div>
               </div>
               <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap;">
-                <input type="number" id="paymentAmount" class="input" placeholder="Montant" step="0.01" min="0" style="flex:1; min-width:140px;">
-                <input type="date" id="paymentDate" class="input" style="flex:1; min-width:140px;">
+                <input type="number" id="paymentAmount" class="input" placeholder="Montant" step="0.01" min="0" style="flex:1; min-width:140px;" aria-label="Montant du paiement">
+                <input type="date" id="paymentDate" class="input" style="flex:1; min-width:140px;" aria-label="Date du paiement">
                 <button class="btn btn-success btn-sm" id="addPaymentBtn"><i class="fas fa-plus"></i> Ajouter</button>
               </div>
               <div id="paymentsList"></div>
@@ -1301,20 +1371,20 @@
               <div class="section-title"><i class="fas fa-envelope"></i> Envoi au client</div>
               <div class="info-note">
                 <i class="fas fa-info-circle"></i> L'application n'intègre pas de signature électronique certifiée.
-                Pour un devis, la pratique courante est d'envoyer le PDF par email et de demander au client de le
-                retourner <strong>signé avec la mention « Bon pour accord »</strong>, ou de répondre à l'email avec
-                cette mention. Le retour du client vaut acceptation ; vous pouvez alors passer le devis au statut
-                <em>Accepté</em> et renseigner la date d'acceptation.
+                Envoyez le PDF par email et demandez au client de le retourner <strong>signé avec la mention « Bon pour accord »</strong>,
+                ou de répondre à l'email avec cette mention. Sur mobile, le bouton « Partager le PDF » permet de joindre
+                directement le fichier à un email.
               </div>
               <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                <button class="btn btn-success" id="emailBtn"><i class="fas fa-envelope"></i> Envoyer le devis par email</button>
+                <button class="btn btn-success" id="emailBtn"><i class="fas fa-envelope"></i> Générer le PDF et préparer l'email</button>
+                <button class="btn btn-accent" id="shareBtn"><i class="fas fa-share-nodes"></i> Partager le PDF (mobile)</button>
                 <button class="btn btn-outline" id="printBtn"><i class="fas fa-print"></i> Imprimer (avec zone « Bon pour accord »)</button>
               </div>
             </div>
           </div>
 
           <div>
-            <div class="card" style="position: sticky; top: calc(var(--pad) + var(--safe-top));">
+            <div class="card" style="position: sticky; top: calc(var(--pad) + var(--safe-top) + 1rem);">
               <div class="section-title"><i class="fas fa-receipt"></i> Récapitulatif</div>
               <div class="summary" id="summaryBox">
                 <div class="summary-line"><span>Total HT</span><span class="value" id="sumHT">0,00 €</span></div>
@@ -1361,64 +1431,48 @@
         </div>
 
         <div class="card" style="margin-top:var(--gap);">
-          <div class="section-title"><i class="fas fa-lock"></i> Sécurité</div>
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.75rem;">
-            <div>
-              <div style="font-weight:600;">Chiffrement AES-256</div>
-              <div style="font-size:0.8rem; color:var(--text-muted);">Les données locales sont chiffrées</div>
+          <div class="section-title"><i class="fas fa-lock"></i> Sécurité & chiffrement</div>
+          <div style="padding:0.75rem 0; border-bottom:1px solid var(--border);">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+              <div>
+                <div style="font-weight:600;">Code PIN</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">Le PIN sert à dériver la clé de chiffrement AES. Sans PIN, les données ne sont pas protégées de manière robuste.</div>
+              </div>
+              <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                <input type="password" id="pinSettingInput" class="input" placeholder="4-8 chiffres" maxlength="8" inputmode="numeric" style="width:140px;" aria-label="Nouveau code PIN">
+                <button class="btn btn-outline btn-sm" id="savePinBtn">Définir / changer</button>
+                <button class="btn btn-danger btn-sm" id="removePinBtn">Retirer</button>
+              </div>
             </div>
-            <span class="status-badge" style="background:#d1fae5; color:#047857;">Actif</span>
+            <div id="pinSecurityInfo" style="margin-top:0.75rem;"></div>
           </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; flex-wrap:wrap; gap:0.75rem;">
-            <div>
-              <div style="font-weight:600;">Code PIN</div>
-              <div style="font-size:0.8rem; color:var(--text-muted);">Verrouillez l'app avec un code PIN</div>
-            </div>
-            <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
-              <input type="password" id="pinSettingInput" class="input" placeholder="4-8 chiffres" maxlength="8" inputmode="numeric" style="width:140px;">
-              <button class="btn btn-outline btn-sm" id="savePinBtn">Enregistrer</button>
-              <button class="btn btn-danger btn-sm" id="removePinBtn">Retirer</button>
-            </div>
+          <div style="padding:0.75rem 0;">
+            <div style="font-weight:600;">Stockage local</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Taille utilisée par l'application</div>
+            <div class="storage-bar"><div class="storage-bar-fill" id="storageBarFill" style="width:0%"></div></div>
+            <div style="font-size:0.78rem; color:var(--text-muted);" id="storageInfo">—</div>
           </div>
         </div>
 
         <div class="card" style="margin-top:var(--gap);">
           <div class="section-title"><i class="fas fa-building"></i> Identité de l'entreprise</div>
           <div class="grid-2">
-            <div class="field-group">
-              <label>Nom / Raison sociale</label>
-              <input type="text" id="companyNameInput" class="input" placeholder="DevisPro SAS">
-            </div>
-            <div class="field-group">
-              <label>Email</label>
-              <input type="email" id="companyEmailInput" class="input" placeholder="contact@exemple.fr">
-            </div>
-            <div class="field-group">
-              <label>Téléphone</label>
-              <input type="tel" id="companyPhoneInput" class="input" placeholder="01 23 45 67 89">
-            </div>
-            <div class="field-group">
-              <label>SIRET</label>
-              <input type="text" id="companySiretInput" class="input" placeholder="123 456 789 00012">
-            </div>
-            <div class="field-group">
-              <label>N° TVA intracommunautaire</label>
-              <input type="text" id="companyTvaInput" class="input" placeholder="FR 12 123456789">
-            </div>
-            <div class="field-group">
-              <label>Couleur d'accent</label>
-              <input type="color" id="accentColorInput" class="input" value="#6366f1" style="height:44px; padding:0.3rem;">
-            </div>
+            <div class="field-group"><label>Nom / Raison sociale</label><input type="text" id="companyNameInput" class="input" placeholder="DevisPro SAS"></div>
+            <div class="field-group"><label>Email</label><input type="email" id="companyEmailInput" class="input" placeholder="contact@exemple.fr"></div>
+            <div class="field-group"><label>Téléphone</label><input type="tel" id="companyPhoneInput" class="input" placeholder="01 23 45 67 89"></div>
+            <div class="field-group"><label>SIRET</label><input type="text" id="companySiretInput" class="input" placeholder="123 456 789 00012"></div>
+            <div class="field-group"><label>N° TVA intracommunautaire</label><input type="text" id="companyTvaInput" class="input" placeholder="FR 12 123456789"></div>
+            <div class="field-group"><label>Couleur d'accent</label><input type="color" id="accentColorInput" class="input" value="#6366f1" style="height:44px; padding:0.3rem;"></div>
           </div>
           <div class="field-group" style="margin-top:0.75rem;">
             <label>Adresse</label>
             <textarea id="companyAddressInput" placeholder="Rue, code postal, ville"></textarea>
           </div>
           <div style="display:flex; align-items:center; gap:0.75rem; margin-top:1rem; flex-wrap:wrap;">
-            <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()"><i class="fas fa-image"></i></div>
+            <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()" role="button" aria-label="Changer le logo"><i class="fas fa-image"></i></div>
             <div>
               <div style="font-weight:600; font-size:0.88rem;">Logo</div>
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem;">PNG, JPG ou SVG · max 500 Ko</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem;">Compressé automatiquement (max ~200 Ko)</div>
               <button class="btn btn-outline btn-sm" onclick="document.getElementById('logoInput').click()"><i class="fas fa-upload"></i> Choisir</button>
               <button class="btn btn-outline btn-sm" id="removeLogoBtn"><i class="fas fa-trash"></i> Retirer</button>
             </div>
@@ -1432,18 +1486,9 @@
         <div class="card" style="margin-top:var(--gap);">
           <div class="section-title"><i class="fas fa-shield-halved"></i> Assurance professionnelle</div>
           <div class="grid-2">
-            <div class="field-group">
-              <label>Nom de l'assureur</label>
-              <input type="text" id="insuranceNameInput" class="input" placeholder="AXA, MAIF…">
-            </div>
-            <div class="field-group">
-              <label>N° de police</label>
-              <input type="text" id="insurancePolicyInput" class="input" placeholder="POL-123456">
-            </div>
-            <div class="field-group">
-              <label>Couverture géographique</label>
-              <input type="text" id="insuranceCoverageInput" class="input" placeholder="France, UE…">
-            </div>
+            <div class="field-group"><label>Nom de l'assureur</label><input type="text" id="insuranceNameInput" class="input" placeholder="AXA, MAIF…"></div>
+            <div class="field-group"><label>N° de police</label><input type="text" id="insurancePolicyInput" class="input" placeholder="POL-123456"></div>
+            <div class="field-group"><label>Couverture géographique</label><input type="text" id="insuranceCoverageInput" class="input" placeholder="France, UE…"></div>
           </div>
         </div>
 
@@ -1470,7 +1515,6 @@
           </div>
         </div>
 
-        <!-- Barre d'action sticky toujours visible pour enregistrer les paramètres -->
         <div class="settings-actionbar">
           <button class="btn btn-outline" id="resetSettingsBtn"><i class="fas fa-undo"></i> Recharger</button>
           <button class="btn btn-success" id="saveSettingsBtn"><i class="fas fa-save"></i> Enregistrer les paramètres</button>
@@ -1479,11 +1523,11 @@
     </main>
   </div>
 
-  <div class="modal-overlay" id="clientModal">
+  <div class="modal-overlay" id="clientModal" role="dialog" aria-modal="true" aria-labelledby="clientModalTitle">
     <div class="modal">
       <div class="modal-header">
         <h2 id="clientModalTitle">Nouveau client</h2>
-        <button class="modal-close" onclick="closeClientModal()"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="closeClientModal()" aria-label="Fermer"><i class="fas fa-times"></i></button>
       </div>
       <div style="display:flex; flex-direction:column; gap:0.75rem;">
         <div class="field-group"><label>Nom / Raison sociale *</label><input type="text" id="clientNameInput" class="input" placeholder="Ex: Studio Créatif SAS"></div>
@@ -1499,11 +1543,11 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="catalogModal">
+  <div class="modal-overlay" id="catalogModal" role="dialog" aria-modal="true" aria-labelledby="catalogModalTitle">
     <div class="modal">
       <div class="modal-header">
         <h2 id="catalogModalTitle">Nouvel article</h2>
-        <button class="modal-close" onclick="closeCatalogModal()"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="closeCatalogModal()" aria-label="Fermer"><i class="fas fa-times"></i></button>
       </div>
       <div style="display:flex; flex-direction:column; gap:0.75rem;">
         <div class="field-group"><label>Désignation *</label><input type="text" id="catalogNameInput" class="input" placeholder="Ex: Développement site vitrine"></div>
@@ -1528,32 +1572,32 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="catalogPickerModal">
+  <div class="modal-overlay" id="catalogPickerModal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:700px;">
       <div class="modal-header">
         <h2><i class="fas fa-boxes-stacked"></i> Choisir dans le catalogue</h2>
-        <button class="modal-close" onclick="closeCatalogPicker()"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="closeCatalogPicker()" aria-label="Fermer"><i class="fas fa-times"></i></button>
       </div>
-      <input type="text" id="catalogPickerSearch" class="input" placeholder="🔍 Rechercher..." style="margin-bottom:0.75rem;">
+      <input type="text" id="catalogPickerSearch" class="input" placeholder="🔍 Rechercher..." style="margin-bottom:0.75rem;" aria-label="Rechercher un article">
       <div class="catalog-grid" id="catalogPickerGrid"></div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="historyModal">
+  <div class="modal-overlay" id="historyModal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:650px;">
       <div class="modal-header">
         <h2><i class="fas fa-history"></i> Historique</h2>
-        <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="closeHistoryModal()" aria-label="Fermer"><i class="fas fa-times"></i></button>
       </div>
       <div id="historyList"></div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="searchModal">
+  <div class="modal-overlay" id="searchModal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:650px;">
       <div class="search-input-wrap">
         <i class="fas fa-search"></i>
-        <input type="text" id="globalSearchInput" class="input" placeholder="Rechercher clients, devis, articles…" autocomplete="off">
+        <input type="text" id="globalSearchInput" class="input" placeholder="Rechercher clients, devis, articles…" autocomplete="off" aria-label="Rechercher">
       </div>
       <div class="search-results" id="globalSearchResults"></div>
       <div style="display:flex; justify-content:flex-end; gap:0.4rem; margin-top:0.75rem;">
@@ -1566,8 +1610,44 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
-    const APP_VERSION = '2.0';
-    const ENCRYPTION_KEY = 'DevisPro_v2_secret_key';
+    const APP_VERSION = '2.3';
+    const STORAGE_LIMIT_MB = 5;
+    const EXPORT_REMINDER_DAYS = 7;
+    const PIN_VERIFIER_SALT = 'DevisPro_v2_pin_salt';
+    const PBKDF2_ITERATIONS = 10000;
+
+    const DEFAULT_KEY = 'DevisPro_NO_PIN_INSECURE_DEFAULT_KEY_v2';
+
+    const Crypto = {
+      deriveKey(pin) {
+        if (!pin) return DEFAULT_KEY;
+        const derived = CryptoJS.PBKDF2(pin, PIN_VERIFIER_SALT, {
+          keySize: 256 / 32,
+          iterations: PBKDF2_ITERATIONS,
+          hasher: CryptoJS.algo.SHA256
+        });
+        return derived.toString();
+      },
+      hashPin(pin) {
+        if (!pin) return null;
+        return CryptoJS.SHA256(PIN_VERIFIER_SALT + '::' + pin).toString();
+      },
+      encrypt(data, key) {
+        try { return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString(); }
+        catch { return ''; }
+      },
+      decrypt(str, key, fallback = null) {
+        if (!str) return fallback;
+        try {
+          const bytes = CryptoJS.AES.decrypt(str, key);
+          const text = bytes.toString(CryptoJS.enc.Utf8);
+          if (!text) return fallback;
+          return JSON.parse(text);
+        } catch { return fallback; }
+      }
+    };
+
+    let activeKey = DEFAULT_KEY;
 
     const Storage = {
       KEY_CLIENTS: 'devispro_clients_enc',
@@ -1577,19 +1657,8 @@
       KEY_TRASH: 'devispro_trash_enc',
       KEY_DRAFT: 'devispro_draft_enc',
 
-      encrypt(data) {
-        try { return CryptoJS.AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString(); }
-        catch { return ''; }
-      },
-      decrypt(str, fallback = null) {
-        if (!str) return fallback;
-        try {
-          const bytes = CryptoJS.AES.decrypt(str, ENCRYPTION_KEY);
-          const text = bytes.toString(CryptoJS.enc.Utf8);
-          if (!text) return fallback;
-          return JSON.parse(text);
-        } catch { return fallback; }
-      },
+      encrypt(data) { return Crypto.encrypt(data, activeKey); },
+      decrypt(str, fallback = null) { return Crypto.decrypt(str, activeKey, fallback); },
 
       loadClients() { return this.decrypt(localStorage.getItem(this.KEY_CLIENTS), []); },
       saveClients(c) { localStorage.setItem(this.KEY_CLIENTS, this.encrypt(c)); },
@@ -1601,46 +1670,69 @@
       saveTrash(t) { localStorage.setItem(this.KEY_TRASH, this.encrypt(t)); },
       loadDraft() { return this.decrypt(localStorage.getItem(this.KEY_DRAFT), null); },
       saveDraft(d) { if (d) localStorage.setItem(this.KEY_DRAFT, this.encrypt(d)); else localStorage.removeItem(this.KEY_DRAFT); },
-      loadSettings() {
-        return this.decrypt(localStorage.getItem(this.KEY_SETTINGS), {
-          company: {
-            name: 'DevisPro SAS', email: '', phone: '', address: '', logo: '',
-            siret: '', tvaNumber: '',
-            insurance: { name: '', policy: '', coverage: '' },
-            vatRegime: 'normal'
-          },
-          accent: '#6366f1',
-          dark: false,
-          tablet: false,
-          autosave: true,
-          pin: null
-        });
-      },
+      loadSettings() { return this.decrypt(localStorage.getItem(this.KEY_SETTINGS), defaultSettings()); },
       saveSettings(s) { localStorage.setItem(this.KEY_SETTINGS, this.encrypt(s)); }
     };
 
+    function defaultSettings() {
+      return {
+        company: {
+          name: 'DevisPro SAS', email: '', phone: '', address: '', logo: '',
+          siret: '', tvaNumber: '',
+          insurance: { name: '', policy: '', coverage: '' },
+          vatRegime: 'normal'
+        },
+        accent: '#6366f1',
+        dark: false,
+        tablet: false,
+        autosave: true,
+        pinHash: null,
+        hasPin: false,
+        nextNumber: 1,
+        lastExportAt: 0
+      };
+    }
+
+    function getStorageBytes() {
+      let total = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        const v = localStorage.getItem(k) || '';
+        total += (k.length + v.length) * 2;
+      }
+      return total;
+    }
+
+    const UndoStack = {
+      stack: [],
+      MAX: 50,
+      push(label, fn) {
+        this.stack.push({ label, fn, at: Date.now() });
+        if (this.stack.length > this.MAX) this.stack.shift();
+      },
+      undo() {
+        const last = this.stack.pop();
+        if (!last) { toast('Rien à annuler', 'warning'); return; }
+        try { last.fn(); toast(`Annulé : ${last.label}`); }
+        catch (e) { console.error(e); toast('Annulation impossible', 'error'); }
+      }
+    };
+
     let state = {
-      clients: Storage.loadClients(),
-      devis: Storage.loadDevis(),
-      catalog: Storage.loadCatalog(),
-      trash: Storage.loadTrash(),
-      settings: Storage.loadSettings(),
+      clients: [],
+      devis: [],
+      catalog: [],
+      trash: { clients: [], devis: [] },
+      settings: null,
       currentDevisId: null,
       currentItems: [],
       currentPayments: [],
       editingClientId: null,
       editingCatalogId: null,
       currentView: 'devis-list',
-      autosaveTimer: null
+      autosaveTimer: null,
+      loaded: false
     };
-
-    (function purgeTrash() {
-      const now = Date.now();
-      const THIRTY = 30 * 24 * 60 * 60 * 1000;
-      state.trash.clients = state.trash.clients.filter(c => now - (c.deletedAt || 0) < THIRTY);
-      state.trash.devis = state.trash.devis.filter(d => now - (d.deletedAt || 0) < THIRTY);
-      Storage.saveTrash(state.trash);
-    })();
 
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
@@ -1681,7 +1773,7 @@
       const container = $('#toastContainer');
       const el = document.createElement('div');
       el.className = `toast ${type}`;
-      const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+      const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-info-circle';
       el.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(msg)}</span>`;
 
       if (options.undo && typeof options.undo === 'function') {
@@ -1698,12 +1790,35 @@
       }
 
       container.appendChild(el);
-      const timeout = options.undo ? 6000 : 3500;
+      const timeout = options.undo ? 6000 : 4000;
       setTimeout(() => {
         el.style.opacity = '0';
         el.style.transform = 'translateX(100%)';
         setTimeout(() => el.remove(), 300);
       }, timeout);
+    }
+
+    function loadAllData() {
+      state.clients = Storage.loadClients();
+      state.devis = Storage.loadDevis();
+      state.catalog = Storage.loadCatalog();
+      state.trash = Storage.loadTrash();
+      state.settings = Storage.loadSettings();
+      state.loaded = true;
+      ensureNextNumber();
+    }
+
+    function ensureNextNumber() {
+      let max = state.settings.nextNumber || 1;
+      state.devis.forEach(d => {
+        const m = (d.number || '').match(/(\d+)\s*$/);
+        if (m) {
+          const n = parseInt(m[1], 10);
+          if (n >= max) max = n + 1;
+        }
+      });
+      state.settings.nextNumber = max;
+      Storage.saveSettings(state.settings);
     }
 
     function applyTheme() {
@@ -1760,14 +1875,13 @@
       $('#pageSubtitle').textContent = pageInfo[view]?.subtitle || '';
       renderTopbarActions(view);
 
-      if (view === 'devis-list') renderDevisList();
+      if (view === 'devis-list') { renderDevisList(); renderExportReminder(); }
       if (view === 'clients') renderClients();
       if (view === 'catalogue') renderCatalogue();
       if (view === 'reports') renderReports();
       if (view === 'trash') renderTrash();
       if (view === 'settings') renderSettings();
 
-      // Scroll en haut à chaque navigation
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1790,69 +1904,59 @@
       }
     }
 
-    function startAutosave() {
-      stopAutosave();
-      if (!state.settings.autosave) return;
-      state.autosaveTimer = setInterval(() => {
-        if (state.currentView !== 'editor') return;
-        if (!hasEditorChanges()) return;
-        saveDraft();
-      }, 30000);
+    function renderExportReminder() {
+      const el = $('#exportReminder');
+      if (!el) return;
+      const last = state.settings.lastExportAt || 0;
+      const days = (Date.now() - last) / (1000 * 60 * 60 * 24);
+      if (last > 0 && days < EXPORT_REMINDER_DAYS) { el.innerHTML = ''; return; }
+      el.innerHTML = `
+        <div class="export-reminder">
+          <i class="fas fa-triangle-exclamation"></i>
+          <div class="txt">
+            ${last === 0
+              ? 'Vous n\'avez jamais exporté vos données. Un export régulier vous protège en cas de perte du navigateur.'
+              : `Dernier export il y a ${Math.floor(days)} jour(s). Pensez à sauvegarder vos données.`}
+          </div>
+          <button class="btn btn-sm btn-primary" id="exportReminderBtn"><i class="fas fa-download"></i> Exporter</button>
+        </div>
+      `;
+      $('#exportReminderBtn').addEventListener('click', exportAll);
     }
 
-    function stopAutosave() {
-      if (state.autosaveTimer) {
-        clearInterval(state.autosaveTimer);
-        state.autosaveTimer = null;
-      }
-    }
+    function getFilteredDevis() {
+      const search = ($('#devisSearch')?.value || '').toLowerCase();
+      const status = $('#devisFilterStatus')?.value || '';
+      const from = $('#devisFilterFrom')?.value || '';
+      const to = $('#devisFilterTo')?.value || '';
+      const sortBy = $('#devisSortBy')?.value || 'date-desc';
 
-    function hasEditorChanges() {
-      return $('#invoiceNumber').value || state.currentItems.length > 0;
-    }
+      let list = state.devis.filter(d => {
+        if (search && !(d.number || '').toLowerCase().includes(search) && !(d.clientName || '').toLowerCase().includes(search)) return false;
+        if (status && d.status !== status) return false;
+        if (from && d.date < from) return false;
+        if (to && d.date > to) return false;
+        return true;
+      });
 
-    function saveDraft() {
-      const indicator = $('#autosaveIndicator');
-      if (indicator) {
-        indicator.style.display = 'inline-flex';
-        indicator.classList.add('saving');
-        indicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Sauvegarde…</span>';
-      }
-
-      const draft = {
-        id: state.currentDevisId,
-        number: $('#invoiceNumber').value,
-        date: $('#invoiceDate').value,
-        status: $('#invoiceStatus').value,
-        notes: $('#invoiceNotes').value,
-        clientId: $('#clientSelect').value,
-        items: JSON.parse(JSON.stringify(state.currentItems)),
-        payments: JSON.parse(JSON.stringify(state.currentPayments)),
-        depositPercent: parseFloat($('#depositPercent').value) || 0,
-        validityDays: parseInt($('#validityDays').value) || 0,
-        acceptedDate: $('#acceptedDate').value || '',
-        savedAt: Date.now()
-      };
-      Storage.saveDraft(draft);
-
-      setTimeout(() => {
-        if (indicator) {
-          indicator.classList.remove('saving');
-          indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Brouillon sauvegardé</span>';
-          setTimeout(() => { indicator.style.display = 'none'; }, 2000);
+      list.sort((a, b) => {
+        switch (sortBy) {
+          case 'date-asc': return (a.date || '').localeCompare(b.date || '');
+          case 'amount-desc': return devisTotalTTC(b) - devisTotalTTC(a);
+          case 'amount-asc': return devisTotalTTC(a) - devisTotalTTC(b);
+          case 'client-asc': return (a.clientName || '').localeCompare(b.clientName || '');
+          case 'date-desc':
+          default: return (b.date || '').localeCompare(a.date || '');
         }
-      }, 400);
+      });
+      return list;
     }
 
-    function renderDevisList(filter = '') {
+    function renderDevisList() {
       const list = $('#devisList');
-      const sorted = [...state.devis].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-      const filtered = filter
-        ? sorted.filter(d => (d.number || '').toLowerCase().includes(filter.toLowerCase()) || (d.clientName || '').toLowerCase().includes(filter.toLowerCase()))
-        : sorted;
-
+      const filtered = getFilteredDevis();
       if (filtered.length === 0) {
-        list.innerHTML = `<div class="empty"><i class="fas fa-file-invoice"></i><h3>${filter ? 'Aucun résultat' : 'Aucun devis'}</h3><p>${filter ? 'Essayez un autre terme' : 'Créez votre premier devis'}</p></div>`;
+        list.innerHTML = `<div class="empty"><i class="fas fa-file-invoice"></i><h3>Aucun devis</h3><p>Modifiez les filtres ou créez un devis</p></div>`;
         return;
       }
       list.innerHTML = filtered.map(d => devisItemHTML(d)).join('');
@@ -1887,8 +1991,8 @@
           </div>
           <div class="devis-total">${formatEuro(total)}</div>
           <div style="display:flex; gap:0.25rem;">
-            <button class="btn btn-outline btn-icon btn-sm" data-action="edit" title="Modifier"><i class="fas fa-pen"></i></button>
-            <button class="btn btn-outline btn-icon btn-sm" data-action="delete" title="Supprimer"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-outline btn-icon btn-sm" data-action="edit" title="Modifier" aria-label="Modifier"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-outline btn-icon btn-sm" data-action="delete" title="Supprimer" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       `;
@@ -1911,19 +2015,17 @@
           Storage.saveDevis(state.devis);
           Storage.saveTrash(state.trash);
           updateBadges();
-          if (state.currentView === 'devis-list') renderDevisList($('#devisSearch')?.value || '');
-          toast('Devis dans la corbeille', 'warning', {
-            undo: () => {
-              state.trash.devis = state.trash.devis.filter(x => !(x.id === id && x.deletedAt === d.deletedAt));
-              const restored = { ...d }; delete restored.deletedAt;
-              state.devis.push(restored);
-              Storage.saveDevis(state.devis);
-              Storage.saveTrash(state.trash);
-              updateBadges();
-              if (state.currentView === 'devis-list') renderDevisList($('#devisSearch')?.value || '');
-              toast('Devis restauré');
-            }
+          if (state.currentView === 'devis-list') renderDevisList();
+          UndoStack.push('Suppression devis ' + (d.number || ''), () => {
+            state.trash.devis = state.trash.devis.filter(x => x.id !== id);
+            const restored = { ...d }; delete restored.deletedAt;
+            state.devis.push(restored);
+            Storage.saveDevis(state.devis);
+            Storage.saveTrash(state.trash);
+            updateBadges();
+            if (state.currentView === 'devis-list') renderDevisList();
           });
+          toast('Devis dans la corbeille', 'warning');
         });
       });
     }
@@ -1941,8 +2043,8 @@
         return `
           <div class="client-card" data-client-id="${c.id}">
             <div class="client-actions">
-              <button class="btn btn-outline btn-icon btn-sm" data-action="edit-client" title="Modifier"><i class="fas fa-pen"></i></button>
-              <button class="btn btn-outline btn-icon btn-sm" data-action="delete-client" title="Supprimer"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-outline btn-icon btn-sm" data-action="edit-client" title="Modifier" aria-label="Modifier"><i class="fas fa-pen"></i></button>
+              <button class="btn btn-outline btn-icon btn-sm" data-action="delete-client" title="Supprimer" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
             </div>
             <div class="client-avatar">${escapeHtml(initials)}</div>
             <div class="client-name">${escapeHtml(c.name || 'Sans nom')}</div>
@@ -1964,7 +2066,7 @@
           if (client) {
             navigateTo('devis-list');
             $('#devisSearch').value = client.name || '';
-            renderDevisList(client.name || '');
+            renderDevisList();
           }
         });
         card.querySelector('[data-action="edit-client"]')?.addEventListener('click', () => openClientModal(id));
@@ -1978,18 +2080,16 @@
           Storage.saveTrash(state.trash);
           updateBadges();
           renderClients();
-          toast('Client dans la corbeille', 'warning', {
-            undo: () => {
-              state.trash.clients = state.trash.clients.filter(x => x.id !== id);
-              const restored = { ...c }; delete restored.deletedAt;
-              state.clients.push(restored);
-              Storage.saveClients(state.clients);
-              Storage.saveTrash(state.trash);
-              updateBadges();
-              renderClients();
-              toast('Client restauré');
-            }
+          UndoStack.push('Suppression client ' + (c.name || ''), () => {
+            state.trash.clients = state.trash.clients.filter(x => x.id !== id);
+            const restored = { ...c }; delete restored.deletedAt;
+            state.clients.push(restored);
+            Storage.saveClients(state.clients);
+            Storage.saveTrash(state.trash);
+            updateBadges();
+            renderClients();
           });
+          toast('Client dans la corbeille', 'warning');
         });
       });
     }
@@ -2028,12 +2128,14 @@
         address: $('#clientAddressInput').value.trim(),
         notes: $('#clientNotesInput').value.trim()
       };
+      let newId = null;
       if (state.editingClientId) {
         const idx = state.clients.findIndex(c => c.id === state.editingClientId);
         if (idx >= 0) state.clients[idx] = { ...state.clients[idx], ...data };
         toast('Client mis à jour');
       } else {
-        state.clients.push({ id: uid(), ...data, createdAt: Date.now() });
+        newId = uid();
+        state.clients.push({ id: newId, ...data, createdAt: Date.now() });
         toast('Client créé');
       }
       Storage.saveClients(state.clients);
@@ -2041,6 +2143,13 @@
       renderClients();
       updateClientSelect();
       closeClientModal();
+
+      if (newId && state.currentView === 'editor') {
+        setTimeout(() => {
+          updateClientSelect();
+          $('#clientSelect').value = newId;
+        }, 50);
+      }
     }
 
     function renderCatalogue(filter = '') {
@@ -2060,8 +2169,8 @@
           <td data-label="TVA">${c.tva}%</td>
           <td data-label="Utilisations">${c.usage || 0}</td>
           <td data-label="">
-            <button class="btn btn-outline btn-icon btn-sm" data-action="edit-catalog" data-id="${c.id}"><i class="fas fa-pen"></i></button>
-            <button class="btn btn-outline btn-icon btn-sm" data-action="delete-catalog" data-id="${c.id}"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-outline btn-icon btn-sm" data-action="edit-catalog" data-id="${c.id}" aria-label="Modifier"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-outline btn-icon btn-sm" data-action="delete-catalog" data-id="${c.id}" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -2075,17 +2184,15 @@
         Storage.saveCatalog(state.catalog);
         updateBadges();
         renderCatalogue($('#catalogSearch').value);
-        toast('Article supprimé', 'warning', {
-          undo: () => {
-            if (item) {
-              state.catalog.push(item);
-              Storage.saveCatalog(state.catalog);
-              updateBadges();
-              renderCatalogue($('#catalogSearch').value);
-              toast('Article restauré');
-            }
+        UndoStack.push('Suppression article ' + (item?.name || ''), () => {
+          if (item) {
+            state.catalog.push(item);
+            Storage.saveCatalog(state.catalog);
+            updateBadges();
+            renderCatalogue($('#catalogSearch').value);
           }
         });
+        toast('Article supprimé', 'warning');
       }));
     }
 
@@ -2205,6 +2312,7 @@
           renderItems();
           updateSummary();
           updatePaymentsSummary();
+          updateDepositInfo();
           closeCatalogPicker();
           toast(`"${item.name}" ajouté`);
         });
@@ -2233,6 +2341,29 @@
       }
     }
 
+    function updateDepositInfo() {
+      const pct = parseFloat($('#depositPercent').value) || 0;
+      const totalTTC = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (1 + i.tva/100), 0);
+      const info = $('#depositInfo');
+      if (!info) return;
+      if (pct > 0 && totalTTC > 0) {
+        info.textContent = `Acompte : ${formatEuro(totalTTC * pct / 100)} (${pct}% du TTC)`;
+      } else {
+        info.textContent = '';
+      }
+    }
+
+    function nextDevisNumber() {
+      const year = new Date().getFullYear();
+      const n = state.settings.nextNumber || 1;
+      return `DEV-${year}-${String(n).padStart(3, '0')}`;
+    }
+
+    function consumeDevisNumber() {
+      state.settings.nextNumber = (state.settings.nextNumber || 1) + 1;
+      Storage.saveSettings(state.settings);
+    }
+
     function openEditor(devisId = null) {
       state.currentDevisId = devisId;
       state.currentItems = [];
@@ -2246,7 +2377,7 @@
         $('#invoiceStatus').value = d.status || 'brouillon';
         $('#invoiceNotes').value = d.notes || '';
         $('#paidAmount').value = (d.payments || []).reduce((s, p) => s + p.amount, 0);
-        $('#depositPercent').value = d.depositPercent || 30;
+        $('#depositPercent').value = d.depositPercent ?? 30;
         $('#validityDays').value = d.validityDays || 30;
         $('#acceptedDate').value = d.acceptedDate || '';
         state.currentItems = JSON.parse(JSON.stringify(d.items || []));
@@ -2255,22 +2386,23 @@
           updateClientSelect();
           $('#clientSelect').value = d.clientId || '';
           updateValidityInfo();
+          updateDepositInfo();
         }, 0);
       } else {
         const draft = Storage.loadDraft();
         if (draft && draft.items && draft.items.length > 0) {
           if (confirm('Un brouillon non enregistré a été trouvé. Le restaurer ?')) {
-            $('#invoiceNumber').value = draft.number || 'DEV-' + new Date().getFullYear() + '-' + String(state.devis.length + 1).padStart(3, '0');
+            $('#invoiceNumber').value = draft.number || nextDevisNumber();
             $('#invoiceDate').value = draft.date || todayISO();
             $('#invoiceStatus').value = draft.status || 'brouillon';
             $('#invoiceNotes').value = draft.notes || '';
-            $('#depositPercent').value = draft.depositPercent || 30;
+            $('#depositPercent').value = draft.depositPercent ?? 30;
             $('#validityDays').value = draft.validityDays || 30;
             $('#acceptedDate').value = draft.acceptedDate || '';
             state.currentItems = draft.items;
             state.currentPayments = draft.payments || [];
             updateClientSelect();
-            setTimeout(() => { $('#clientSelect').value = draft.clientId || ''; updateValidityInfo(); }, 0);
+            setTimeout(() => { $('#clientSelect').value = draft.clientId || ''; updateValidityInfo(); updateDepositInfo(); }, 0);
           } else {
             Storage.saveDraft(null);
             initNewEditor();
@@ -2281,7 +2413,7 @@
       }
 
       function initNewEditor() {
-        $('#invoiceNumber').value = 'DEV-' + new Date().getFullYear() + '-' + String(state.devis.length + 1).padStart(3, '0');
+        $('#invoiceNumber').value = nextDevisNumber();
         $('#invoiceDate').value = todayISO();
         $('#invoiceStatus').value = 'brouillon';
         $('#invoiceNotes').value = '';
@@ -2294,6 +2426,7 @@
         updateClientSelect();
         $('#clientSelect').value = '';
         updateValidityInfo();
+        updateDepositInfo();
       }
 
       $('#pageTitle').textContent = devisId ? 'Modifier le devis' : 'Nouveau devis';
@@ -2304,6 +2437,7 @@
       updateSummary();
       updatePaymentsSummary();
       updateValidityInfo();
+      updateDepositInfo();
       navigateTo('editor');
       startAutosave();
     }
@@ -2318,11 +2452,11 @@
         const total = item.quantity * item.unitPrice;
         return `
           <tr data-item-id="${item.id}">
-            <td data-label="Désignation"><input type="text" class="input-inline" data-field="description" value="${escapeHtml(item.description)}" placeholder="Description..."></td>
-            <td data-label="Qté"><input type="number" class="input-inline small" data-field="quantity" value="${item.quantity}" min="0" step="1"></td>
-            <td data-label="Prix HT"><input type="number" class="input-inline small" data-field="unitPrice" value="${item.unitPrice}" min="0" step="0.01"></td>
+            <td data-label="Désignation"><input type="text" class="input-inline" data-field="description" value="${escapeHtml(item.description)}" placeholder="Description..." aria-label="Désignation"></td>
+            <td data-label="Qté"><input type="number" class="input-inline small" data-field="quantity" value="${item.quantity}" min="0" step="1" aria-label="Quantité"></td>
+            <td data-label="Prix HT"><input type="number" class="input-inline small" data-field="unitPrice" value="${item.unitPrice}" min="0" step="0.01" aria-label="Prix HT"></td>
             <td data-label="TVA">
-              <select class="input-inline" data-field="tva">
+              <select class="input-inline" data-field="tva" aria-label="TVA">
                 <option value="0" ${item.tva == 0 ? 'selected' : ''}>0%</option>
                 <option value="5.5" ${item.tva == 5.5 ? 'selected' : ''}>5,5%</option>
                 <option value="10" ${item.tva == 10 ? 'selected' : ''}>10%</option>
@@ -2330,7 +2464,7 @@
               </select>
             </td>
             <td data-label="Total HT"><strong>${formatEuro(total)}</strong></td>
-            <td data-label=""><button class="delete-btn" data-action="remove-item"><i class="fas fa-trash"></i></button></td>
+            <td data-label=""><button class="delete-btn" data-action="remove-item" aria-label="Supprimer la ligne"><i class="fas fa-trash"></i></button></td>
           </tr>
         `;
       }).join('');
@@ -2343,19 +2477,19 @@
         btn.addEventListener('click', (e) => {
           const row = e.target.closest('tr');
           const removedId = row.dataset.itemId;
-          const removed = state.currentItems.find(i => i.id === removedId);
+          const idx = state.currentItems.findIndex(i => i.id === removedId);
+          const removed = state.currentItems[idx];
           state.currentItems = state.currentItems.filter(i => i.id !== removedId);
           renderItems();
           updateSummary();
           updatePaymentsSummary();
+          updateDepositInfo();
           if (removed) {
-            toast('Ligne supprimée', 'warning', {
-              undo: () => {
-                state.currentItems.push(removed);
-                renderItems(); updateSummary(); updatePaymentsSummary();
-                toast('Ligne restaurée');
-              }
+            UndoStack.push('Suppression ligne', () => {
+              state.currentItems.splice(idx, 0, removed);
+              renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo();
             });
+            toast('Ligne supprimée', 'warning');
           }
         });
       });
@@ -2374,6 +2508,7 @@
       if (totalCell) totalCell.innerHTML = `<strong>${formatEuro(item.quantity * item.unitPrice)}</strong>`;
       updateSummary();
       updatePaymentsSummary();
+      updateDepositInfo();
     }
 
     function updateSummary() {
@@ -2397,7 +2532,7 @@
       list.innerHTML = state.currentPayments.map((p, idx) => `
         <div class="payment-row">
           <div><strong>${formatEuro(p.amount)}</strong><span class="date"> — ${formatDate(p.date)}</span></div>
-          <button class="delete-btn" data-payment-idx="${idx}" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+          <button class="delete-btn" data-payment-idx="${idx}" style="color:var(--danger);" aria-label="Supprimer le paiement"><i class="fas fa-trash"></i></button>
         </div>
       `).join('');
 
@@ -2409,13 +2544,11 @@
           renderPayments();
           updatePaymentsSummary();
           if (removed) {
-            toast('Paiement supprimé', 'warning', {
-              undo: () => {
-                state.currentPayments.splice(idx, 0, removed);
-                renderPayments(); updatePaymentsSummary();
-                toast('Paiement restauré');
-              }
+            UndoStack.push('Suppression paiement', () => {
+              state.currentPayments.splice(idx, 0, removed);
+              renderPayments(); updatePaymentsSummary();
             });
+            toast('Paiement supprimé', 'warning');
           }
         });
       });
@@ -2448,7 +2581,7 @@
 
       const devisData = {
         id: state.currentDevisId || uid(),
-        number: $('#invoiceNumber').value.trim() || 'DEV-' + Date.now(),
+        number: $('#invoiceNumber').value.trim() || nextDevisNumber(),
         date: $('#invoiceDate').value,
         status: $('#invoiceStatus').value,
         notes: $('#invoiceNotes').value.trim(),
@@ -2487,6 +2620,7 @@
         devisData.history = [];
         state.devis.push(devisData);
         state.currentDevisId = devisData.id;
+        consumeDevisNumber();
         toast('Devis enregistré');
       }
 
@@ -2541,55 +2675,75 @@
 
     function closeHistoryModal() { $('#historyModal').classList.remove('active'); }
 
-    function sendEmail() {
+    // ============================================================
+    // PDF — LOGO CORRIGÉ
+    // ============================================================
+    function buildDevisDataForPDF() {
       const clientId = $('#clientSelect').value;
       const client = state.clients.find(c => c.id === clientId);
-      if (!client || !client.email) { toast('Aucun email client défini', 'error'); return; }
-      const totalTTC = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (1 + i.tva/100), 0);
-      const totalHT = state.currentItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      const items = state.currentItems;
+      const ht = items.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      const tva = items.reduce((s, i) => s + (i.quantity * i.unitPrice) * (i.tva/100), 0);
+      const ttc = ht + tva;
+      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
+      const remaining = Math.max(0, ttc - paid);
+      const depositPct = parseFloat($('#depositPercent').value) || 0;
+      const depositAmount = Math.round(ttc * depositPct) / 100;
       const validityDate = computeValidityDate($('#invoiceDate').value, $('#validityDays').value);
-      const companyName = state.settings.company.name || '';
-
-      const lines = state.currentItems.map(i =>
-        `- ${i.description || 'Sans nom'} : ${i.quantity} × ${formatEuro(i.unitPrice)} HT (TVA ${i.tva}%) = ${formatEuro(i.quantity * i.unitPrice * (1 + i.tva/100))} TTC`
-      ).join('\n');
-
-      let body = `Bonjour ${client.name || ''},\n\n`;
-      body += `Veuillez trouver ci-joint le devis ${$('#invoiceNumber').value} du ${formatDate($('#invoiceDate').value)} :\n\n`;
-      body += lines + `\n\n`;
-      body += `Total HT : ${formatEuro(totalHT)}\n`;
-      body += `Total TTC : ${formatEuro(totalTTC)}\n`;
-      if (validityDate) body += `\nCe devis est valable jusqu'au ${formatDate(validityDate)}.\n`;
-      if ($('#invoiceNotes').value) body += `\nNotes / conditions :\n${$('#invoiceNotes').value}\n`;
-
-      body += `\n--- Pour accord ---\n`;
-      body += `Merci de nous retourner ce devis :\n`;
-      body += `  • soit signé, daté et précédé de la mention « Bon pour accord » (par email ou courrier),\n`;
-      body += `  • soit en répondant simplement à cet email avec la mention « Bon pour accord » et la date.\n\n`;
-      if (validityDate) body += `Sans retour de votre part avant le ${formatDate(validityDate)}, ce devis sera considéré comme caduc.\n\n`;
-      body += `Cordialement,\n${companyName}`;
-
-      const subject = encodeURIComponent(`Devis ${$('#invoiceNumber').value} - ${companyName}`);
-      window.location.href = `mailto:${client.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
-      toast('Email prêt dans votre messagerie');
+      return {
+        client, items, ht, tva, ttc, paid, remaining,
+        depositPct, depositAmount, validityDate,
+        number: $('#invoiceNumber').value,
+        date: $('#invoiceDate').value,
+        status: $('#invoiceStatus').value,
+        notes: $('#invoiceNotes').value
+      };
     }
 
-    function exportPDF() {
+    function hexToRgb(hex) {
+      const h = hex.replace('#', '');
+      return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
+    }
+
+    function generatePDFDoc() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const data = buildDevisDataForPDF();
       const accent = hexToRgb(state.settings.accent || '#6366f1');
-      const clientId = $('#clientSelect').value;
-      const client = state.clients.find(c => c.id === clientId);
       const pageW = 210, margin = 15;
       let y = margin;
 
+      // Bande d'accent
       doc.setFillColor(accent[0], accent[1], accent[2]);
       doc.rect(0, 0, pageW, 4, 'F');
 
+      // --- LOGO : calcul des proportions réelles + placement en haut à gauche ---
+      let logoHeight = 0;
+      if (state.settings.company.logo) {
+        try {
+          const imgProps = doc.getImageProperties(state.settings.company.logo);
+          const MAX_W = 35;  // largeur max en mm
+          const MAX_H = 18;  // hauteur max en mm
+          let logoW = MAX_W;
+          let logoH = (imgProps.height / imgProps.width) * logoW;
+          if (logoH > MAX_H) {
+            logoH = MAX_H;
+            logoW = (imgProps.width / imgProps.height) * logoH;
+          }
+          // Placer le logo en haut à gauche, sur la marge
+          doc.addImage(state.settings.company.logo, 'PNG', margin, y, logoW, logoH);
+          logoHeight = logoH + 4; // marge sous le logo
+        } catch (e) {
+          console.warn('Logo non ajouté au PDF', e);
+          logoHeight = 0;
+        }
+      }
+
+      // --- ENTREPRISE (décalée sous le logo) ---
       doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
-      doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8);
+      doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8 + logoHeight);
       doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.setFont(undefined, 'normal');
-      let cy = y + 13;
+      let cy = y + 13 + logoHeight;
       const compAddr = (state.settings.company.address || '').split('\n');
       compAddr.forEach(l => { if (l.trim()) { doc.text(l, margin, cy); cy += 4; } });
       if (state.settings.company.email) { doc.text(state.settings.company.email, margin, cy); cy += 4; }
@@ -2601,36 +2755,34 @@
         doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4;
       }
 
+      // --- INFO DEVIS (à droite) ---
       const infoX = pageW - margin;
       doc.setFontSize(14); doc.setTextColor(0); doc.setFont(undefined, 'bold');
-      doc.text(`DEVIS ${$('#invoiceNumber').value}`, infoX, y + 8, { align: 'right' });
+      doc.text(`DEVIS ${data.number}`, infoX, y + 8, { align: 'right' });
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-      doc.text(`Date : ${formatDate($('#invoiceDate').value)}`, infoX, y + 14, { align: 'right' });
-      const validityDate = computeValidityDate($('#invoiceDate').value, $('#validityDays').value);
-      if (validityDate) doc.text(`Valable jusqu'au : ${formatDate(validityDate)}`, infoX, y + 19, { align: 'right' });
-      doc.text(`Statut : ${$('#invoiceStatus').value}`, infoX, y + 24, { align: 'right' });
+      doc.text(`Date : ${formatDate(data.date)}`, infoX, y + 14, { align: 'right' });
+      if (data.validityDate) doc.text(`Valable jusqu'au : ${formatDate(data.validityDate)}`, infoX, y + 19, { align: 'right' });
+      doc.text(`Statut : ${data.status}`, infoX, y + 24, { align: 'right' });
 
-      if (state.settings.company.logo) {
-        try { doc.addImage(state.settings.company.logo, 'PNG', margin, y + 25, 30, 15); } catch {}
-      }
-
-      y = Math.max(cy + 5, y + 25) + 10;
+      // --- Ligne de séparation + client ---
+      y = Math.max(cy + 5, y + 25 + logoHeight) + 10;
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
       doc.line(margin, y, pageW - margin, y); y += 8;
       doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
       doc.text('CLIENT', margin, y); y += 6;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
-      if (client) {
-        doc.text(client.name || '', margin, y); y += 4;
-        if (client.email) { doc.text(client.email, margin, y); y += 4; }
-        if (client.phone) { doc.text(client.phone, margin, y); y += 4; }
-        if (client.address) client.address.split('\n').forEach(l => { doc.text(l, margin, y); y += 4; });
+      if (data.client) {
+        doc.text(data.client.name || '', margin, y); y += 4;
+        if (data.client.email) { doc.text(data.client.email, margin, y); y += 4; }
+        if (data.client.phone) { doc.text(data.client.phone, margin, y); y += 4; }
+        if (data.client.address) data.client.address.split('\n').forEach(l => { doc.text(l, margin, y); y += 4; });
       } else {
         doc.text('—', margin, y); y += 4;
       }
 
+      // --- Tableau articles ---
       y += 5;
-      const rows = state.currentItems.map(i => [
+      const rows = data.items.map(i => [
         i.description || '',
         String(i.quantity),
         formatEuro(i.unitPrice),
@@ -2650,47 +2802,55 @@
       });
       y = doc.lastAutoTable.finalY + 10;
 
-      const ht = state.currentItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-      const tva = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (i.tva/100), 0);
-      const ttc = ht + tva;
-      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
-      const remaining = Math.max(0, ttc - paid);
-
+      // --- Totaux ---
       const boxX = pageW - margin - 80;
       doc.setFontSize(9); doc.setTextColor(100);
       doc.text('Total HT', boxX, y);
-      doc.text(formatEuro(ht), pageW - margin, y, { align: 'right' }); y += 5;
+      doc.text(formatEuro(data.ht), pageW - margin, y, { align: 'right' }); y += 5;
       doc.text('TVA', boxX, y);
-      doc.text(formatEuro(tva), pageW - margin, y, { align: 'right' }); y += 5;
+      doc.text(formatEuro(data.tva), pageW - margin, y, { align: 'right' }); y += 5;
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
       doc.line(boxX, y, pageW - margin, y); y += 6;
       doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(accent[0], accent[1], accent[2]);
       doc.text('Total TTC', boxX, y);
-      doc.text(formatEuro(ttc), pageW - margin, y, { align: 'right' }); y += 7;
+      doc.text(formatEuro(data.ttc), pageW - margin, y, { align: 'right' }); y += 7;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
-      if (paid > 0) {
+
+      // Acompte
+      if (data.depositPct > 0 && data.depositAmount > 0) {
+        doc.setTextColor(100);
+        doc.text(`Acompte (${data.depositPct}%)`, boxX, y);
+        doc.text(formatEuro(data.depositAmount), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text('Solde après acompte', boxX, y);
+        doc.text(formatEuro(data.ttc - data.depositAmount), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.setTextColor(30);
+      }
+
+      if (data.paid > 0) {
         doc.setTextColor(16, 185, 129);
         doc.text('Payé', boxX, y);
-        doc.text(formatEuro(paid), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text(formatEuro(data.paid), pageW - margin, y, { align: 'right' }); y += 5;
       }
-      if (remaining > 0 && paid > 0) {
+      if (data.remaining > 0 && data.paid > 0) {
         doc.setTextColor(245, 158, 11);
         doc.text('Reste à payer', boxX, y);
-        doc.text(formatEuro(remaining), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text(formatEuro(data.remaining), pageW - margin, y, { align: 'right' }); y += 5;
       }
       doc.setTextColor(30);
 
-      if ($('#invoiceNotes').value) {
+      // --- Notes ---
+      if (data.notes) {
         y = Math.max(y, doc.lastAutoTable.finalY + 40);
         doc.setFillColor(248, 250, 252); doc.roundedRect(margin, y, pageW - margin * 2, 20, 2, 2, 'F');
         doc.setFontSize(8); doc.setTextColor(100);
         doc.text('Notes / conditions', margin + 3, y + 5);
         doc.setTextColor(60);
-        const split = doc.splitTextToSize($('#invoiceNotes').value, pageW - margin * 2 - 6);
+        const split = doc.splitTextToSize(data.notes, pageW - margin * 2 - 6);
         doc.text(split, margin + 3, y + 10);
         y += 25;
       }
 
+      // --- Assurance ---
       const ins = state.settings.company.insurance || {};
       if (ins.name || ins.policy || ins.coverage) {
         y = Math.max(y + 5, doc.lastAutoTable.finalY + 50);
@@ -2704,7 +2864,7 @@
         y += split.length * 3.5 + 3;
       }
 
-      // Zone « Bon pour accord »
+      // --- Zone Bon pour accord ---
       y = Math.max(y + 6, doc.lastAutoTable.finalY + 55);
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.3);
       const boxY = y;
@@ -2719,36 +2879,101 @@
       doc.text('Date', margin + 4, boxY + 30);
       doc.line(margin + 80, boxY + 24, pageW - margin - 4, boxY + 24);
       doc.text('Signature du client', margin + 80, boxY + 30);
-      y = boxY + boxH + 6;
 
       doc.setFontSize(7); doc.setTextColor(150);
       doc.text(`Devis généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}`, pageW/2, 290, { align: 'center' });
 
-      doc.save(`Devis_${$('#invoiceNumber').value || 'export'}.pdf`);
-      toast('PDF exporté');
+      return { doc, filename: `Devis_${data.number || 'export'}.pdf`, data };
     }
 
-    function hexToRgb(hex) {
-      const h = hex.replace('#', '');
-      return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
+    function exportPDF() {
+      try {
+        const { doc, filename } = generatePDFDoc();
+        doc.save(filename);
+        toast('PDF exporté');
+      } catch (e) {
+        console.error(e);
+        toast('Erreur lors de la génération du PDF', 'error');
+      }
+    }
+
+    function prepareEmailWithPDF() {
+      const clientId = $('#clientSelect').value;
+      const client = state.clients.find(c => c.id === clientId);
+      if (!client || !client.email) { toast('Aucun email client défini', 'error'); return; }
+
+      let pdfFilename = '';
+      try {
+        const { doc, filename } = generatePDFDoc();
+        pdfFilename = filename;
+        doc.save(filename);
+      } catch (e) {
+        console.error(e);
+        toast('Erreur génération PDF', 'error');
+        return;
+      }
+
+      const data = buildDevisDataForPDF();
+      const companyName = state.settings.company.name || '';
+      const lines = data.items.map(i =>
+        `- ${i.description || 'Sans nom'} : ${i.quantity} × ${formatEuro(i.unitPrice)} HT (TVA ${i.tva}%) = ${formatEuro(i.quantity * i.unitPrice * (1 + i.tva/100))} TTC`
+      ).join('\n');
+
+      let body = `Bonjour ${client.name || ''},\n\n`;
+      body += `Veuillez trouver ci-joint le devis ${data.number} du ${formatDate(data.date)} :\n\n`;
+      body += lines + `\n\n`;
+      body += `Total HT : ${formatEuro(data.ht)}\n`;
+      body += `Total TTC : ${formatEuro(data.ttc)}\n`;
+      if (data.depositPct > 0 && data.depositAmount > 0) {
+        body += `Acompte demandé (${data.depositPct}%) : ${formatEuro(data.depositAmount)}\n`;
+      }
+      if (data.validityDate) body += `\nCe devis est valable jusqu'au ${formatDate(data.validityDate)}.\n`;
+      if (data.notes) body += `\nNotes / conditions :\n${data.notes}\n`;
+
+      body += `\n--- Pour accord ---\n`;
+      body += `Merci de nous retourner ce devis :\n`;
+      body += `  • soit signé, daté et précédé de la mention « Bon pour accord » (par email ou courrier),\n`;
+      body += `  • soit en répondant simplement à cet email avec la mention « Bon pour accord » et la date.\n\n`;
+      if (data.validityDate) body += `Sans retour de votre part avant le ${formatDate(data.validityDate)}, ce devis sera considéré comme caduc.\n\n`;
+      body += `Cordialement,\n${companyName}`;
+
+      const subject = encodeURIComponent(`Devis ${data.number} - ${companyName}`);
+
+      toast(`PDF téléchargé (${pdfFilename}). Attachez-le à l'email qui s'ouvre.`, 'success');
+      setTimeout(() => {
+        window.location.href = `mailto:${client.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
+      }, 800);
+    }
+
+    async function sharePDF() {
+      try {
+        const { doc, filename } = generatePDFDoc();
+        const blob = doc.output('blob');
+        const file = new File([blob], filename, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `Devis ${$('#invoiceNumber').value}`,
+            text: `Devis ${$('#invoiceNumber').value} - ${state.settings.company.name || ''}`
+          });
+          toast('PDF partagé');
+        } else {
+          doc.save(filename);
+          toast('Partage non disponible. PDF téléchargé.', 'warning');
+        }
+      } catch (e) {
+        if (e.name === 'AbortError') return;
+        console.error(e);
+        toast('Erreur lors du partage', 'error');
+      }
     }
 
     function printDevis() {
-      const clientId = $('#clientSelect').value;
-      const client = state.clients.find(c => c.id === clientId);
-      let ht = 0, tva = 0;
-      let rows = '';
-      state.currentItems.forEach(i => {
-        const lh = (i.quantity || 0) * (i.unitPrice || 0);
-        ht += lh; tva += lh * ((i.tva || 0) / 100);
-        rows += `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${i.quantity}</td><td style="text-align:right">${formatEuro(i.unitPrice)}</td><td style="text-align:center">${i.tva}%</td><td style="text-align:right">${formatEuro(lh)}</td></tr>`;
-      });
-      const totalTTC = ht + tva;
-      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
-      const remaining = Math.max(0, totalTTC - paid);
-      const logoHtml = state.settings.company.logo ? `<img src="${state.settings.company.logo}" style="max-height:60px; max-width:150px; object-fit:contain; margin-bottom:8px;">` : '';
+      const data = buildDevisDataForPDF();
+      // Logo dans l'impression : on l'affiche en <img> avec max-height 60px
+      const logoHtml = state.settings.company.logo ? `<img src="${state.settings.company.logo}" style="max-height:60px; max-width:150px; object-fit:contain; margin-bottom:8px; display:block;">` : '';
       const accent = state.settings.accent || '#6366f1';
-      const validityDate = computeValidityDate($('#invoiceDate').value, $('#validityDays').value);
       const ins = state.settings.company.insurance || {};
       let insuranceHtml = '';
       if (ins.name || ins.policy || ins.coverage) {
@@ -2758,10 +2983,11 @@
       if (state.settings.company.vatRegime === 'franchise') {
         vatMention = `<div style="font-size:11px; color:#64748b; margin-top:8px;">TVA non applicable, art. 293 B du CGI</div>`;
       }
+      const rows = data.items.map(i => `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${i.quantity}</td><td style="text-align:right">${formatEuro(i.unitPrice)}</td><td style="text-align:center">${i.tva}%</td><td style="text-align:right">${formatEuro(i.quantity * i.unitPrice)}</td></tr>`).join('');
 
       const win = window.open('', '_blank');
       win.document.write(`
-        <html><head><title>Devis ${escapeHtml($('#invoiceNumber').value)}</title>
+        <html><head><title>Devis ${escapeHtml(data.number)}</title>
         <style>* { box-sizing: border-box; }
         body { font-family: 'Inter', Arial, sans-serif; padding: 40px; color: #0f172a; max-width: 800px; margin: auto; }
         .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid ${accent}; padding-bottom: 20px; gap: 20px; flex-wrap: wrap; }
@@ -2772,13 +2998,15 @@
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         th { background: ${accent}; color: white; padding: 10px; text-align: left; font-size: 12px; text-transform: uppercase; }
         td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+        tr { page-break-inside: avoid; }
         .totals { margin-left: auto; width: 320px; margin-top: 20px; }
         .totals div { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
         .totals .total { border-top: 2px solid #0f172a; font-weight: 800; font-size: 18px; padding-top: 12px; color: ${accent}; }
+        .totals .deposit { color: #6366f1; font-weight: 600; }
         .totals .paid { color: #10b981; font-weight: 600; }
         .totals .remaining { color: #f59e0b; font-weight: 600; }
         .notes { margin-top: 40px; padding: 15px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #64748b; }
-        .accord-box { margin-top: 40px; border: 2px solid ${accent}; border-radius: 8px; padding: 15px; }
+        .accord-box { margin-top: 40px; border: 2px solid ${accent}; border-radius: 8px; padding: 15px; page-break-before: always; page-break-inside: avoid; }
         .accord-box .title { font-weight: 800; color: ${accent}; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; }
         .accord-box .hint { font-size: 12px; color: #64748b; margin-bottom: 20px; }
         .accord-lines { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -2786,6 +3014,10 @@
         .accord-line .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
         .accord-line .line { border-bottom: 1px solid #94a3b8; height: 40px; }
         .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        @media print {
+          body { padding: 15px; }
+          .accord-box { page-break-before: always; }
+        }
         @media (max-width: 600px) {
           body { padding: 15px; }
           .header .client { text-align: left; }
@@ -2794,17 +3026,21 @@
         </style></head><body>
         <div class="header">
           <div class="company">${logoHtml}<strong>${escapeHtml(state.settings.company.name || 'Mon entreprise')}</strong>${escapeHtml(state.settings.company.address || '').replace(/\n/g, '<br>')}<br>${state.settings.company.email ? escapeHtml(state.settings.company.email) + '<br>' : ''}${state.settings.company.phone ? escapeHtml(state.settings.company.phone) : ''}${state.settings.company.siret ? '<br>SIRET : ' + escapeHtml(state.settings.company.siret) : ''}${vatMention}</div>
-          <div class="client"><strong>Devis ${escapeHtml($('#invoiceNumber').value)}</strong>${formatDate($('#invoiceDate').value)}${validityDate ? '<br>Valable jusqu\'au ' + formatDate(validityDate) : ''}<br>Statut: ${$('#invoiceStatus').value}<br><br><strong>Client</strong>${escapeHtml(client?.name || '—')}<br>${escapeHtml(client?.email || '')}<br>${escapeHtml(client?.address || '').replace(/\n/g, '<br>')}</div>
+          <div class="client"><strong>Devis ${escapeHtml(data.number)}</strong>${formatDate(data.date)}${data.validityDate ? '<br>Valable jusqu\'au ' + formatDate(data.validityDate) : ''}<br>Statut: ${data.status}<br><br><strong>Client</strong>${escapeHtml(data.client?.name || '—')}<br>${escapeHtml(data.client?.email || '')}<br>${escapeHtml(data.client?.address || '').replace(/\n/g, '<br>')}</div>
         </div>
         <table><thead><tr><th>Désignation</th><th style="text-align:center">Qté</th><th style="text-align:right">Prix HT</th><th style="text-align:center">TVA</th><th style="text-align:right">Total HT</th></tr></thead><tbody>${rows}</tbody></table>
         <div class="totals">
-          <div><span>Total HT</span><span>${formatEuro(ht)}</span></div>
-          <div><span>TVA</span><span>${formatEuro(tva)}</span></div>
-          <div class="total"><span>Total TTC</span><span>${formatEuro(totalTTC)}</span></div>
-          ${paid > 0 ? `<div class="paid"><span>Acompte / payé</span><span>${formatEuro(paid)}</span></div>` : ''}
-          ${paid > 0 && remaining > 0 ? `<div class="remaining"><span>Reste à payer</span><span>${formatEuro(remaining)}</span></div>` : ''}
+          <div><span>Total HT</span><span>${formatEuro(data.ht)}</span></div>
+          <div><span>TVA</span><span>${formatEuro(data.tva)}</span></div>
+          <div class="total"><span>Total TTC</span><span>${formatEuro(data.ttc)}</span></div>
+          ${data.depositPct > 0 && data.depositAmount > 0 ? `
+            <div class="deposit"><span>Acompte (${data.depositPct}%)</span><span>${formatEuro(data.depositAmount)}</span></div>
+            <div><span>Solde après acompte</span><span>${formatEuro(data.ttc - data.depositAmount)}</span></div>
+          ` : ''}
+          ${data.paid > 0 ? `<div class="paid"><span>Déjà payé</span><span>${formatEuro(data.paid)}</span></div>` : ''}
+          ${data.paid > 0 && data.remaining > 0 ? `<div class="remaining"><span>Reste à payer</span><span>${formatEuro(data.remaining)}</span></div>` : ''}
         </div>
-        ${$('#invoiceNotes').value ? `<div class="notes"><strong>Notes :</strong><br>${escapeHtml($('#invoiceNotes').value).replace(/\n/g, '<br>')}</div>` : ''}
+        ${data.notes ? `<div class="notes"><strong>Notes :</strong><br>${escapeHtml(data.notes).replace(/\n/g, '<br>')}</div>` : ''}
         ${insuranceHtml}
         <div class="accord-box">
           <div class="title">Bon pour accord</div>
@@ -2956,7 +3192,7 @@
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-devis="${d.id}"><i class="fas fa-undo"></i> Restaurer</button>
-              <button class="btn btn-danger btn-sm" data-purge-devis="${d.id}"><i class="fas fa-times"></i></button>
+              <button class="btn btn-danger btn-sm" data-purge-devis="${d.id}" aria-label="Supprimer définitivement"><i class="fas fa-times"></i></button>
             </div>
           </div>
         `).join('');
@@ -2971,7 +3207,7 @@
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-client="${c.id}"><i class="fas fa-undo"></i> Restaurer</button>
-              <button class="btn btn-danger btn-sm" data-purge-client="${c.id}"><i class="fas fa-times"></i></button>
+              <button class="btn btn-danger btn-sm" data-purge-client="${c.id}" aria-label="Supprimer définitivement"><i class="fas fa-times"></i></button>
             </div>
           </div>
         `).join('');
@@ -3070,7 +3306,7 @@
           closeSearchModal();
           if (type === 'client') {
             const c = state.clients.find(x => x.id === id);
-            if (c) { navigateTo('devis-list'); $('#devisSearch').value = c.name || ''; renderDevisList(c.name || ''); }
+            if (c) { navigateTo('devis-list'); $('#devisSearch').value = c.name || ''; renderDevisList(); }
           } else if (type === 'devis') {
             openEditor(id);
           } else if (type === 'catalog') {
@@ -3107,16 +3343,27 @@
       const abtn = $('#autosaveToggleBtn');
       abtn.innerHTML = s.autosave ? '<i class="fas fa-toggle-on" style="color:var(--success);"></i> Activée' : '<i class="fas fa-toggle-off"></i> Désactivée';
 
-      if (s.pin) {
+      if (s.hasPin) {
         $('#pinSettingInput').value = '';
         $('#pinSettingInput').placeholder = '•••• (défini)';
         $('#removePinBtn').style.display = '';
+        $('#pinSecurityInfo').innerHTML = `<div class="info-note"><i class="fas fa-shield-halved"></i> PIN défini : les données sont chiffrées avec une clé dérivée de votre PIN. Sans le PIN, les données sont illisibles.</div>`;
+        $('#sidebarSecurityLabel').textContent = 'Chiffré (PIN)';
       } else {
         $('#pinSettingInput').placeholder = '4-8 chiffres';
         $('#removePinBtn').style.display = 'none';
+        $('#pinSecurityInfo').innerHTML = `<div class="warn-note"><i class="fas fa-triangle-exclamation"></i> Aucun PIN défini : les données sont chiffrées avec une clé par défaut non sécurisée. Définissez un PIN pour protéger réellement vos données.</div>`;
+        $('#sidebarSecurityLabel').textContent = 'Chiffrement local';
       }
 
-      // Afficher la version
+      const bytes = getStorageBytes();
+      const mb = bytes / (1024 * 1024);
+      const pct = Math.min(100, (mb / STORAGE_LIMIT_MB) * 100);
+      const fill = $('#storageBarFill');
+      fill.style.width = pct + '%';
+      fill.classList.toggle('danger', pct > 80);
+      $('#storageInfo').textContent = `${mb.toFixed(2)} Mo utilisés sur ~${STORAGE_LIMIT_MB} Mo (${pct.toFixed(0)}%)`;
+
       const verEl = $('#appVersion');
       if (verEl) verEl.textContent = `v${APP_VERSION}`;
     }
@@ -3143,7 +3390,6 @@
       toast('Paramètres enregistrés');
     }
 
-    // Enregistre uniquement le bloc « Identité de l'entreprise »
     function saveCompanyOnly() {
       state.settings.company = {
         ...state.settings.company,
@@ -3175,13 +3421,38 @@
 
     function handleLogoUpload(file) {
       if (!file) return;
-      if (file.size > 500000) { toast('Logo trop lourd (max 500 Ko)', 'error'); return; }
+      if (file.size > 2 * 1024 * 1024) { toast('Image trop lourde (max 2 Mo avant compression)', 'error'); return; }
       const reader = new FileReader();
       reader.onload = (e) => {
-        state.settings.company.logo = e.target.result;
-        Storage.saveSettings(state.settings);
-        renderSettings();
-        toast('Logo chargé');
+        const img = new Image();
+        img.onload = () => {
+          const MAX_W = 600, MAX_H = 600;
+          let w = img.width, h = img.height;
+          if (w > MAX_W || h > MAX_H) {
+            const ratio = Math.min(MAX_W / w, MAX_H / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          let dataUrl;
+          try {
+            dataUrl = canvas.toDataURL('image/webp', 0.8);
+            if (!dataUrl.startsWith('data:image/webp')) dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          } catch {
+            dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          }
+          const sizeBytes = Math.round((dataUrl.length * 3) / 4);
+          if (sizeBytes > 200000) dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+          state.settings.company.logo = dataUrl;
+          Storage.saveSettings(state.settings);
+          renderSettings();
+          toast(`Logo compressé (${Math.round(dataUrl.length * 3 / 4 / 1024)} Ko)`);
+        };
+        img.onerror = () => toast('Image invalide', 'error');
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -3196,36 +3467,133 @@
     function savePin() {
       const pin = $('#pinSettingInput').value.trim();
       if (!/^\d{4,8}$/.test(pin)) { toast('PIN : 4 à 8 chiffres', 'error'); return; }
-      state.settings.pin = pin;
+
+      const testData = { test: 'ok_' + Date.now() };
+      const testKey = Crypto.deriveKey(pin);
+      const enc = Crypto.encrypt(testData, testKey);
+      const dec = Crypto.decrypt(enc, testKey, null);
+      if (!dec || dec.test !== testData.test) {
+        toast('Erreur de chiffrement avec ce PIN', 'error');
+        return;
+      }
+
+      const oldKey = activeKey;
+      activeKey = testKey;
+
+      const clients = Crypto.decrypt(localStorage.getItem(Storage.KEY_CLIENTS), oldKey, []);
+      const devis = Crypto.decrypt(localStorage.getItem(Storage.KEY_DEVIS), oldKey, []);
+      const catalog = Crypto.decrypt(localStorage.getItem(Storage.KEY_CATALOG), oldKey, []);
+      const trash = Crypto.decrypt(localStorage.getItem(Storage.KEY_TRASH), oldKey, { clients: [], devis: [] });
+      const settings = Crypto.decrypt(localStorage.getItem(Storage.KEY_SETTINGS), oldKey, state.settings);
+      const draft = Crypto.decrypt(localStorage.getItem(Storage.KEY_DRAFT), oldKey, null);
+
+      state.clients = clients;
+      state.devis = devis;
+      state.catalog = catalog;
+      state.trash = trash;
+      state.settings = settings;
+      state.settings.pinHash = Crypto.hashPin(pin);
+      state.settings.hasPin = true;
+
+      Storage.saveClients(clients);
+      Storage.saveDevis(devis);
+      Storage.saveCatalog(catalog);
+      Storage.saveTrash(trash);
       Storage.saveSettings(state.settings);
+      if (draft) Storage.saveDraft(draft);
+
       renderSettings();
-      toast('PIN défini');
+      updateBadges();
+      toast('PIN défini et données re-chiffrées');
     }
 
     function removePin() {
-      if (!confirm('Retirer le code PIN ?')) return;
-      state.settings.pin = null;
+      if (!confirm('Retirer le code PIN ? Les données seront re-chiffrées avec la clé par défaut non sécurisée.')) return;
+
+      const oldKey = activeKey;
+      activeKey = DEFAULT_KEY;
+
+      const clients = Crypto.decrypt(localStorage.getItem(Storage.KEY_CLIENTS), oldKey, []);
+      const devis = Crypto.decrypt(localStorage.getItem(Storage.KEY_DEVIS), oldKey, []);
+      const catalog = Crypto.decrypt(localStorage.getItem(Storage.KEY_CATALOG), oldKey, []);
+      const trash = Crypto.decrypt(localStorage.getItem(Storage.KEY_TRASH), oldKey, { clients: [], devis: [] });
+      const settings = Crypto.decrypt(localStorage.getItem(Storage.KEY_SETTINGS), oldKey, state.settings);
+      const draft = Crypto.decrypt(localStorage.getItem(Storage.KEY_DRAFT), oldKey, null);
+
+      state.clients = clients;
+      state.devis = devis;
+      state.catalog = catalog;
+      state.trash = trash;
+      state.settings = settings;
+      state.settings.pinHash = null;
+      state.settings.hasPin = false;
+
+      Storage.saveClients(clients);
+      Storage.saveDevis(devis);
+      Storage.saveCatalog(catalog);
+      Storage.saveTrash(trash);
       Storage.saveSettings(state.settings);
+      if (draft) Storage.saveDraft(draft);
+
       renderSettings();
-      toast('PIN retiré');
+      updateBadges();
+      toast('PIN retiré. Données re-chiffrées avec la clé par défaut.', 'warning');
     }
 
     function lockApp() {
-      if (!state.settings.pin) { toast('Aucun PIN défini', 'warning'); return; }
+      if (!state.settings.hasPin) { toast('Aucun PIN défini', 'warning'); return; }
       $('#lockScreen').classList.add('active');
       $('#lockPinInput').value = '';
       setTimeout(() => $('#lockPinInput').focus(), 100);
     }
 
-    function unlockApp() {
-      const input = $('#lockPinInput').value;
-      if (input === state.settings.pin) {
+    function unlockAppRobust() {
+      const pin = $('#lockPinInput').value.trim();
+      if (!pin) return;
+
+      const derivedKey = Crypto.deriveKey(pin);
+      const settingsStr = localStorage.getItem(Storage.KEY_SETTINGS);
+      const decryptedSettings = settingsStr ? Crypto.decrypt(settingsStr, derivedKey, null) : null;
+
+      if (decryptedSettings) {
+        activeKey = derivedKey;
+        state.settings = { ...defaultSettings(), ...decryptedSettings };
+        state.settings.hasPin = true;
+        state.settings.pinHash = Crypto.hashPin(pin);
+        loadAllData();
         $('#lockScreen').classList.remove('active');
         $('#lockPinInput').value = '';
-      } else {
-        toast('PIN incorrect', 'error');
-        $('#lockPinInput').value = '';
+        afterUnlock();
+        return;
       }
+
+      const defaultProbe = settingsStr ? Crypto.decrypt(settingsStr, DEFAULT_KEY, null) : null;
+      if (defaultProbe && !defaultProbe.hasPin) {
+        activeKey = DEFAULT_KEY;
+        state.settings = { ...defaultSettings(), ...defaultProbe };
+        loadAllData();
+        $('#lockScreen').classList.remove('active');
+        $('#lockPinInput').value = '';
+        afterUnlock();
+        return;
+      }
+
+      toast('PIN incorrect', 'error');
+      $('#lockPinInput').value = '';
+    }
+
+    function afterUnlock() {
+      applyTheme();
+      updateBadges();
+      updateClientSelect();
+      navigateTo('devis-list');
+      renderExportReminder();
+    }
+
+    function resetAppFromLock() {
+      if (!confirm('Réinitialiser l\'application ? TOUTES les données locales seront définitivement supprimées. Cette action est irréversible.')) return;
+      localStorage.clear();
+      location.reload();
     }
 
     function updateBadges() {
@@ -3249,6 +3617,10 @@
       a.download = `devispro-backup-${todayISO()}.json`;
       a.click();
       URL.revokeObjectURL(url);
+
+      state.settings.lastExportAt = Date.now();
+      Storage.saveSettings(state.settings);
+      renderExportReminder();
       toast('Sauvegarde exportée');
     }
 
@@ -3258,35 +3630,151 @@
         try {
           const data = JSON.parse(e.target.result);
           if (!data.clients || !data.devis) throw new Error('Format invalide');
-          if (confirm(`Importer ${data.clients.length} clients, ${data.devis.length} devis ? Cela remplacera vos données actuelles.`)) {
-            state.clients = data.clients;
-            state.devis = data.devis;
-            if (data.catalog) state.catalog = data.catalog;
-            if (data.trash) state.trash = data.trash;
-            if (data.settings) state.settings = data.settings;
-            Storage.saveClients(state.clients);
-            Storage.saveDevis(state.devis);
-            Storage.saveCatalog(state.catalog);
-            Storage.saveTrash(state.trash);
-            Storage.saveSettings(state.settings);
-            updateBadges();
-            applyTheme();
-            navigateTo('devis-list');
-            toast('Données importées');
+
+          if (!data.version) {
+            if (!confirm('Ce fichier ne contient pas d\'indication de version. L\'import peut être incompatible. Continuer ?')) return;
+          } else if (data.version !== APP_VERSION) {
+            if (!confirm(`Ce fichier provient de la version ${data.version}, vous utilisez la ${APP_VERSION}. L'import peut nécessiter une migration. Continuer ?`)) return;
+          } else {
+            if (!confirm(`Importer ${data.clients.length} clients, ${data.devis.length} devis ? Cela remplacera vos données actuelles.`)) return;
           }
-        } catch { toast('Fichier invalide', 'error'); }
+
+          state.clients = data.clients;
+          state.devis = data.devis;
+          state.catalog = data.catalog || [];
+          state.trash = data.trash || { clients: [], devis: [] };
+          if (data.settings) {
+            state.settings = { ...state.settings, ...data.settings };
+            if (!state.settings.nextNumber) state.settings.nextNumber = 1;
+            if (state.settings.lastExportAt === undefined) state.settings.lastExportAt = 0;
+          }
+
+          Storage.saveClients(state.clients);
+          Storage.saveDevis(state.devis);
+          Storage.saveCatalog(state.catalog);
+          Storage.saveTrash(state.trash);
+          Storage.saveSettings(state.settings);
+
+          ensureNextNumber();
+          updateBadges();
+          applyTheme();
+          navigateTo('devis-list');
+          toast('Données importées');
+        } catch (err) {
+          console.error(err);
+          toast('Fichier invalide', 'error');
+        }
       };
       reader.readAsText(file);
     }
 
+    function startAutosave() {
+      stopAutosave();
+      if (!state.settings.autosave) return;
+      state.autosaveTimer = setInterval(() => {
+        if (state.currentView !== 'editor') return;
+        if (!hasEditorChanges()) return;
+        saveDraft();
+      }, 30000);
+    }
+
+    function stopAutosave() {
+      if (state.autosaveTimer) {
+        clearInterval(state.autosaveTimer);
+        state.autosaveTimer = null;
+      }
+    }
+
+    function hasEditorChanges() {
+      const num = $('#invoiceNumber')?.value;
+      return num || state.currentItems.length > 0;
+    }
+
+    function saveDraft() {
+      if (!state.loaded) return;
+      const indicator = $('#autosaveIndicator');
+      if (indicator) {
+        indicator.style.display = 'inline-flex';
+        indicator.classList.add('saving');
+        indicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Sauvegarde…</span>';
+      }
+      const draft = {
+        id: state.currentDevisId,
+        number: $('#invoiceNumber').value,
+        date: $('#invoiceDate').value,
+        status: $('#invoiceStatus').value,
+        notes: $('#invoiceNotes').value,
+        clientId: $('#clientSelect').value,
+        items: JSON.parse(JSON.stringify(state.currentItems)),
+        payments: JSON.parse(JSON.stringify(state.currentPayments)),
+        depositPercent: parseFloat($('#depositPercent').value) || 0,
+        validityDays: parseInt($('#validityDays').value) || 0,
+        acceptedDate: $('#acceptedDate').value || '',
+        savedAt: Date.now()
+      };
+      Storage.saveDraft(draft);
+      setTimeout(() => {
+        if (indicator) {
+          indicator.classList.remove('saving');
+          indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Brouillon sauvegardé</span>';
+          setTimeout(() => { indicator.style.display = 'none'; }, 2000);
+        }
+      }, 400);
+    }
+
+    function bootApp() {
+      const settingsStr = localStorage.getItem(Storage.KEY_SETTINGS);
+
+      if (!settingsStr) {
+        activeKey = DEFAULT_KEY;
+        state.settings = defaultSettings();
+        Storage.saveSettings(state.settings);
+        loadAllData();
+        applyTheme();
+        updateBadges();
+        updateClientSelect();
+        navigateTo('devis-list');
+        renderExportReminder();
+        setTimeout(() => {
+          toast('Bienvenue ! Pensez à définir un PIN dans les Paramètres pour sécuriser vos données.', 'info');
+        }, 600);
+        return;
+      }
+
+      const probe = Crypto.decrypt(settingsStr, DEFAULT_KEY, null);
+
+      if (probe) {
+        state.settings = { ...defaultSettings(), ...probe };
+        if (state.settings.hasPin) {
+          activeKey = DEFAULT_KEY;
+          $('#lockSubtitle').textContent = 'Entrez votre code PIN pour accéder à vos données';
+          $('#resetFromLockBtn').style.display = 'none';
+          $('#lockScreen').classList.add('active');
+          setTimeout(() => $('#lockPinInput').focus(), 100);
+        } else {
+          activeKey = DEFAULT_KEY;
+          loadAllData();
+          applyTheme();
+          updateBadges();
+          updateClientSelect();
+          navigateTo('devis-list');
+          renderExportReminder();
+        }
+      } else {
+        state.settings = defaultSettings();
+        state.settings.hasPin = true;
+        state.settings.pinHash = null;
+        activeKey = DEFAULT_KEY;
+        $('#lockSubtitle').textContent = 'Données chiffrées. Entrez votre code PIN. Si vous n\'avez jamais défini de PIN, cliquez sur « Réinitialiser ».';
+        $('#resetFromLockBtn').style.display = '';
+        $('#lockScreen').classList.add('active');
+        setTimeout(() => $('#lockPinInput').focus(), 100);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-      // Afficher la version dans l'en-tête
       const verEl = $('#appVersion');
       if (verEl) verEl.textContent = `v${APP_VERSION}`;
-
-      applyTheme();
-      updateBadges();
-      updateClientSelect();
 
       $$('.nav-item[data-view]').forEach(btn => {
         btn.addEventListener('click', () => navigateTo(btn.dataset.view));
@@ -3294,6 +3782,7 @@
 
       $('#newClientBtn').addEventListener('click', () => openClientModal());
       $('#saveClientBtn').addEventListener('click', saveClient);
+      $('#quickNewClientBtn').addEventListener('click', () => openClientModal());
 
       $('#newCatalogBtn').addEventListener('click', () => openCatalogModal());
       $('#saveCatalogBtn').addEventListener('click', saveCatalogItem);
@@ -3309,12 +3798,13 @@
 
       $('#addItemBtn').addEventListener('click', () => {
         state.currentItems.push({ id: uid(), description: '', quantity: 1, unitPrice: 0, tva: 20 });
-        renderItems(); updateSummary(); updatePaymentsSummary();
+        renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo();
       });
       $('#saveBtn').addEventListener('click', saveCurrentDevis);
       $('#pdfBtn').addEventListener('click', exportPDF);
+      $('#emailBtn').addEventListener('click', prepareEmailWithPDF);
+      $('#shareBtn').addEventListener('click', sharePDF);
       $('#printBtn').addEventListener('click', printDevis);
-      $('#emailBtn').addEventListener('click', sendEmail);
       $('#historyBtn').addEventListener('click', openHistoryModal);
       $('#duplicateBtn').addEventListener('click', () => {
         if (!state.currentDevisId) { toast('Enregistrez d\'abord le devis', 'warning'); return; }
@@ -3322,11 +3812,12 @@
         if (!original) return;
         const copy = JSON.parse(JSON.stringify(original));
         copy.id = uid();
-        copy.number = (original.number || 'DEV') + '-COPIE';
+        copy.number = nextDevisNumber();
         copy.createdAt = Date.now(); copy.updatedAt = Date.now();
         copy.status = 'brouillon'; copy.history = []; copy.payments = [];
         copy.acceptedDate = '';
         state.devis.push(copy);
+        consumeDevisNumber();
         Storage.saveDevis(state.devis);
         updateBadges();
         openEditor(copy.id);
@@ -3340,12 +3831,15 @@
           navigateTo('devis-list');
         }
       });
-
       $('#addPaymentBtn').addEventListener('click', addPayment);
       $('#invoiceDate').addEventListener('change', updateValidityInfo);
       $('#validityDays').addEventListener('input', updateValidityInfo);
+      $('#depositPercent').addEventListener('input', updateDepositInfo);
 
-      $('#devisSearch').addEventListener('input', (e) => renderDevisList(e.target.value));
+      ['devisSearch', 'devisFilterStatus', 'devisFilterFrom', 'devisFilterTo', 'devisSortBy'].forEach(id => {
+        const el = $('#' + id);
+        if (el) el.addEventListener(el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input', renderDevisList);
+      });
 
       ['reportFrom', 'reportTo', 'reportStatus'].forEach(id => $('#' + id).addEventListener('change', renderReports));
       $('#exportCSVBtn').addEventListener('click', exportCSV);
@@ -3365,8 +3859,9 @@
       $('#removePinBtn').addEventListener('click', removePin);
 
       $('#lockNowBtn').addEventListener('click', lockApp);
-      $('#unlockBtn').addEventListener('click', unlockApp);
-      $('#lockPinInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockApp(); });
+      $('#unlockBtn').addEventListener('click', unlockAppRobust);
+      $('#resetFromLockBtn').addEventListener('click', resetAppFromLock);
+      $('#lockPinInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockAppRobust(); });
 
       $('#exportAllBtn').addEventListener('click', exportAll);
       $('#importBtn').addEventListener('click', () => $('#importFile').click());
@@ -3388,6 +3883,12 @@
           e.preventDefault();
           openSearchModal();
         }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+          const tag = (e.target.tagName || '').toLowerCase();
+          if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+          e.preventDefault();
+          UndoStack.undo();
+        }
         if (e.key === 'Escape') {
           ['clientModal','catalogModal','catalogPickerModal','historyModal','searchModal'].forEach(id => $('#'+id).classList.remove('active'));
         }
@@ -3397,23 +3898,17 @@
         }
       });
 
-      navigateTo('devis-list');
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
-          self.addEventListener('install', e => self.skipWaiting());
-          self.addEventListener('activate', e => self.clients.claim());
-          self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-        `)).catch(() => {});
+      window.addEventListener('beforeunload', (e) => {
+        if (state.currentView === 'editor' && state.loaded && hasEditorChanges()) {
+          try { saveDraft(); } catch {}
+          e.preventDefault();
+          e.returnValue = '';
+          return '';
+        }
       });
-    }
 
-    window.closeClientModal = closeClientModal;
-    window.closeCatalogModal = closeCatalogModal;
-    window.closeCatalogPicker = closeCatalogPicker;
-    window.closeHistoryModal = closeHistoryModal;
+      bootApp();
+    });
   </script>
 </body>
 </html>
