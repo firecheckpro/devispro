@@ -1,0 +1,3394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>DevisPro · Gestion clients & devis</title>
+  <link rel="manifest" href='data:application/manifest+json,{"name":"DevisPro","short_name":"DevisPro","start_url":".","display":"standalone","background_color":"%23f6f9fc","theme_color":"%230f172a","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%230f172a%27/%3E%3Ctext x=%2750%27 y=%2765%27 font-size=%2750%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27%3ED%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100%;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      touch-action: manipulation;
+      -ms-touch-action: manipulation;
+    }
+
+    :root {
+      --primary: #0f172a;
+      --primary-light: #1e293b;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f6f9fc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --touch: 44px;
+      --radius: 16px;
+      --pad: clamp(0.75rem, 2.5vw, 1.75rem);
+      --gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+
+    body.dark {
+      --primary: #818cf8;
+      --primary-light: #6366f1;
+      --accent: #818cf8;
+      --accent-light: #a5b4fc;
+      --bg: #0b1120;
+      --card: #111827;
+      --border: #1f2937;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-light: #64748b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: var(--pad);
+      transition: background 0.3s, color 0.3s;
+      font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+      line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+
+    body.tablet-mode { --touch: 52px; }
+    body.tablet-mode .btn { padding: 0.9rem 1.4rem; font-size: 0.95rem; }
+    body.tablet-mode .nav-item { padding: 1rem; font-size: 1rem; }
+    body.tablet-mode .input, body.tablet-mode .input-inline, body.tablet-mode .field-group input,
+    body.tablet-mode .field-group select, body.tablet-mode .field-group textarea { padding: 1rem 1.1rem; font-size: 1rem; }
+    body.tablet-mode .btn-icon { width: 46px; height: 46px; }
+
+    /* Empêche tout débordement horizontal */
+    img, svg, canvas, table { max-width: 100%; }
+
+    .app {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: var(--gap);
+      min-height: calc(100vh - 2 * var(--pad));
+      min-height: calc(100dvh - 2 * var(--pad));
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      box-shadow: 0 4px 20px -8px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+      position: sticky;
+      top: var(--pad);
+      max-height: calc(100vh - 2 * var(--pad));
+      max-height: calc(100dvh - 2 * var(--pad));
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 0.25rem 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .logo-text { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; white-space: nowrap; }
+    .logo-text span { font-weight: 400; color: var(--text-muted); }
+
+    .nav-section { margin-bottom: 1rem; }
+    .nav-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      font-weight: 700;
+      padding: 0 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.7rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      margin-bottom: 0.2rem;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      min-height: 44px;
+      white-space: nowrap;
+    }
+    .nav-item:hover { background: var(--bg); color: var(--text); }
+    .nav-item.active { background: var(--primary); color: white; }
+    .nav-item.active i { color: white; }
+    .nav-item i { width: 20px; font-size: 0.9rem; text-align: center; flex-shrink: 0; }
+    .nav-item .badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: white;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-item.active .badge { background: rgba(255,255,255,0.25); }
+
+    .lock-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      margin-top: 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.7rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      width: 100%;
+      min-height: 44px;
+      transition: 0.15s;
+    }
+    .lock-btn:hover { background: var(--border); }
+
+    .sidebar-footer {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--text-light);
+      text-align: center;
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      min-width: 0;
+      width: 100%;
+    }
+
+    .topbar {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 20px -8px rgba(0,0,0,0.08);
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .page-title { min-width: 0; flex: 1 1 200px; }
+    .page-title h1 {
+      font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 0.5rem;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .page-title p { font-size: clamp(0.75rem, 1.6vw, 0.85rem); color: var(--text-muted); margin-top: 0.1rem; }
+
+    .topbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+
+    .search-hint {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.15s;
+      font-family: inherit;
+      min-height: 40px;
+    }
+    .search-hint:hover { border-color: var(--accent); color: var(--accent); }
+    .search-hint kbd {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.1rem 0.35rem;
+      font-family: monospace;
+      font-size: 0.72rem;
+    }
+
+    .autosave-indicator {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; color: var(--success); font-weight: 600;
+    }
+    .autosave-indicator.saving { color: var(--warning); }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: clamp(0.8rem, 1.5vw, 0.88rem);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+      min-height: var(--touch);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-light); }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-accent:hover { background: #4f46e5; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-outline { background: var(--card); color: var(--text); border: 1.5px solid var(--border); }
+    .btn-outline:hover { background: var(--bg); border-color: #cbd5e1; }
+    .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.78rem; border-radius: 8px; min-height: 36px; }
+    .btn-icon { padding: 0.5rem; width: 38px; height: 38px; justify-content: center; }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      box-shadow: 0 4px 20px -8px rgba(0,0,0,0.08);
+      min-width: 0;
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .section-title i { color: var(--accent); }
+
+    /* ===== FORMS ===== */
+    .field-group { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+    .field-group label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .input, .field-group input, .field-group textarea, .field-group select {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      outline: none;
+      color: var(--text);
+      width: 100%;
+      min-width: 0;
+      min-height: 44px;
+    }
+    .input:focus, .field-group input:focus, .field-group textarea:focus, .field-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+    }
+    textarea { resize: vertical; min-height: 70px; }
+
+    /* Grilles responsives : passent à 1 colonne automatiquement */
+    .grid-2, .grid-3, .grid-4 {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+
+    th {
+      text-align: left;
+      padding: 0.75rem 0.6rem;
+      background: var(--bg);
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      border-bottom: 1.5px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td { padding: 0.6rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+
+    .input-inline {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.6rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      transition: 0.15s;
+      color: var(--text);
+      min-height: 40px;
+      min-width: 0;
+    }
+    .input-inline:focus { border-color: var(--accent); }
+    .input-inline.small { max-width: 100%; }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: 0.15s;
+      min-width: 38px;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delete-btn:hover { background: #fee2e2; color: var(--danger); }
+
+    /* ===== SUMMARY ===== */
+    .summary {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      min-width: 0;
+    }
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      gap: 0.5rem;
+    }
+    .summary-line .value { font-weight: 600; color: var(--text); text-align: right; }
+    .summary-line.total {
+      border-top: 2px solid var(--border);
+      margin-top: 0.4rem;
+      padding-top: 0.75rem;
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+      font-weight: 800;
+      color: var(--text);
+    }
+    .summary-line.total .value { color: var(--accent); }
+
+    /* ===== CLIENT CARDS ===== */
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+      gap: var(--gap);
+    }
+    .client-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      min-width: 0;
+    }
+    .client-card:hover { border-color: var(--accent); }
+    .client-avatar {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .client-name { font-weight: 700; font-size: 0.98rem; margin-bottom: 0.2rem; word-break: break-word; }
+    .client-info { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.15rem; word-break: break-word; }
+    .client-stats {
+      display: flex; gap: 0.75rem; margin-top: 0.75rem;
+      padding-top: 0.75rem; border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .client-stat { font-size: 0.72rem; color: var(--text-muted); }
+    .client-stat strong { display: block; color: var(--text); font-size: 0.95rem; font-weight: 700; }
+    .client-actions {
+      position: absolute; top: 0.75rem; right: 0.75rem;
+      display: flex; gap: 0.25rem;
+    }
+
+    /* ===== DEVIS LIST ===== */
+    .devis-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .devis-item {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .devis-item:hover { border-color: var(--accent); }
+    .devis-info { flex: 1 1 200px; min-width: 0; }
+    .devis-number { font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; word-break: break-word; }
+    .devis-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .devis-total { font-weight: 800; font-size: 1rem; color: var(--accent); white-space: nowrap; }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.18rem 0.55rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .status-brouillon { background: #fef3c7; color: #b45309; }
+    .status-envoye { background: #dbeafe; color: #1d4ed8; }
+    .status-accepte { background: #d1fae5; color: #047857; }
+    .status-refuse { background: #fee2e2; color: #b91c1c; }
+
+    .empty { text-align: center; padding: 2rem 1rem; color: var(--text-light); }
+    .empty i { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+    .empty h3 { color: var(--text-muted); font-size: 1rem; margin-bottom: 0.4rem; }
+    .empty p { font-size: 0.85rem; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+      animation: fadeIn 0.2s ease;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .modal-overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      max-width: 500px;
+      width: 100%;
+      max-height: calc(100dvh - 2rem);
+      overflow-y: auto;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4);
+      animation: slideUp 0.25s ease;
+      min-width: 0;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.5rem; }
+    .modal-header h2 { font-size: clamp(1rem, 2.5vw, 1.2rem); font-weight: 700; word-break: break-word; }
+    .modal-close {
+      background: var(--bg);
+      border: none;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: 0.15s;
+      flex-shrink: 0;
+      min-width: 36px;
+      min-height: 36px;
+    }
+    .modal-close:hover { background: #fee2e2; color: var(--danger); }
+    .modal-actions {
+      display: flex; gap: 0.5rem; justify-content: flex-end;
+      margin-top: 1.25rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    /* ===== TOAST ===== */
+    .toast-container {
+      position: fixed;
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      right: max(1rem, env(safe-area-inset-right));
+      left: max(1rem, env(safe-area-inset-left));
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 2000;
+      pointer-events: none;
+      align-items: flex-end;
+    }
+    .toast {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+      max-width: min(420px, 100%);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: auto;
+      word-break: break-word;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    .toast.warning { background: var(--warning); }
+    .toast-undo {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      color: white;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: auto;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .toast-undo:hover { background: rgba(255,255,255,0.15); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ===== VIEWS ===== */
+    .view { display: none; width: 100%; }
+    .view.active { display: block; }
+
+    .editor-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+      gap: var(--gap);
+      align-items: start;
+    }
+
+    /* ===== SIGNATURE ===== */
+    .signature-pad {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      cursor: crosshair;
+      touch-action: none;
+      width: 100%;
+      height: 140px;
+      display: block;
+    }
+    .signature-preview {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    .signature-preview img { max-width: 100%; max-height: 80px; }
+
+    /* ===== PAYMENTS ===== */
+    .payment-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .payment-row:last-child { border-bottom: none; }
+    .payment-row .date { color: var(--text-muted); font-size: 0.75rem; }
+
+    /* ===== HISTORY ===== */
+    .history-item {
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.5rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: 0.15s;
+      word-break: break-word;
+    }
+    .history-item:hover { border-color: var(--accent); background: var(--bg); }
+    .history-item .version { font-weight: 700; color: var(--accent); font-size: 0.72rem; text-transform: uppercase; }
+    .history-item .meta { color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem; }
+
+    /* ===== LOGO ===== */
+    .logo-preview {
+      width: 72px; height: 72px;
+      border-radius: 10px;
+      border: 2px dashed var(--border);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .logo-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .logo-preview i { color: var(--text-light); font-size: 1.3rem; }
+
+    /* ===== CATALOGUE ===== */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+      gap: 0.6rem;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 0.2rem;
+    }
+    .catalog-item {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+    .catalog-item:hover { border-color: var(--accent); background: var(--card); }
+    .catalog-item .info { flex: 1; min-width: 0; }
+    .catalog-item .title { font-weight: 600; font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .catalog-item .meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .catalog-item .add { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
+
+    /* ===== SEARCH ===== */
+    .search-input-wrap { position: relative; margin-bottom: 0.75rem; }
+    .search-input-wrap i {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+    .search-input-wrap input { padding-left: 2.5rem; font-size: 1rem; }
+    .search-results { max-height: 50vh; overflow-y: auto; }
+    .search-category {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      font-weight: 700;
+      margin: 0.75rem 0 0.4rem;
+    }
+    .search-result {
+      padding: 0.65rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      transition: 0.15s;
+      word-break: break-word;
+    }
+    .search-result:hover { background: var(--bg); }
+    .search-result i { color: var(--accent); width: 20px; flex-shrink: 0; }
+
+    /* ===== TRASH ===== */
+    .trash-item {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .trash-item .info { flex: 1 1 180px; min-width: 0; }
+    .trash-item .title { font-weight: 700; font-size: 0.88rem; word-break: break-word; }
+    .trash-item .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; word-break: break-word; }
+    .trash-item .actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
+
+    /* ===== LOCK SCREEN ===== */
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      padding: 1rem;
+    }
+    .lock-screen.active { display: flex; }
+    .lock-box {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      color: white;
+    }
+    .lock-box h2 { font-size: clamp(1.1rem, 3vw, 1.4rem); margin-bottom: 0.4rem; }
+    .lock-box p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 1.25rem; }
+    .lock-box input {
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      color: white;
+      padding: 0.9rem;
+      border-radius: 10px;
+      width: 100%;
+      font-size: 1.3rem;
+      text-align: center;
+      letter-spacing: 0.5em;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 0.85rem;
+      min-height: 48px;
+    }
+    .lock-box input:focus { border-color: var(--accent); }
+    .lock-box .btn { width: 100%; justify-content: center; }
+
+    .validity-info {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+      font-style: italic;
+    }
+
+    /* ============================================================
+       RESPONSIVE : TABLETTE (<= 1100px) -> sidebar en haut horizontale
+       ============================================================ */
+    @media (max-width: 1100px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: relative;
+        top: 0;
+        max-height: none;
+        padding: 0.75rem;
+        overflow: visible;
+      }
+      .logo {
+        padding: 0 0.25rem 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.4rem;
+        padding-bottom: 0.4rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+      }
+      .sidebar nav::-webkit-scrollbar { height: 4px; }
+      .sidebar nav .nav-section {
+        display: flex;
+        flex-direction: row;
+        gap: 0.4rem;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      .sidebar nav .nav-title { display: none; }
+      .sidebar nav .nav-item {
+        width: auto;
+        margin-bottom: 0;
+        flex-shrink: 0;
+        padding: 0.6rem 0.85rem;
+        font-size: 0.82rem;
+      }
+      .sidebar nav .nav-item .badge { margin-left: 0.35rem; }
+      .lock-btn { margin-top: 0.5rem; }
+      .sidebar-footer { display: none; }
+      .editor-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       MOBILE (<= 640px) : tout en pleine largeur, tableaux en cartes
+       ============================================================ */
+    @media (max-width: 640px) {
+      body { padding: 0.5rem; font-size: 0.88rem; }
+      .card, .topbar { padding: 0.85rem; border-radius: 12px; }
+      .logo-text { font-size: 1.05rem; }
+      .logo-icon { width: 34px; height: 34px; font-size: 1rem; }
+
+      .topbar-actions { width: 100%; justify-content: flex-end; }
+      .search-hint span { display: none; }
+      .search-hint kbd { display: none; }
+      .search-hint { padding: 0.5rem; min-width: 40px; justify-content: center; }
+
+      /* Tables -> cartes empilées */
+      .table-wrap { border: none; overflow: visible; }
+      table, thead, tbody, tr, th, td { display: block; width: 100%; }
+      table { border-collapse: collapse; }
+      thead { display: none; }
+      tbody tr {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.6rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      tbody td {
+        border: none;
+        padding: 0.15rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.82rem;
+        word-break: break-word;
+      }
+      tbody td::before {
+        content: attr(data-label);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      tbody td:empty::before { content: ''; }
+
+      .input-inline { font-size: 0.85rem; }
+      .input-inline.small { max-width: 100%; }
+
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+
+      .devis-item { flex-direction: column; align-items: flex-start; }
+      .devis-total { align-self: flex-end; }
+      .devis-item > div:last-child { align-self: flex-end; }
+
+      .modal { padding: 1rem; border-radius: 12px; }
+      .modal-actions { flex-direction: column-reverse; }
+      .modal-actions .btn { width: 100%; justify-content: center; }
+
+      .client-actions { opacity: 1; }
+
+      .toast { font-size: 0.8rem; padding: 0.7rem 1rem; }
+    }
+
+    /* ============================================================
+       PETITS MOBILES (<= 380px)
+       ============================================================ */
+    @media (max-width: 380px) {
+      body { padding: 0.35rem; }
+      .card, .topbar { padding: 0.7rem; }
+      .btn { font-size: 0.78rem; padding: 0.55rem 0.85rem; }
+      .btn-sm { font-size: 0.72rem; padding: 0.35rem 0.6rem; }
+    }
+
+    /* Scrollbars fines et discrètes */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Empêche le zoom sur double-tap sur iOS */
+    button, a, .btn, .nav-item, .client-card, .devis-item, .catalog-item {
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body>
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-box">
+      <div style="font-size:2.5rem; margin-bottom:1rem;"><i class="fas fa-lock"></i></div>
+      <h2>DevisPro verrouillé</h2>
+      <p>Entrez votre code PIN pour accéder à vos données</p>
+      <input type="password" id="lockPinInput" maxlength="8" placeholder="••••" inputmode="numeric">
+      <button class="btn btn-accent" id="unlockBtn"><i class="fas fa-unlock"></i> Déverrouiller</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+        <div class="logo-text">Devis<span>Pro</span></div>
+      </div>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-title">Navigation</div>
+          <button class="nav-item active" data-view="devis-list"><i class="fas fa-file-invoice"></i> Mes devis <span class="badge" id="devisCountBadge">0</span></button>
+          <button class="nav-item" data-view="clients"><i class="fas fa-users"></i> Clients <span class="badge" id="clientsCountBadge">0</span></button>
+          <button class="nav-item" data-view="catalogue"><i class="fas fa-boxes-stacked"></i> Catalogue <span class="badge" id="catalogCountBadge">0</span></button>
+          <button class="nav-item" data-view="editor"><i class="fas fa-plus-circle"></i> Nouveau devis</button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">Outils</div>
+          <button class="nav-item" data-view="reports"><i class="fas fa-chart-line"></i> Rapports</button>
+          <button class="nav-item" data-view="trash"><i class="fas fa-trash-can"></i> Corbeille <span class="badge" id="trashCountBadge">0</span></button>
+          <button class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Paramètres</button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">Données</div>
+          <button class="nav-item" id="exportAllBtn"><i class="fas fa-download"></i> Exporter</button>
+          <button class="nav-item" id="importBtn"><i class="fas fa-upload"></i> Importer</button>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+        </div>
+      </nav>
+
+      <button class="lock-btn" id="lockNowBtn"><i class="fas fa-lock"></i> Verrouiller</button>
+      <div class="sidebar-footer"><i class="fas fa-shield-alt"></i> Chiffré AES-256</div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="page-title">
+          <h1 id="pageTitle">Mes devis</h1>
+          <p id="pageSubtitle">Consultez et gérez tous vos devis</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="search-hint" id="searchHintBtn" title="Rechercher">
+            <i class="fas fa-search"></i>
+            <span>Rechercher…</span>
+            <kbd>⌘K</kbd>
+          </button>
+          <div class="autosave-indicator" id="autosaveIndicator" style="display:none;">
+            <i class="fas fa-circle-notch fa-spin"></i> <span>Sauvegarde…</span>
+          </div>
+          <div id="topbarActions"></div>
+        </div>
+      </div>
+
+      <!-- ========== DEVIS LIST (vue par défaut) ========== -->
+      <div class="view active" id="view-devis-list">
+        <div class="card">
+          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div class="section-title" style="margin:0;"><i class="fas fa-list"></i> Tous les devis</div>
+            <input type="text" id="devisSearch" class="input" placeholder="🔍 Rechercher un devis..." style="max-width: 300px;">
+          </div>
+          <div class="devis-list" id="devisList"></div>
+        </div>
+      </div>
+
+      <div class="view" id="view-clients">
+        <div class="card">
+          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div class="section-title" style="margin:0;"><i class="fas fa-users"></i> Tous les clients</div>
+            <button class="btn btn-accent btn-sm" id="newClientBtn"><i class="fas fa-user-plus"></i> Nouveau client</button>
+          </div>
+          <div class="clients-grid" id="clientsGrid"></div>
+        </div>
+      </div>
+
+      <div class="view" id="view-catalogue">
+        <div class="card">
+          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div class="section-title" style="margin:0;"><i class="fas fa-boxes-stacked"></i> Catalogue de produits & services</div>
+            <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" id="importCatalogBtn"><i class="fas fa-file-csv"></i> CSV</button>
+              <button class="btn btn-accent btn-sm" id="newCatalogBtn"><i class="fas fa-plus"></i> Nouveau</button>
+            </div>
+          </div>
+          <input type="text" id="catalogSearch" class="input" placeholder="🔍 Filtrer le catalogue..." style="margin-bottom:0.75rem;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Désignation</th>
+                  <th style="width:110px;">Prix HT</th>
+                  <th style="width:80px;">TVA</th>
+                  <th style="width:100px;">Utilisations</th>
+                  <th style="width:90px;"></th>
+                </tr>
+              </thead>
+              <tbody id="catalogBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="view-reports">
+        <div class="card" style="margin-bottom:var(--gap);">
+          <div class="section-title"><i class="fas fa-calendar"></i> Période</div>
+          <div class="grid-3">
+            <div class="field-group">
+              <label>Du</label>
+              <input type="date" id="reportFrom" class="input">
+            </div>
+            <div class="field-group">
+              <label>Au</label>
+              <input type="date" id="reportTo" class="input">
+            </div>
+            <div class="field-group">
+              <label>Statut</label>
+              <select id="reportStatus" class="input">
+                <option value="">Tous</option>
+                <option value="brouillon">Brouillon</option>
+                <option value="envoye">Envoyé</option>
+                <option value="accepte">Accepté</option>
+                <option value="refuse">Refusé</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:var(--gap);">
+          <div class="section-title"><i class="fas fa-calculator"></i> Récapitulatif comptable</div>
+          <div class="grid-4">
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-file-invoice"></i> Devis</div><div style="font-size:1.4rem; font-weight:800;" id="repCount">0</div></div>
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-euro-sign"></i> CA HT</div><div style="font-size:1.4rem; font-weight:800;" id="repHT">0 €</div></div>
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-percent"></i> TVA collectée</div><div style="font-size:1.4rem; font-weight:800; color:var(--warning);" id="repTVA">0 €</div></div>
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-money-bill"></i> CA TTC</div><div style="font-size:1.4rem; font-weight:800; color:var(--accent);" id="repTTC">0 €</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div class="section-title" style="margin:0;"><i class="fas fa-table"></i> Détail</div>
+            <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" id="exportCSVBtn"><i class="fas fa-file-csv"></i> CSV</button>
+              <button class="btn btn-outline btn-sm" id="exportReportPDFBtn"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Date</th>
+                  <th>Client</th>
+                  <th>Statut</th>
+                  <th style="text-align:right">HT</th>
+                  <th style="text-align:right">TVA</th>
+                  <th style="text-align:right">TTC</th>
+                </tr>
+              </thead>
+              <tbody id="reportBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="view-trash">
+        <div class="card">
+          <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div class="section-title" style="margin:0;"><i class="fas fa-trash-can"></i> Corbeille (30 jours)</div>
+            <button class="btn btn-danger btn-sm" id="emptyTrashBtn"><i class="fas fa-broom"></i> Vider</button>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            Les éléments supprimés sont conservés 30 jours avant purge automatique.
+          </p>
+          <div id="trashList"></div>
+        </div>
+      </div>
+
+      <div class="view" id="view-editor">
+        <div class="editor-layout">
+          <div>
+            <div class="card" style="margin-bottom:var(--gap);">
+              <div class="section-title"><i class="fas fa-info-circle"></i> Informations devis</div>
+              <div class="grid-2">
+                <div class="field-group">
+                  <label>Client</label>
+                  <select id="clientSelect" class="input">
+                    <option value="">— Sélectionner un client —</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label>N° de devis</label>
+                  <input type="text" id="invoiceNumber" class="input" placeholder="DEV-2025-001">
+                </div>
+                <div class="field-group">
+                  <label>Date</label>
+                  <input type="date" id="invoiceDate" class="input">
+                </div>
+                <div class="field-group">
+                  <label>Statut</label>
+                  <select id="invoiceStatus" class="input">
+                    <option value="brouillon">Brouillon</option>
+                    <option value="envoye">Envoyé</option>
+                    <option value="accepte">Accepté</option>
+                    <option value="refuse">Refusé</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label>Durée de validité (jours)</label>
+                  <input type="number" id="validityDays" class="input" min="1" max="365" step="1" value="30">
+                  <div class="validity-info" id="validityInfo"></div>
+                </div>
+              </div>
+              <div class="field-group" style="margin-top:0.75rem;">
+                <label>Notes / conditions</label>
+                <textarea id="invoiceNotes" placeholder="Conditions de paiement, délais..."></textarea>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:var(--gap);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+                <div class="section-title" style="margin:0;"><i class="fas fa-cubes"></i> Pièces & prestations</div>
+                <button class="btn btn-outline btn-sm" id="openCatalogBtn"><i class="fas fa-boxes-stacked"></i> Catalogue</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Désignation</th>
+                      <th style="width:70px;">Qté</th>
+                      <th style="width:100px;">Prix HT</th>
+                      <th style="width:80px;">TVA</th>
+                      <th style="width:100px;">Total HT</th>
+                      <th style="width:44px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="itemsBody"></tbody>
+                </table>
+              </div>
+              <button class="btn btn-outline btn-sm" id="addItemBtn" style="margin-top:0.75rem;">
+                <i class="fas fa-plus"></i> Ajouter une ligne
+              </button>
+            </div>
+
+            <div class="card" style="margin-bottom:var(--gap);">
+              <div class="section-title"><i class="fas fa-coins"></i> Paiements & acomptes</div>
+              <div class="grid-2" style="margin-bottom:0.75rem;">
+                <div class="field-group">
+                  <label>Montant payé (€)</label>
+                  <input type="number" id="paidAmount" class="input" min="0" step="0.01" value="0">
+                </div>
+                <div class="field-group">
+                  <label>Acompte demandé (%)</label>
+                  <input type="number" id="depositPercent" class="input" min="0" max="100" step="1" value="30">
+                </div>
+              </div>
+              <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap;">
+                <input type="number" id="paymentAmount" class="input" placeholder="Montant" step="0.01" min="0" style="flex:1; min-width:140px;">
+                <input type="date" id="paymentDate" class="input" style="flex:1; min-width:140px;">
+                <button class="btn btn-success btn-sm" id="addPaymentBtn"><i class="fas fa-plus"></i> Ajouter</button>
+              </div>
+              <div id="paymentsList"></div>
+              <div class="summary" style="margin-top:0.75rem;">
+                <div class="summary-line"><span>Total TTC</span><span class="value" id="payTotalTTC">0,00 €</span></div>
+                <div class="summary-line"><span>Déjà payé</span><span class="value" style="color:var(--success);" id="payTotalPaid">0,00 €</span></div>
+                <div class="summary-line total" style="font-size:1rem;"><span>Reste à payer</span><span class="value" id="payRemaining">0,00 €</span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title"><i class="fas fa-signature"></i> Signature électronique</div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
+                Signez avec votre souris ou votre doigt. <strong>Attention :</strong> cette signature est un simple dessin numérisé ; elle n'a pas la valeur juridique d'une signature électronique certifiée (eIDAS).
+              </p>
+              <canvas id="signaturePad" class="signature-pad"></canvas>
+              <div style="display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-sm" id="clearSignatureBtn"><i class="fas fa-eraser"></i> Effacer</button>
+                <button class="btn btn-accent btn-sm" id="saveSignatureBtn"><i class="fas fa-check"></i> Valider</button>
+              </div>
+              <div id="signaturePreview" style="margin-top:0.75rem;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="position: sticky; top: var(--pad);">
+              <div class="section-title"><i class="fas fa-receipt"></i> Récapitulatif</div>
+              <div class="summary" id="summaryBox">
+                <div class="summary-line"><span>Total HT</span><span class="value" id="sumHT">0,00 €</span></div>
+                <div class="summary-line"><span>TVA</span><span class="value" id="sumTVA">0,00 €</span></div>
+                <div class="summary-line total"><span>Total TTC</span><span class="value" id="sumTTC">0,00 €</span></div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;">
+                <button class="btn btn-success" id="saveBtn"><i class="fas fa-save"></i> Enregistrer</button>
+                <button class="btn btn-accent" id="pdfBtn"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                <button class="btn btn-outline" id="emailBtn"><i class="fas fa-envelope"></i> Envoyer par email</button>
+                <button class="btn btn-outline" id="printBtn"><i class="fas fa-print"></i> Imprimer</button>
+                <button class="btn btn-outline" id="duplicateBtn"><i class="fas fa-copy"></i> Dupliquer</button>
+                <button class="btn btn-outline" id="historyBtn"><i class="fas fa-history"></i> Historique</button>
+                <button class="btn btn-outline" id="cancelEditBtn" style="color: var(--danger);"><i class="fas fa-times"></i> Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="view-settings">
+        <div class="card">
+          <div class="section-title"><i class="fas fa-palette"></i> Apparence</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <div style="font-weight:600;">Mode sombre</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Basculer entre thème clair et sombre</div>
+            </div>
+            <button class="btn btn-outline" id="themeToggleBtn"><i class="fas fa-moon"></i> Activer</button>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <div style="font-weight:600;">Mode tablette / tactile</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Agrandit les boutons et champs</div>
+            </div>
+            <button class="btn btn-outline" id="tabletToggleBtn"><i class="fas fa-tablet-alt"></i> Activer</button>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <div style="font-weight:600;">Sauvegarde automatique</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Toutes les 30 secondes</div>
+            </div>
+            <button class="btn btn-outline" id="autosaveToggleBtn"><i class="fas fa-toggle-on"></i> Activée</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--gap);">
+          <div class="section-title"><i class="fas fa-lock"></i> Sécurité</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <div style="font-weight:600;">Chiffrement AES-256</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Les données locales sont chiffrées</div>
+            </div>
+            <span class="status-badge" style="background:#d1fae5; color:#047857;">Actif</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <div style="font-weight:600;">Code PIN</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Verrouillez l'app avec un code PIN</div>
+            </div>
+            <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+              <input type="password" id="pinSettingInput" class="input" placeholder="4-8 chiffres" maxlength="8" inputmode="numeric" style="width:140px;">
+              <button class="btn btn-outline btn-sm" id="savePinBtn">Enregistrer</button>
+              <button class="btn btn-danger btn-sm" id="removePinBtn">Retirer</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--gap);">
+          <div class="section-title"><i class="fas fa-building"></i> Identité de l'entreprise</div>
+          <div class="grid-2">
+            <div class="field-group">
+              <label>Nom / Raison sociale</label>
+              <input type="text" id="companyNameInput" class="input" placeholder="DevisPro SAS">
+            </div>
+            <div class="field-group">
+              <label>Email</label>
+              <input type="email" id="companyEmailInput" class="input" placeholder="contact@exemple.fr">
+            </div>
+            <div class="field-group">
+              <label>Téléphone</label>
+              <input type="tel" id="companyPhoneInput" class="input" placeholder="01 23 45 67 89">
+            </div>
+            <div class="field-group">
+              <label>SIRET</label>
+              <input type="text" id="companySiretInput" class="input" placeholder="123 456 789 00012">
+            </div>
+            <div class="field-group">
+              <label>N° TVA intracommunautaire</label>
+              <input type="text" id="companyTvaInput" class="input" placeholder="FR 12 123456789">
+            </div>
+            <div class="field-group">
+              <label>Couleur d'accent</label>
+              <input type="color" id="accentColorInput" class="input" value="#6366f1" style="height:44px; padding:0.3rem;">
+            </div>
+          </div>
+          <div class="field-group" style="margin-top:0.75rem;">
+            <label>Adresse</label>
+            <textarea id="companyAddressInput" placeholder="Rue, code postal, ville"></textarea>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.75rem; margin-top:1rem; flex-wrap:wrap;">
+            <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()"><i class="fas fa-image"></i></div>
+            <div>
+              <div style="font-weight:600; font-size:0.88rem;">Logo</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem;">PNG, JPG ou SVG · max 500 Ko</div>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('logoInput').click()"><i class="fas fa-upload"></i> Choisir</button>
+              <button class="btn btn-outline btn-sm" id="removeLogoBtn"><i class="fas fa-trash"></i> Retirer</button>
+            </div>
+            <input type="file" id="logoInput" accept="image/*" style="display:none">
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--gap);">
+          <div class="section-title"><i class="fas fa-shield-halved"></i> Assurance professionnelle</div>
+          <div class="grid-2">
+            <div class="field-group">
+              <label>Nom de l'assureur</label>
+              <input type="text" id="insuranceNameInput" class="input" placeholder="AXA, MAIF…">
+            </div>
+            <div class="field-group">
+              <label>N° de police</label>
+              <input type="text" id="insurancePolicyInput" class="input" placeholder="POL-123456">
+            </div>
+            <div class="field-group">
+              <label>Couverture géographique</label>
+              <input type="text" id="insuranceCoverageInput" class="input" placeholder="France, UE…">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--gap);">
+          <div class="section-title"><i class="fas fa-file-invoice-dollar"></i> Régime de TVA</div>
+          <div class="field-group">
+            <label>Régime</label>
+            <select id="vatRegimeInput" class="input">
+              <option value="normal">Assujetti à la TVA (normal)</option>
+              <option value="franchise">Franchise en base (TVA non applicable, art. 293 B du CGI)</option>
+            </select>
+          </div>
+          <div style="margin-top:1rem; text-align:right;">
+            <button class="btn btn-success" id="saveSettingsBtn"><i class="fas fa-save"></i> Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="clientModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="clientModalTitle">Nouveau client</h2>
+        <button class="modal-close" onclick="closeClientModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <div class="field-group"><label>Nom / Raison sociale *</label><input type="text" id="clientNameInput" class="input" placeholder="Ex: Studio Créatif SAS"></div>
+        <div class="field-group"><label>Email</label><input type="email" id="clientEmailInput" class="input" placeholder="contact@exemple.fr"></div>
+        <div class="field-group"><label>Téléphone</label><input type="tel" id="clientPhoneInput" class="input" placeholder="06 12 34 56 78"></div>
+        <div class="field-group"><label>Adresse</label><textarea id="clientAddressInput" placeholder="Rue, code postal, ville"></textarea></div>
+        <div class="field-group"><label>Notes internes</label><textarea id="clientNotesInput" placeholder="Infos complémentaires..."></textarea></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeClientModal()">Annuler</button>
+        <button class="btn btn-accent" id="saveClientBtn"><i class="fas fa-check"></i> Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="catalogModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="catalogModalTitle">Nouvel article</h2>
+        <button class="modal-close" onclick="closeCatalogModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <div class="field-group"><label>Désignation *</label><input type="text" id="catalogNameInput" class="input" placeholder="Ex: Développement site vitrine"></div>
+        <div class="grid-2">
+          <div class="field-group"><label>Prix HT</label><input type="number" id="catalogPriceInput" class="input" min="0" step="0.01" value="0"></div>
+          <div class="field-group">
+            <label>TVA</label>
+            <select id="catalogTvaInput" class="input">
+              <option value="0">0%</option>
+              <option value="5.5">5,5%</option>
+              <option value="10">10%</option>
+              <option value="20" selected>20%</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group"><label>Description</label><textarea id="catalogDescInput" placeholder="Détails..."></textarea></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeCatalogModal()">Annuler</button>
+        <button class="btn btn-accent" id="saveCatalogBtn"><i class="fas fa-check"></i> Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="catalogPickerModal">
+    <div class="modal" style="max-width:700px;">
+      <div class="modal-header">
+        <h2><i class="fas fa-boxes-stacked"></i> Choisir dans le catalogue</h2>
+        <button class="modal-close" onclick="closeCatalogPicker()"><i class="fas fa-times"></i></button>
+      </div>
+      <input type="text" id="catalogPickerSearch" class="input" placeholder="🔍 Rechercher..." style="margin-bottom:0.75rem;">
+      <div class="catalog-grid" id="catalogPickerGrid"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal" style="max-width:650px;">
+      <div class="modal-header">
+        <h2><i class="fas fa-history"></i> Historique</h2>
+        <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="searchModal">
+    <div class="modal" style="max-width:650px;">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="globalSearchInput" class="input" placeholder="Rechercher clients, devis, articles…" autocomplete="off">
+      </div>
+      <div class="search-results" id="globalSearchResults"></div>
+      <div style="display:flex; justify-content:flex-end; gap:0.4rem; margin-top:0.75rem;">
+        <kbd style="background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:0.15rem 0.35rem; font-size:0.72rem;">ESC</kbd>
+        <span style="font-size:0.72rem; color:var(--text-muted);">pour fermer</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const ENCRYPTION_KEY = 'DevisPro_v2_secret_key';
+
+    const Storage = {
+      KEY_CLIENTS: 'devispro_clients_enc',
+      KEY_DEVIS: 'devispro_devis_enc',
+      KEY_SETTINGS: 'devispro_settings_enc',
+      KEY_CATALOG: 'devispro_catalog_enc',
+      KEY_TRASH: 'devispro_trash_enc',
+      KEY_DRAFT: 'devispro_draft_enc',
+
+      encrypt(data) {
+        try { return CryptoJS.AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString(); }
+        catch { return ''; }
+      },
+      decrypt(str, fallback = null) {
+        if (!str) return fallback;
+        try {
+          const bytes = CryptoJS.AES.decrypt(str, ENCRYPTION_KEY);
+          const text = bytes.toString(CryptoJS.enc.Utf8);
+          if (!text) return fallback;
+          return JSON.parse(text);
+        } catch { return fallback; }
+      },
+
+      loadClients() { return this.decrypt(localStorage.getItem(this.KEY_CLIENTS), []); },
+      saveClients(c) { localStorage.setItem(this.KEY_CLIENTS, this.encrypt(c)); },
+      loadDevis() { return this.decrypt(localStorage.getItem(this.KEY_DEVIS), []); },
+      saveDevis(d) { localStorage.setItem(this.KEY_DEVIS, this.encrypt(d)); },
+      loadCatalog() { return this.decrypt(localStorage.getItem(this.KEY_CATALOG), []); },
+      saveCatalog(c) { localStorage.setItem(this.KEY_CATALOG, this.encrypt(c)); },
+      loadTrash() { return this.decrypt(localStorage.getItem(this.KEY_TRASH), { clients: [], devis: [] }); },
+      saveTrash(t) { localStorage.setItem(this.KEY_TRASH, this.encrypt(t)); },
+      loadDraft() { return this.decrypt(localStorage.getItem(this.KEY_DRAFT), null); },
+      saveDraft(d) { if (d) localStorage.setItem(this.KEY_DRAFT, this.encrypt(d)); else localStorage.removeItem(this.KEY_DRAFT); },
+      loadSettings() {
+        return this.decrypt(localStorage.getItem(this.KEY_SETTINGS), {
+          company: {
+            name: 'DevisPro SAS', email: '', phone: '', address: '', logo: '',
+            siret: '', tvaNumber: '',
+            insurance: { name: '', policy: '', coverage: '' },
+            vatRegime: 'normal'
+          },
+          accent: '#6366f1',
+          dark: false,
+          tablet: false,
+          autosave: true,
+          pin: null
+        });
+      },
+      saveSettings(s) { localStorage.setItem(this.KEY_SETTINGS, this.encrypt(s)); }
+    };
+
+    let state = {
+      clients: Storage.loadClients(),
+      devis: Storage.loadDevis(),
+      catalog: Storage.loadCatalog(),
+      trash: Storage.loadTrash(),
+      settings: Storage.loadSettings(),
+      currentDevisId: null,
+      currentItems: [],
+      currentPayments: [],
+      currentSignature: null,
+      editingClientId: null,
+      editingCatalogId: null,
+      currentView: 'devis-list',
+      autosaveTimer: null
+    };
+
+    (function purgeTrash() {
+      const now = Date.now();
+      const THIRTY = 30 * 24 * 60 * 60 * 1000;
+      state.trash.clients = state.trash.clients.filter(c => now - (c.deletedAt || 0) < THIRTY);
+      state.trash.devis = state.trash.devis.filter(d => now - (d.deletedAt || 0) < THIRTY);
+      Storage.saveTrash(state.trash);
+    })();
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+
+    const escapeHtml = (t) => {
+      if (t === null || t === undefined) return '';
+      const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
+    };
+
+    const formatEuro = (a) => {
+      const n = Number(a) || 0;
+      return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n);
+    };
+
+    const formatDate = (d) => {
+      if (!d) return '—';
+      const [y, m, day] = d.split('-');
+      return `${day}/${m}/${y}`;
+    };
+
+    const todayISO = () => new Date().toISOString().split('T')[0];
+
+    const computeValidityDate = (dateISO, days) => {
+      if (!dateISO) return '';
+      const d = new Date(dateISO + 'T00:00:00');
+      const n = parseInt(days) || 0;
+      if (!n) return '';
+      d.setDate(d.getDate() + n);
+      return d.toISOString().split('T')[0];
+    };
+
+    const devisTotalTTC = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice) * (1 + it.tva/100), 0);
+    const devisTotalHT = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice), 0);
+    const devisTotalTVA = (d) => devisTotalTTC(d) - devisTotalHT(d);
+
+    function toast(msg, type = 'success', options = {}) {
+      const container = $('#toastContainer');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+      el.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(msg)}</span>`;
+
+      if (options.undo && typeof options.undo === 'function') {
+        const undoBtn = document.createElement('button');
+        undoBtn.className = 'toast-undo';
+        undoBtn.innerHTML = '<i class="fas fa-undo"></i> Annuler';
+        undoBtn.addEventListener('click', () => {
+          try { options.undo(); } catch (e) { console.error(e); }
+          el.style.opacity = '0';
+          el.style.transform = 'translateX(100%)';
+          setTimeout(() => el.remove(), 300);
+        });
+        el.appendChild(undoBtn);
+      }
+
+      container.appendChild(el);
+      const timeout = options.undo ? 6000 : 3500;
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(100%)';
+        setTimeout(() => el.remove(), 300);
+      }, timeout);
+    }
+
+    function applyTheme() {
+      document.body.classList.toggle('dark', state.settings.dark);
+      document.body.classList.toggle('tablet-mode', state.settings.tablet);
+      const btn = $('#themeToggleBtn');
+      if (btn) btn.innerHTML = state.settings.dark ? '<i class="fas fa-sun"></i> Désactiver' : '<i class="fas fa-moon"></i> Activer';
+      const tbtn = $('#tabletToggleBtn');
+      if (tbtn) tbtn.innerHTML = state.settings.tablet ? '<i class="fas fa-mobile-alt"></i> Désactiver' : '<i class="fas fa-tablet-alt"></i> Activer';
+      if (state.settings.accent) document.documentElement.style.setProperty('--accent', state.settings.accent);
+    }
+
+    function toggleTheme() {
+      state.settings.dark = !state.settings.dark;
+      Storage.saveSettings(state.settings);
+      applyTheme();
+    }
+
+    function toggleTablet() {
+      state.settings.tablet = !state.settings.tablet;
+      Storage.saveSettings(state.settings);
+      applyTheme();
+    }
+
+    function toggleAutosave() {
+      state.settings.autosave = !state.settings.autosave;
+      Storage.saveSettings(state.settings);
+      renderSettings();
+      if (!state.settings.autosave) stopAutosave();
+      else if (state.currentView === 'editor') startAutosave();
+      toast(`Sauvegarde automatique ${state.settings.autosave ? 'activée' : 'désactivée'}`);
+    }
+
+    const pageInfo = {
+      'devis-list': { title: 'Mes devis', subtitle: 'Consultez et gérez tous vos devis' },
+      clients: { title: 'Clients', subtitle: 'Gérez votre base clients' },
+      catalogue: { title: 'Catalogue', subtitle: 'Bibliothèque de produits et services' },
+      editor: { title: 'Devis', subtitle: 'Créez ou modifiez un devis' },
+      reports: { title: 'Rapports', subtitle: 'Analysez et exportez vos données' },
+      trash: { title: 'Corbeille', subtitle: 'Éléments supprimés (30 jours)' },
+      settings: { title: 'Paramètres', subtitle: 'Personnalisez votre application' }
+    };
+
+    function navigateTo(view) {
+      state.currentView = view;
+      $$('.view').forEach(v => v.classList.remove('active'));
+      const v = $(`#view-${view}`);
+      if (v) v.classList.add('active');
+      $$('.nav-item').forEach(n => n.classList.remove('active'));
+      const navBtn = document.querySelector(`.nav-item[data-view="${view}"]`);
+      if (navBtn) navBtn.classList.add('active');
+
+      $('#pageTitle').textContent = pageInfo[view]?.title || '';
+      $('#pageSubtitle').textContent = pageInfo[view]?.subtitle || '';
+      renderTopbarActions(view);
+
+      if (view === 'devis-list') renderDevisList();
+      if (view === 'clients') renderClients();
+      if (view === 'catalogue') renderCatalogue();
+      if (view === 'reports') renderReports();
+      if (view === 'trash') renderTrash();
+      if (view === 'settings') renderSettings();
+    }
+
+    function renderTopbarActions(view) {
+      const c = $('#topbarActions');
+      c.innerHTML = '';
+      if (view === 'devis-list' || view === 'clients') {
+        const b = document.createElement('button');
+        b.className = 'btn btn-accent';
+        b.innerHTML = '<i class="fas fa-plus"></i> Nouveau';
+        b.onclick = () => openEditor();
+        c.appendChild(b);
+      }
+      if (view === 'editor') {
+        const b = document.createElement('button');
+        b.className = 'btn btn-success';
+        b.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+        b.onclick = saveCurrentDevis;
+        c.appendChild(b);
+      }
+    }
+
+    function startAutosave() {
+      stopAutosave();
+      if (!state.settings.autosave) return;
+      state.autosaveTimer = setInterval(() => {
+        if (state.currentView !== 'editor') return;
+        if (!hasEditorChanges()) return;
+        saveDraft();
+      }, 30000);
+    }
+
+    function stopAutosave() {
+      if (state.autosaveTimer) {
+        clearInterval(state.autosaveTimer);
+        state.autosaveTimer = null;
+      }
+    }
+
+    function hasEditorChanges() {
+      return $('#invoiceNumber').value || state.currentItems.length > 0;
+    }
+
+    function saveDraft() {
+      const indicator = $('#autosaveIndicator');
+      if (indicator) {
+        indicator.style.display = 'inline-flex';
+        indicator.classList.add('saving');
+        indicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Sauvegarde…</span>';
+      }
+
+      const draft = {
+        id: state.currentDevisId,
+        number: $('#invoiceNumber').value,
+        date: $('#invoiceDate').value,
+        status: $('#invoiceStatus').value,
+        notes: $('#invoiceNotes').value,
+        clientId: $('#clientSelect').value,
+        items: JSON.parse(JSON.stringify(state.currentItems)),
+        payments: JSON.parse(JSON.stringify(state.currentPayments)),
+        signature: state.currentSignature,
+        depositPercent: parseFloat($('#depositPercent').value) || 0,
+        validityDays: parseInt($('#validityDays').value) || 0,
+        savedAt: Date.now()
+      };
+      Storage.saveDraft(draft);
+
+      setTimeout(() => {
+        if (indicator) {
+          indicator.classList.remove('saving');
+          indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Brouillon sauvegardé</span>';
+          setTimeout(() => { indicator.style.display = 'none'; }, 2000);
+        }
+      }, 400);
+    }
+
+    function renderDevisList(filter = '') {
+      const list = $('#devisList');
+      const sorted = [...state.devis].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      const filtered = filter
+        ? sorted.filter(d => (d.number || '').toLowerCase().includes(filter.toLowerCase()) || (d.clientName || '').toLowerCase().includes(filter.toLowerCase()))
+        : sorted;
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty"><i class="fas fa-file-invoice"></i><h3>${filter ? 'Aucun résultat' : 'Aucun devis'}</h3><p>${filter ? 'Essayez un autre terme' : 'Créez votre premier devis'}</p></div>`;
+        return;
+      }
+      list.innerHTML = filtered.map(d => devisItemHTML(d)).join('');
+      attachDevisListeners(list);
+    }
+
+    function devisItemHTML(d) {
+      const total = devisTotalTTC(d);
+      const statusLabels = { brouillon: 'Brouillon', envoye: 'Envoyé', accepte: 'Accepté', refuse: 'Refusé' };
+      const paid = (d.payments || []).reduce((s, p) => s + p.amount, 0);
+      const remaining = total - paid;
+      const validityDate = d.validityDays && d.date ? computeValidityDate(d.date, d.validityDays) : '';
+      const expired = validityDate && validityDate < todayISO();
+      return `
+        <div class="devis-item" data-devis-id="${d.id}">
+          <div class="devis-info">
+            <div class="devis-number">
+              <i class="fas fa-file-invoice" style="color: var(--accent);"></i>
+              ${escapeHtml(d.number || 'Sans numéro')}
+              <span class="status-badge status-${d.status || 'brouillon'}">${statusLabels[d.status] || 'Brouillon'}</span>
+              ${d.signature ? '<i class="fas fa-signature" style="color:var(--success);" title="Signé"></i>' : ''}
+              ${expired ? '<span class="status-badge status-refuse"><i class="fas fa-clock"></i> Expiré</span>' : ''}
+            </div>
+            <div class="devis-meta">
+              <span><i class="fas fa-user"></i> ${escapeHtml(d.clientName || 'Aucun client')}</span>
+              <span><i class="far fa-calendar"></i> ${formatDate(d.date)}</span>
+              <span><i class="fas fa-cubes"></i> ${d.items.length} ligne${d.items.length > 1 ? 's' : ''}</span>
+              ${validityDate ? `<span><i class="fas fa-hourglass-half"></i> Valide jusqu'au ${formatDate(validityDate)}</span>` : ''}
+              ${paid > 0 ? `<span style="color:var(--success);"><i class="fas fa-check-circle"></i> ${formatEuro(paid)} payé</span>` : ''}
+              ${remaining > 0 && paid > 0 ? `<span style="color:var(--warning);"><i class="fas fa-clock"></i> ${formatEuro(remaining)} restant</span>` : ''}
+            </div>
+          </div>
+          <div class="devis-total">${formatEuro(total)}</div>
+          <div style="display:flex; gap:0.25rem;">
+            <button class="btn btn-outline btn-icon btn-sm" data-action="edit" title="Modifier"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-outline btn-icon btn-sm" data-action="delete" title="Supprimer"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    }
+
+    function attachDevisListeners(container) {
+      container.querySelectorAll('.devis-item').forEach(item => {
+        const id = item.dataset.devisId;
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('button')) return;
+          openEditor(id);
+        });
+        item.querySelector('[data-action="edit"]')?.addEventListener('click', () => openEditor(id));
+        item.querySelector('[data-action="delete"]')?.addEventListener('click', () => {
+          const d = state.devis.find(x => x.id === id);
+          if (!d) return;
+          if (!confirm('Déplacer ce devis dans la corbeille ?')) return;
+          state.devis = state.devis.filter(x => x.id !== id);
+          state.trash.devis.push({ ...d, deletedAt: Date.now() });
+          Storage.saveDevis(state.devis);
+          Storage.saveTrash(state.trash);
+          updateBadges();
+          if (state.currentView === 'devis-list') renderDevisList($('#devisSearch')?.value || '');
+          toast('Devis dans la corbeille', 'warning', {
+            undo: () => {
+              state.trash.devis = state.trash.devis.filter(x => !(x.id === id && x.deletedAt === d.deletedAt));
+              const restored = { ...d }; delete restored.deletedAt;
+              state.devis.push(restored);
+              Storage.saveDevis(state.devis);
+              Storage.saveTrash(state.trash);
+              updateBadges();
+              if (state.currentView === 'devis-list') renderDevisList($('#devisSearch')?.value || '');
+              toast('Devis restauré');
+            }
+          });
+        });
+      });
+    }
+
+    function renderClients() {
+      const grid = $('#clientsGrid');
+      if (state.clients.length === 0) {
+        grid.innerHTML = `<div class="empty" style="grid-column: 1/-1;"><i class="fas fa-users"></i><h3>Aucun client</h3><p>Ajoutez votre premier client</p></div>`;
+        return;
+      }
+      grid.innerHTML = state.clients.map(c => {
+        const initials = (c.name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        const clientDevis = state.devis.filter(d => d.clientId === c.id);
+        const totalCA = clientDevis.reduce((s, d) => s + devisTotalTTC(d), 0);
+        return `
+          <div class="client-card" data-client-id="${c.id}">
+            <div class="client-actions">
+              <button class="btn btn-outline btn-icon btn-sm" data-action="edit-client" title="Modifier"><i class="fas fa-pen"></i></button>
+              <button class="btn btn-outline btn-icon btn-sm" data-action="delete-client" title="Supprimer"><i class="fas fa-trash"></i></button>
+            </div>
+            <div class="client-avatar">${escapeHtml(initials)}</div>
+            <div class="client-name">${escapeHtml(c.name || 'Sans nom')}</div>
+            ${c.email ? `<div class="client-info"><i class="fas fa-envelope"></i> ${escapeHtml(c.email)}</div>` : ''}
+            ${c.phone ? `<div class="client-info"><i class="fas fa-phone"></i> ${escapeHtml(c.phone)}</div>` : ''}
+            <div class="client-stats">
+              <div class="client-stat"><strong>${clientDevis.length}</strong>Devis</div>
+              <div class="client-stat"><strong>${formatEuro(totalCA)}</strong>CA</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.client-card').forEach(card => {
+        const id = card.dataset.clientId;
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('button')) return;
+          const client = state.clients.find(c => c.id === id);
+          if (client) {
+            navigateTo('devis-list');
+            $('#devisSearch').value = client.name || '';
+            renderDevisList(client.name || '');
+          }
+        });
+        card.querySelector('[data-action="edit-client"]')?.addEventListener('click', () => openClientModal(id));
+        card.querySelector('[data-action="delete-client"]')?.addEventListener('click', () => {
+          const c = state.clients.find(x => x.id === id);
+          if (!c) return;
+          if (!confirm('Déplacer ce client dans la corbeille ?')) return;
+          state.clients = state.clients.filter(x => x.id !== id);
+          state.trash.clients.push({ ...c, deletedAt: Date.now() });
+          Storage.saveClients(state.clients);
+          Storage.saveTrash(state.trash);
+          updateBadges();
+          renderClients();
+          toast('Client dans la corbeille', 'warning', {
+            undo: () => {
+              state.trash.clients = state.trash.clients.filter(x => x.id !== id);
+              const restored = { ...c }; delete restored.deletedAt;
+              state.clients.push(restored);
+              Storage.saveClients(state.clients);
+              Storage.saveTrash(state.trash);
+              updateBadges();
+              renderClients();
+              toast('Client restauré');
+            }
+          });
+        });
+      });
+    }
+
+    function openClientModal(clientId = null) {
+      state.editingClientId = clientId;
+      const modal = $('#clientModal');
+      const title = $('#clientModalTitle');
+      if (clientId) {
+        const c = state.clients.find(c => c.id === clientId);
+        if (c) {
+          title.textContent = 'Modifier le client';
+          $('#clientNameInput').value = c.name || '';
+          $('#clientEmailInput').value = c.email || '';
+          $('#clientPhoneInput').value = c.phone || '';
+          $('#clientAddressInput').value = c.address || '';
+          $('#clientNotesInput').value = c.notes || '';
+        }
+      } else {
+        title.textContent = 'Nouveau client';
+        ['clientNameInput','clientEmailInput','clientPhoneInput','clientAddressInput','clientNotesInput'].forEach(id => $('#'+id).value = '');
+      }
+      modal.classList.add('active');
+      setTimeout(() => $('#clientNameInput').focus(), 100);
+    }
+
+    function closeClientModal() { $('#clientModal').classList.remove('active'); state.editingClientId = null; }
+
+    function saveClient() {
+      const name = $('#clientNameInput').value.trim();
+      if (!name) { toast('Le nom est obligatoire', 'error'); return; }
+      const data = {
+        name,
+        email: $('#clientEmailInput').value.trim(),
+        phone: $('#clientPhoneInput').value.trim(),
+        address: $('#clientAddressInput').value.trim(),
+        notes: $('#clientNotesInput').value.trim()
+      };
+      if (state.editingClientId) {
+        const idx = state.clients.findIndex(c => c.id === state.editingClientId);
+        if (idx >= 0) state.clients[idx] = { ...state.clients[idx], ...data };
+        toast('Client mis à jour');
+      } else {
+        state.clients.push({ id: uid(), ...data, createdAt: Date.now() });
+        toast('Client créé');
+      }
+      Storage.saveClients(state.clients);
+      updateBadges();
+      renderClients();
+      updateClientSelect();
+      closeClientModal();
+    }
+
+    function renderCatalogue(filter = '') {
+      const tbody = $('#catalogBody');
+      const filtered = state.catalog.filter(c => !filter || (c.name || '').toLowerCase().includes(filter.toLowerCase()));
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-light);">${filter ? 'Aucun résultat' : 'Catalogue vide'}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.sort((a, b) => (b.usage || 0) - (a.usage || 0)).map(c => `
+        <tr>
+          <td data-label="Désignation">
+            <div style="font-weight:600;">${escapeHtml(c.name)}</div>
+            ${c.description ? `<div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(c.description)}</div>` : ''}
+          </td>
+          <td data-label="Prix HT">${formatEuro(c.price)}</td>
+          <td data-label="TVA">${c.tva}%</td>
+          <td data-label="Utilisations">${c.usage || 0}</td>
+          <td data-label="">
+            <button class="btn btn-outline btn-icon btn-sm" data-action="edit-catalog" data-id="${c.id}"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-outline btn-icon btn-sm" data-action="delete-catalog" data-id="${c.id}"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('[data-action="edit-catalog"]').forEach(b => b.addEventListener('click', () => openCatalogModal(b.dataset.id)));
+      tbody.querySelectorAll('[data-action="delete-catalog"]').forEach(b => b.addEventListener('click', () => {
+        if (!confirm('Supprimer cet article du catalogue ?')) return;
+        const id = b.dataset.id;
+        const item = state.catalog.find(x => x.id === id);
+        state.catalog = state.catalog.filter(c => c.id !== id);
+        Storage.saveCatalog(state.catalog);
+        updateBadges();
+        renderCatalogue($('#catalogSearch').value);
+        toast('Article supprimé', 'warning', {
+          undo: () => {
+            if (item) {
+              state.catalog.push(item);
+              Storage.saveCatalog(state.catalog);
+              updateBadges();
+              renderCatalogue($('#catalogSearch').value);
+              toast('Article restauré');
+            }
+          }
+        });
+      }));
+    }
+
+    function openCatalogModal(id = null) {
+      state.editingCatalogId = id;
+      const title = $('#catalogModalTitle');
+      if (id) {
+        const c = state.catalog.find(x => x.id === id);
+        if (c) {
+          title.textContent = 'Modifier l\'article';
+          $('#catalogNameInput').value = c.name || '';
+          $('#catalogPriceInput').value = c.price || 0;
+          $('#catalogTvaInput').value = c.tva ?? 20;
+          $('#catalogDescInput').value = c.description || '';
+        }
+      } else {
+        title.textContent = 'Nouvel article';
+        $('#catalogNameInput').value = '';
+        $('#catalogPriceInput').value = 0;
+        $('#catalogTvaInput').value = 20;
+        $('#catalogDescInput').value = '';
+      }
+      $('#catalogModal').classList.add('active');
+      setTimeout(() => $('#catalogNameInput').focus(), 100);
+    }
+
+    function closeCatalogModal() { $('#catalogModal').classList.remove('active'); state.editingCatalogId = null; }
+
+    function saveCatalogItem() {
+      const name = $('#catalogNameInput').value.trim();
+      if (!name) { toast('La désignation est obligatoire', 'error'); return; }
+      const data = {
+        name,
+        price: parseFloat($('#catalogPriceInput').value) || 0,
+        tva: parseFloat($('#catalogTvaInput').value) || 0,
+        description: $('#catalogDescInput').value.trim()
+      };
+      if (state.editingCatalogId) {
+        const idx = state.catalog.findIndex(c => c.id === state.editingCatalogId);
+        if (idx >= 0) state.catalog[idx] = { ...state.catalog[idx], ...data };
+        toast('Article mis à jour');
+      } else {
+        state.catalog.push({ id: uid(), ...data, usage: 0, createdAt: Date.now() });
+        toast('Article créé');
+      }
+      Storage.saveCatalog(state.catalog);
+      updateBadges();
+      renderCatalogue($('#catalogSearch')?.value || '');
+      closeCatalogModal();
+    }
+
+    function importCatalogCSV(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/).filter(l => l.trim());
+        if (lines.length < 2) { toast('Fichier vide ou invalide', 'error'); return; }
+        let imported = 0;
+        lines.slice(1).forEach(line => {
+          const parts = line.split(/[;,]/).map(s => s.trim().replace(/^"|"$/g, ''));
+          if (!parts[0]) return;
+          state.catalog.push({
+            id: uid(),
+            name: parts[0],
+            price: parseFloat(parts[1]) || 0,
+            tva: parseFloat(parts[2]) || 20,
+            description: parts[3] || '',
+            usage: 0,
+            createdAt: Date.now()
+          });
+          imported++;
+        });
+        Storage.saveCatalog(state.catalog);
+        updateBadges();
+        renderCatalogue();
+        toast(`${imported} articles importés`);
+      };
+      reader.readAsText(file);
+    }
+
+    function openCatalogPicker() {
+      $('#catalogPickerModal').classList.add('active');
+      renderCatalogPicker('');
+      setTimeout(() => $('#catalogPickerSearch').focus(), 100);
+    }
+    function closeCatalogPicker() { $('#catalogPickerModal').classList.remove('active'); }
+
+    function renderCatalogPicker(filter = '') {
+      const grid = $('#catalogPickerGrid');
+      const filtered = state.catalog.filter(c => !filter || (c.name || '').toLowerCase().includes(filter.toLowerCase()));
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><i class="fas fa-boxes-stacked"></i><h3>Catalogue vide</h3><p>Ajoutez des articles dans l'onglet Catalogue</p></div>`;
+        return;
+      }
+      grid.innerHTML = filtered.map(c => `
+        <div class="catalog-item" data-catalog-id="${c.id}">
+          <div class="info">
+            <div class="title">${escapeHtml(c.name)}</div>
+            <div class="meta">${formatEuro(c.price)} · TVA ${c.tva}%</div>
+          </div>
+          <i class="fas fa-plus-circle add"></i>
+        </div>
+      `).join('');
+      grid.querySelectorAll('.catalog-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const item = state.catalog.find(c => c.id === el.dataset.catalogId);
+          if (!item) return;
+          state.currentItems.push({
+            id: uid(),
+            description: item.name + (item.description ? ' — ' + item.description : ''),
+            quantity: 1,
+            unitPrice: item.price,
+            tva: item.tva
+          });
+          item.usage = (item.usage || 0) + 1;
+          Storage.saveCatalog(state.catalog);
+          renderItems();
+          updateSummary();
+          updatePaymentsSummary();
+          closeCatalogPicker();
+          toast(`"${item.name}" ajouté`);
+        });
+      });
+    }
+
+    function updateClientSelect() {
+      const select = $('#clientSelect');
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">— Sélectionner un client —</option>' +
+        state.clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+      if (currentVal) select.value = currentVal;
+    }
+
+    function updateValidityInfo() {
+      const date = $('#invoiceDate').value;
+      const days = parseInt($('#validityDays').value) || 0;
+      const info = $('#validityInfo');
+      if (!info) return;
+      if (date && days > 0) {
+        const vDate = computeValidityDate(date, days);
+        info.textContent = `Valide jusqu'au ${formatDate(vDate)}`;
+      } else {
+        info.textContent = '';
+      }
+    }
+
+    function openEditor(devisId = null) {
+      state.currentDevisId = devisId;
+      state.currentItems = [];
+      state.currentPayments = [];
+      state.currentSignature = null;
+
+      if (devisId) {
+        const d = state.devis.find(d => d.id === devisId);
+        if (!d) return;
+        $('#invoiceNumber').value = d.number || '';
+        $('#invoiceDate').value = d.date || todayISO();
+        $('#invoiceStatus').value = d.status || 'brouillon';
+        $('#invoiceNotes').value = d.notes || '';
+        $('#paidAmount').value = (d.payments || []).reduce((s, p) => s + p.amount, 0);
+        $('#depositPercent').value = d.depositPercent || 30;
+        $('#validityDays').value = d.validityDays || 30;
+        state.currentItems = JSON.parse(JSON.stringify(d.items || []));
+        state.currentPayments = JSON.parse(JSON.stringify(d.payments || []));
+        state.currentSignature = d.signature || null;
+        setTimeout(() => {
+          updateClientSelect();
+          $('#clientSelect').value = d.clientId || '';
+          updateValidityInfo();
+        }, 0);
+      } else {
+        const draft = Storage.loadDraft();
+        if (draft && draft.items && draft.items.length > 0) {
+          if (confirm('Un brouillon non enregistré a été trouvé. Le restaurer ?')) {
+            $('#invoiceNumber').value = draft.number || 'DEV-' + new Date().getFullYear() + '-' + String(state.devis.length + 1).padStart(3, '0');
+            $('#invoiceDate').value = draft.date || todayISO();
+            $('#invoiceStatus').value = draft.status || 'brouillon';
+            $('#invoiceNotes').value = draft.notes || '';
+            $('#depositPercent').value = draft.depositPercent || 30;
+            $('#validityDays').value = draft.validityDays || 30;
+            state.currentItems = draft.items;
+            state.currentPayments = draft.payments || [];
+            state.currentSignature = draft.signature || null;
+            updateClientSelect();
+            setTimeout(() => { $('#clientSelect').value = draft.clientId || ''; updateValidityInfo(); }, 0);
+          } else {
+            Storage.saveDraft(null);
+            initNewEditor();
+          }
+        } else {
+          initNewEditor();
+        }
+      }
+
+      function initNewEditor() {
+        $('#invoiceNumber').value = 'DEV-' + new Date().getFullYear() + '-' + String(state.devis.length + 1).padStart(3, '0');
+        $('#invoiceDate').value = todayISO();
+        $('#invoiceStatus').value = 'brouillon';
+        $('#invoiceNotes').value = '';
+        $('#paidAmount').value = 0;
+        $('#depositPercent').value = 30;
+        $('#validityDays').value = 30;
+        state.currentItems = [{ id: uid(), description: '', quantity: 1, unitPrice: 0, tva: 20 }];
+        state.currentPayments = [];
+        state.currentSignature = null;
+        updateClientSelect();
+        $('#clientSelect').value = '';
+        updateValidityInfo();
+      }
+
+      $('#pageTitle').textContent = devisId ? 'Modifier le devis' : 'Nouveau devis';
+      $('#pageSubtitle').textContent = devisId ? $('#invoiceNumber').value : 'Créez un nouveau devis';
+
+      renderItems();
+      renderPayments();
+      updateSummary();
+      updatePaymentsSummary();
+      updateValidityInfo();
+      renderSignaturePreview();
+      navigateTo('editor');
+      requestAnimationFrame(() => initSignaturePad());
+      startAutosave();
+    }
+
+    function renderItems() {
+      const tbody = $('#itemsBody');
+      if (state.currentItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1.5rem; color:var(--text-light);">Aucune ligne</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.currentItems.map((item) => {
+        const total = item.quantity * item.unitPrice;
+        return `
+          <tr data-item-id="${item.id}">
+            <td data-label="Désignation"><input type="text" class="input-inline" data-field="description" value="${escapeHtml(item.description)}" placeholder="Description..."></td>
+            <td data-label="Qté"><input type="number" class="input-inline small" data-field="quantity" value="${item.quantity}" min="0" step="1"></td>
+            <td data-label="Prix HT"><input type="number" class="input-inline small" data-field="unitPrice" value="${item.unitPrice}" min="0" step="0.01"></td>
+            <td data-label="TVA">
+              <select class="input-inline" data-field="tva">
+                <option value="0" ${item.tva == 0 ? 'selected' : ''}>0%</option>
+                <option value="5.5" ${item.tva == 5.5 ? 'selected' : ''}>5,5%</option>
+                <option value="10" ${item.tva == 10 ? 'selected' : ''}>10%</option>
+                <option value="20" ${item.tva == 20 ? 'selected' : ''}>20%</option>
+              </select>
+            </td>
+            <td data-label="Total HT"><strong>${formatEuro(total)}</strong></td>
+            <td data-label=""><button class="delete-btn" data-action="remove-item"><i class="fas fa-trash"></i></button></td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', handleItemChange);
+        el.addEventListener('change', handleItemChange);
+      });
+      tbody.querySelectorAll('[data-action="remove-item"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const row = e.target.closest('tr');
+          const removedId = row.dataset.itemId;
+          const removed = state.currentItems.find(i => i.id === removedId);
+          state.currentItems = state.currentItems.filter(i => i.id !== removedId);
+          renderItems();
+          updateSummary();
+          updatePaymentsSummary();
+          if (removed) {
+            toast('Ligne supprimée', 'warning', {
+              undo: () => {
+                state.currentItems.push(removed);
+                renderItems(); updateSummary(); updatePaymentsSummary();
+                toast('Ligne restaurée');
+              }
+            });
+          }
+        });
+      });
+    }
+
+    function handleItemChange(e) {
+      const row = e.target.closest('tr');
+      const id = row.dataset.itemId;
+      const item = state.currentItems.find(i => i.id === id);
+      if (!item) return;
+      const field = e.target.dataset.field;
+      let value = e.target.value;
+      if (field === 'quantity' || field === 'unitPrice' || field === 'tva') value = parseFloat(value) || 0;
+      item[field] = value;
+      const totalCell = row.querySelector('td[data-label="Total HT"]');
+      if (totalCell) totalCell.innerHTML = `<strong>${formatEuro(item.quantity * item.unitPrice)}</strong>`;
+      updateSummary();
+      updatePaymentsSummary();
+    }
+
+    function updateSummary() {
+      let ht = 0, tva = 0;
+      state.currentItems.forEach(i => {
+        const lh = (i.quantity || 0) * (i.unitPrice || 0);
+        ht += lh;
+        tva += lh * ((i.tva || 0) / 100);
+      });
+      $('#sumHT').textContent = formatEuro(ht);
+      $('#sumTVA').textContent = formatEuro(tva);
+      $('#sumTTC').textContent = formatEuro(ht + tva);
+    }
+
+    function renderPayments() {
+      const list = $('#paymentsList');
+      if (state.currentPayments.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:0.5rem; color:var(--text-light); font-size:0.8rem; font-style:italic;">Aucun paiement</div>`;
+        return;
+      }
+      list.innerHTML = state.currentPayments.map((p, idx) => `
+        <div class="payment-row">
+          <div><strong>${formatEuro(p.amount)}</strong><span class="date"> — ${formatDate(p.date)}</span></div>
+          <button class="delete-btn" data-payment-idx="${idx}" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('[data-payment-idx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.paymentIdx);
+          const removed = state.currentPayments[idx];
+          state.currentPayments.splice(idx, 1);
+          renderPayments();
+          updatePaymentsSummary();
+          if (removed) {
+            toast('Paiement supprimé', 'warning', {
+              undo: () => {
+                state.currentPayments.splice(idx, 0, removed);
+                renderPayments(); updatePaymentsSummary();
+                toast('Paiement restauré');
+              }
+            });
+          }
+        });
+      });
+    }
+
+    function updatePaymentsSummary() {
+      const totalTTC = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (1 + i.tva/100), 0);
+      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
+      $('#payTotalTTC').textContent = formatEuro(totalTTC);
+      $('#payTotalPaid').textContent = formatEuro(paid);
+      $('#payRemaining').textContent = formatEuro(Math.max(0, totalTTC - paid));
+      $('#paidAmount').value = paid.toFixed(2);
+    }
+
+    function addPayment() {
+      const amount = parseFloat($('#paymentAmount').value);
+      const date = $('#paymentDate').value || todayISO();
+      if (!amount || amount <= 0) { toast('Montant invalide', 'error'); return; }
+      state.currentPayments.push({ id: uid(), amount, date });
+      $('#paymentAmount').value = '';
+      $('#paymentDate').value = '';
+      renderPayments();
+      updatePaymentsSummary();
+      toast('Paiement ajouté');
+    }
+
+    // ============================================================
+    // SIGNATURE
+    // ============================================================
+    let sigCtx = null;
+    let sigDrawing = false;
+    let sigLast = null;
+    let sigPadInitialized = false;
+
+    function initSignaturePad() {
+      const canvas = $('#signaturePad');
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.max(1, Math.floor(rect.width));
+      const height = 140;
+      canvas.width = width;
+      canvas.height = height;
+
+      sigCtx = canvas.getContext('2d');
+      sigCtx.lineWidth = 2.5;
+      sigCtx.lineCap = 'round';
+      sigCtx.lineJoin = 'round';
+      sigCtx.strokeStyle = state.settings.dark ? '#f1f5f9' : '#0f172a';
+
+      if (state.currentSignature) {
+        const img = new Image();
+        img.onload = () => sigCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.src = state.currentSignature;
+      }
+
+      const getPos = (e) => {
+        const r = canvas.getBoundingClientRect();
+        const t = e.touches ? e.touches[0] : e;
+        const x = (t.clientX - r.left) * (canvas.width / r.width);
+        const y = (t.clientY - r.top) * (canvas.height / r.height);
+        return { x, y };
+      };
+
+      const start = (e) => {
+        e.preventDefault();
+        sigDrawing = true;
+        sigLast = getPos(e);
+      };
+      const move = (e) => {
+        if (!sigDrawing) return;
+        e.preventDefault();
+        const p = getPos(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(sigLast.x, sigLast.y);
+        sigCtx.lineTo(p.x, p.y);
+        sigCtx.stroke();
+        sigLast = p;
+      };
+      const end = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        sigDrawing = false;
+        sigLast = null;
+      };
+
+      if (sigPadInitialized) {
+        canvas.onmousedown = null; canvas.onmousemove = null; canvas.onmouseup = null; canvas.onmouseleave = null;
+        canvas.ontouchstart = null; canvas.ontouchmove = null; canvas.ontouchend = null; canvas.ontouchcancel = null;
+      }
+
+      canvas.onmousedown = start;
+      canvas.onmousemove = move;
+      canvas.onmouseup = end;
+      canvas.onmouseleave = end;
+      canvas.ontouchstart = start;
+      canvas.ontouchmove = move;
+      canvas.ontouchend = end;
+      canvas.ontouchcancel = end;
+
+      sigPadInitialized = true;
+    }
+
+    function clearSignature() {
+      const canvas = $('#signaturePad');
+      if (canvas && sigCtx) sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+      state.currentSignature = null;
+      renderSignaturePreview();
+    }
+
+    function saveSignature() {
+      const canvas = $('#signaturePad');
+      if (!canvas) return;
+      const blank = document.createElement('canvas');
+      blank.width = canvas.width; blank.height = canvas.height;
+      if (canvas.toDataURL() === blank.toDataURL()) { toast('Veuillez signer d\'abord', 'warning'); return; }
+      state.currentSignature = canvas.toDataURL('image/png');
+      renderSignaturePreview();
+      toast('Signature enregistrée');
+    }
+
+    function renderSignaturePreview() {
+      const p = $('#signaturePreview');
+      if (!p) return;
+      if (state.currentSignature) {
+        p.innerHTML = `<div class="signature-preview"><img src="${state.currentSignature}" alt="Signature"><div style="font-size:0.72rem; color:var(--success); margin-top:0.3rem;"><i class="fas fa-check-circle"></i> Signature validée</div></div>`;
+      } else {
+        p.innerHTML = '';
+      }
+    }
+
+    function saveCurrentDevis() {
+      const clientId = $('#clientSelect').value;
+      const client = state.clients.find(c => c.id === clientId);
+
+      const devisData = {
+        id: state.currentDevisId || uid(),
+        number: $('#invoiceNumber').value.trim() || 'DEV-' + Date.now(),
+        date: $('#invoiceDate').value,
+        status: $('#invoiceStatus').value,
+        notes: $('#invoiceNotes').value.trim(),
+        clientId: clientId || null,
+        clientName: client ? client.name : '',
+        items: JSON.parse(JSON.stringify(state.currentItems)),
+        payments: JSON.parse(JSON.stringify(state.currentPayments)),
+        signature: state.currentSignature,
+        depositPercent: parseFloat($('#depositPercent').value) || 0,
+        validityDays: parseInt($('#validityDays').value) || 0,
+        updatedAt: Date.now()
+      };
+
+      if (state.currentDevisId) {
+        const idx = state.devis.findIndex(d => d.id === state.currentDevisId);
+        if (idx >= 0) {
+          const old = state.devis[idx];
+          if (!old.history) old.history = [];
+          old.history.push({
+            version: (old.history.length + 1),
+            savedAt: Date.now(),
+            snapshot: {
+              number: old.number, date: old.date, status: old.status, notes: old.notes,
+              clientId: old.clientId, clientName: old.clientName,
+              items: JSON.parse(JSON.stringify(old.items || [])),
+              payments: JSON.parse(JSON.stringify(old.payments || [])),
+              signature: old.signature, depositPercent: old.depositPercent,
+              validityDays: old.validityDays
+            }
+          });
+          state.devis[idx] = { ...old, ...devisData, history: old.history };
+        }
+        toast('Devis mis à jour');
+      } else {
+        devisData.createdAt = Date.now();
+        devisData.history = [];
+        state.devis.push(devisData);
+        state.currentDevisId = devisData.id;
+        toast('Devis enregistré');
+      }
+
+      Storage.saveDevis(state.devis);
+      Storage.saveDraft(null);
+      updateBadges();
+      $('#pageTitle').textContent = 'Modifier le devis';
+      $('#pageSubtitle').textContent = devisData.number;
+    }
+
+    function openHistoryModal() {
+      if (!state.currentDevisId) { toast('Enregistrez le devis d\'abord', 'warning'); return; }
+      const d = state.devis.find(d => d.id === state.currentDevisId);
+      if (!d) return;
+      const list = $('#historyList');
+      const hist = d.history || [];
+      if (hist.length === 0) {
+        list.innerHTML = `<div class="empty"><i class="fas fa-history"></i><h3>Aucune version antérieure</h3><p>L'historique se remplit à chaque enregistrement.</p></div>`;
+      } else {
+        list.innerHTML = hist.slice().reverse().map(h => `
+          <div class="history-item" data-version-id="${h.version}">
+            <div class="version"><i class="fas fa-code-branch"></i> Version ${h.version}</div>
+            <div class="meta">${new Date(h.savedAt).toLocaleString('fr-FR')} · ${formatEuro(devisTotalTTC({ items: h.snapshot.items || [] }))}</div>
+          </div>
+        `).join('');
+        list.querySelectorAll('.history-item').forEach(el => {
+          el.addEventListener('click', () => restoreVersion(parseInt(el.dataset.versionId)));
+        });
+      }
+      $('#historyModal').classList.add('active');
+    }
+
+    function restoreVersion(version) {
+      if (!confirm(`Restaurer la version ${version} ?`)) return;
+      const d = state.devis.find(d => d.id === state.currentDevisId);
+      if (!d) return;
+      const h = (d.history || []).find(x => x.version === version);
+      if (!h) return;
+      const snap = h.snapshot;
+      if (!d.history) d.history = [];
+      d.history.push({
+        version: d.history.length + 1, savedAt: Date.now(),
+        snapshot: { number: d.number, date: d.date, status: d.status, notes: d.notes, clientId: d.clientId, clientName: d.clientName, items: JSON.parse(JSON.stringify(d.items || [])), payments: JSON.parse(JSON.stringify(d.payments || [])), signature: d.signature, depositPercent: d.depositPercent, validityDays: d.validityDays }
+      });
+      Object.assign(d, snap);
+      d.updatedAt = Date.now();
+      Storage.saveDevis(state.devis);
+      closeHistoryModal();
+      openEditor(d.id);
+      toast(`Version ${version} restaurée`);
+    }
+
+    function closeHistoryModal() { $('#historyModal').classList.remove('active'); }
+
+    function sendEmail() {
+      const clientId = $('#clientSelect').value;
+      const client = state.clients.find(c => c.id === clientId);
+      if (!client || !client.email) { toast('Aucun email client défini', 'error'); return; }
+      const totalTTC = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (1 + i.tva/100), 0);
+      const validityDate = computeValidityDate($('#invoiceDate').value, $('#validityDays').value);
+      let body = `Bonjour,\n\nVeuillez trouver ci-dessous le devis ${$('#invoiceNumber').value} du ${formatDate($('#invoiceDate').value)} :\n\n`;
+      state.currentItems.forEach(i => { body += `- ${i.description || 'Sans nom'} : ${i.quantity} × ${formatEuro(i.unitPrice)} HT (TVA ${i.tva}%)\n`; });
+      body += `\nTotal HT : ${formatEuro(state.currentItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0))}`;
+      body += `\nTotal TTC : ${formatEuro(totalTTC)}\n`;
+      if (validityDate) body += `\nDevis valable jusqu'au ${formatDate(validityDate)}.\n`;
+      if ($('#invoiceNotes').value) body += `\nNotes : ${$('#invoiceNotes').value}\n`;
+      body += `\nPour accord, merci de nous retourner ce devis signé avec la mention « Bon pour accord ».\n`;
+      body += `\nCordialement,\n${state.settings.company.name || ''}`;
+      const subject = encodeURIComponent(`Devis ${$('#invoiceNumber').value} - ${state.settings.company.name || ''}`);
+      window.location.href = `mailto:${client.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
+      toast('Email prêt dans votre messagerie');
+    }
+
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const accent = hexToRgb(state.settings.accent || '#6366f1');
+      const clientId = $('#clientSelect').value;
+      const client = state.clients.find(c => c.id === clientId);
+      const pageW = 210, margin = 15;
+      let y = margin;
+
+      doc.setFillColor(accent[0], accent[1], accent[2]);
+      doc.rect(0, 0, pageW, 4, 'F');
+
+      doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
+      doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8);
+      doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.setFont(undefined, 'normal');
+      let cy = y + 13;
+      const compAddr = (state.settings.company.address || '').split('\n');
+      compAddr.forEach(l => { if (l.trim()) { doc.text(l, margin, cy); cy += 4; } });
+      if (state.settings.company.email) { doc.text(state.settings.company.email, margin, cy); cy += 4; }
+      if (state.settings.company.phone) { doc.text(state.settings.company.phone, margin, cy); cy += 4; }
+      if (state.settings.company.siret) { doc.text(`SIRET : ${state.settings.company.siret}`, margin, cy); cy += 4; }
+      if (state.settings.company.vatRegime === 'franchise') {
+        doc.text('TVA non applicable, art. 293 B du CGI', margin, cy); cy += 4;
+      } else if (state.settings.company.tvaNumber) {
+        doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4;
+      }
+
+      const infoX = pageW - margin;
+      doc.setFontSize(14); doc.setTextColor(0); doc.setFont(undefined, 'bold');
+      doc.text(`DEVIS ${$('#invoiceNumber').value}`, infoX, y + 8, { align: 'right' });
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80);
+      doc.text(`Date : ${formatDate($('#invoiceDate').value)}`, infoX, y + 14, { align: 'right' });
+      const validityDate = computeValidityDate($('#invoiceDate').value, $('#validityDays').value);
+      if (validityDate) doc.text(`Valable jusqu'au : ${formatDate(validityDate)}`, infoX, y + 19, { align: 'right' });
+      doc.text(`Statut : ${$('#invoiceStatus').value}`, infoX, y + 24, { align: 'right' });
+
+      if (state.settings.company.logo) {
+        try { doc.addImage(state.settings.company.logo, 'PNG', margin, y + 25, 30, 15); } catch {}
+      }
+
+      y = Math.max(cy + 5, y + 25) + 10;
+      doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
+      doc.line(margin, y, pageW - margin, y); y += 8;
+      doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
+      doc.text('CLIENT', margin, y); y += 6;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
+      if (client) {
+        doc.text(client.name || '', margin, y); y += 4;
+        if (client.email) { doc.text(client.email, margin, y); y += 4; }
+        if (client.phone) { doc.text(client.phone, margin, y); y += 4; }
+        if (client.address) client.address.split('\n').forEach(l => { doc.text(l, margin, y); y += 4; });
+      } else {
+        doc.text('—', margin, y); y += 4;
+      }
+
+      y += 5;
+      const rows = state.currentItems.map(i => [
+        i.description || '',
+        String(i.quantity),
+        formatEuro(i.unitPrice),
+        i.tva + '%',
+        formatEuro(i.quantity * i.unitPrice)
+      ]);
+
+      doc.autoTable({
+        startY: y,
+        head: [['Désignation', 'Qté', 'Prix HT', 'TVA', 'Total HT']],
+        body: rows,
+        theme: 'grid',
+        headStyles: { fillColor: accent, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+        bodyStyles: { fontSize: 8.5 },
+        columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'center' }, 4: { halign: 'right' } },
+        margin: { left: margin, right: margin }
+      });
+      y = doc.lastAutoTable.finalY + 10;
+
+      const ht = state.currentItems.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      const tva = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (i.tva/100), 0);
+      const ttc = ht + tva;
+      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
+      const remaining = Math.max(0, ttc - paid);
+
+      const boxX = pageW - margin - 80;
+      doc.setFontSize(9); doc.setTextColor(100);
+      doc.text('Total HT', boxX, y);
+      doc.text(formatEuro(ht), pageW - margin, y, { align: 'right' }); y += 5;
+      doc.text('TVA', boxX, y);
+      doc.text(formatEuro(tva), pageW - margin, y, { align: 'right' }); y += 5;
+      doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
+      doc.line(boxX, y, pageW - margin, y); y += 6;
+      doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(accent[0], accent[1], accent[2]);
+      doc.text('Total TTC', boxX, y);
+      doc.text(formatEuro(ttc), pageW - margin, y, { align: 'right' }); y += 7;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
+      if (paid > 0) {
+        doc.setTextColor(16, 185, 129);
+        doc.text('Payé', boxX, y);
+        doc.text(formatEuro(paid), pageW - margin, y, { align: 'right' }); y += 5;
+      }
+      if (remaining > 0 && paid > 0) {
+        doc.setTextColor(245, 158, 11);
+        doc.text('Reste à payer', boxX, y);
+        doc.text(formatEuro(remaining), pageW - margin, y, { align: 'right' }); y += 5;
+      }
+      doc.setTextColor(30);
+
+      if ($('#invoiceNotes').value) {
+        y = Math.max(y, doc.lastAutoTable.finalY + 40);
+        doc.setFillColor(248, 250, 252); doc.roundedRect(margin, y, pageW - margin * 2, 20, 2, 2, 'F');
+        doc.setFontSize(8); doc.setTextColor(100);
+        doc.text('Notes / conditions', margin + 3, y + 5);
+        doc.setTextColor(60);
+        const split = doc.splitTextToSize($('#invoiceNotes').value, pageW - margin * 2 - 6);
+        doc.text(split, margin + 3, y + 10);
+        y += 25;
+      }
+
+      const ins = state.settings.company.insurance || {};
+      if (ins.name || ins.policy || ins.coverage) {
+        y = Math.max(y + 5, doc.lastAutoTable.finalY + 50);
+        doc.setFontSize(7.5); doc.setTextColor(120);
+        let line = 'Assurance professionnelle';
+        if (ins.name) line += ` : ${ins.name}`;
+        if (ins.policy) line += ` — Police n° ${ins.policy}`;
+        if (ins.coverage) line += ` — Couverture : ${ins.coverage}`;
+        const split = doc.splitTextToSize(line, pageW - margin * 2);
+        doc.text(split, margin, y);
+        y += split.length * 3.5 + 3;
+      }
+
+      if (state.currentSignature) {
+        y = Math.max(y + 10, doc.lastAutoTable.finalY + 60);
+        doc.setFontSize(8); doc.setTextColor(100); doc.text('Signature du client', pageW - margin, y, { align: 'right' });
+        try {
+          doc.addImage(state.currentSignature, 'PNG', pageW - margin - 60, y + 3, 60, 25);
+        } catch {}
+      }
+
+      doc.setFontSize(7); doc.setTextColor(150);
+      doc.text(`Devis généré par DevisPro · ${new Date().toLocaleDateString('fr-FR')}`, pageW/2, 290, { align: 'center' });
+
+      doc.save(`Devis_${$('#invoiceNumber').value || 'export'}.pdf`);
+      toast('PDF exporté');
+    }
+
+    function hexToRgb(hex) {
+      const h = hex.replace('#', '');
+      return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
+    }
+
+    function printDevis() {
+      const clientId = $('#clientSelect').value;
+      const client = state.clients.find(c => c.id === clientId);
+      let ht = 0, tva = 0;
+      let rows = '';
+      state.currentItems.forEach(i => {
+        const lh = (i.quantity || 0) * (i.unitPrice || 0);
+        ht += lh; tva += lh * ((i.tva || 0) / 100);
+        rows += `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${i.quantity}</td><td style="text-align:right">${formatEuro(i.unitPrice)}</td><td style="text-align:center">${i.tva}%</td><td style="text-align:right">${formatEuro(lh)}</td></tr>`;
+      });
+      const totalTTC = ht + tva;
+      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
+      const remaining = Math.max(0, totalTTC - paid);
+      const logoHtml = state.settings.company.logo ? `<img src="${state.settings.company.logo}" style="max-height:60px; max-width:150px; object-fit:contain; margin-bottom:8px;">` : '';
+      const accent = state.settings.accent || '#6366f1';
+      const validityDate = computeValidityDate($('#invoiceDate').value, $('#validityDays').value);
+      const ins = state.settings.company.insurance || {};
+      let insuranceHtml = '';
+      if (ins.name || ins.policy || ins.coverage) {
+        insuranceHtml = `<div style="margin-top:20px; padding:10px; background:#f8fafc; border-radius:6px; font-size:11px; color:#64748b;"><strong>Assurance professionnelle</strong> : ${escapeHtml(ins.name || '')}${ins.policy ? ' — Police n° ' + escapeHtml(ins.policy) : ''}${ins.coverage ? ' — Couverture : ' + escapeHtml(ins.coverage) : ''}</div>`;
+      }
+      let vatMention = '';
+      if (state.settings.company.vatRegime === 'franchise') {
+        vatMention = `<div style="font-size:11px; color:#64748b; margin-top:8px;">TVA non applicable, art. 293 B du CGI</div>`;
+      }
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html><head><title>Devis ${escapeHtml($('#invoiceNumber').value)}</title>
+        <style>* { box-sizing: border-box; }
+        body { font-family: 'Inter', Arial, sans-serif; padding: 40px; color: #0f172a; max-width: 800px; margin: auto; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid ${accent}; padding-bottom: 20px; gap: 20px; flex-wrap: wrap; }
+        .header .company strong { color: ${accent}; font-size: 18px; display: block; margin-bottom: 6px; }
+        .header .company, .header .client { font-size: 13px; }
+        .header .client { text-align: right; }
+        .header .client strong { color: #0f172a; display: block; font-size: 15px; margin-bottom: 4px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: ${accent}; color: white; padding: 10px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+        .totals { margin-left: auto; width: 320px; margin-top: 20px; }
+        .totals div { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+        .totals .total { border-top: 2px solid #0f172a; font-weight: 800; font-size: 18px; padding-top: 12px; color: ${accent}; }
+        .totals .paid { color: #10b981; font-weight: 600; }
+        .totals .remaining { color: #f59e0b; font-weight: 600; }
+        .notes { margin-top: 40px; padding: 15px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #64748b; }
+        .signature { margin-top: 40px; text-align: right; }
+        .signature img { max-height: 80px; border: 1px dashed #cbd5e1; padding: 5px; border-radius: 6px; }
+        .signature .label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+        .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        @media (max-width: 600px) {
+          body { padding: 15px; }
+          .header .client { text-align: left; }
+          .totals { width: 100%; }
+        }
+        </style></head><body>
+        <div class="header">
+          <div class="company">${logoHtml}<strong>${escapeHtml(state.settings.company.name || 'Mon entreprise')}</strong>${escapeHtml(state.settings.company.address || '').replace(/\n/g, '<br>')}<br>${state.settings.company.email ? escapeHtml(state.settings.company.email) + '<br>' : ''}${state.settings.company.phone ? escapeHtml(state.settings.company.phone) : ''}${state.settings.company.siret ? '<br>SIRET : ' + escapeHtml(state.settings.company.siret) : ''}${vatMention}</div>
+          <div class="client"><strong>Devis ${escapeHtml($('#invoiceNumber').value)}</strong>${formatDate($('#invoiceDate').value)}${validityDate ? '<br>Valable jusqu\'au ' + formatDate(validityDate) : ''}<br>Statut: ${$('#invoiceStatus').value}<br><br><strong>Client</strong>${escapeHtml(client?.name || '—')}<br>${escapeHtml(client?.email || '')}<br>${escapeHtml(client?.address || '').replace(/\n/g, '<br>')}</div>
+        </div>
+        <table><thead><tr><th>Désignation</th><th style="text-align:center">Qté</th><th style="text-align:right">Prix HT</th><th style="text-align:center">TVA</th><th style="text-align:right">Total HT</th></tr></thead><tbody>${rows}</tbody></table>
+        <div class="totals">
+          <div><span>Total HT</span><span>${formatEuro(ht)}</span></div>
+          <div><span>TVA</span><span>${formatEuro(tva)}</span></div>
+          <div class="total"><span>Total TTC</span><span>${formatEuro(totalTTC)}</span></div>
+          ${paid > 0 ? `<div class="paid"><span>Acompte / payé</span><span>${formatEuro(paid)}</span></div>` : ''}
+          ${paid > 0 && remaining > 0 ? `<div class="remaining"><span>Reste à payer</span><span>${formatEuro(remaining)}</span></div>` : ''}
+        </div>
+        ${$('#invoiceNotes').value ? `<div class="notes"><strong>Notes :</strong><br>${escapeHtml($('#invoiceNotes').value).replace(/\n/g, '<br>')}</div>` : ''}
+        ${insuranceHtml}
+        ${state.currentSignature ? `<div class="signature"><div class="label">Signature du client</div><img src="${state.currentSignature}" alt="Signature"></div>` : ''}
+        <div class="footer">Devis généré par DevisPro · ${new Date().toLocaleDateString('fr-FR')}</div>
+        </body></html>
+      `);
+      win.document.close();
+      setTimeout(() => win.print(), 300);
+    }
+
+    function getReportData() {
+      const from = $('#reportFrom').value;
+      const to = $('#reportTo').value;
+      const status = $('#reportStatus').value;
+      return state.devis.filter(d => {
+        if (from && d.date < from) return false;
+        if (to && d.date > to) return false;
+        if (status && d.status !== status) return false;
+        return true;
+      }).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    }
+
+    function renderReports() {
+      if (!$('#reportFrom').value) {
+        const now = new Date();
+        const first = new Date(now.getFullYear(), now.getMonth(), 1);
+        $('#reportFrom').value = first.toISOString().split('T')[0];
+        $('#reportTo').value = todayISO();
+      }
+
+      const data = getReportData();
+      const ht = data.reduce((s, d) => s + devisTotalHT(d), 0);
+      const tva = data.reduce((s, d) => s + devisTotalTVA(d), 0);
+      const ttc = ht + tva;
+
+      $('#repCount').textContent = data.length;
+      $('#repHT').textContent = formatEuro(ht);
+      $('#repTVA').textContent = formatEuro(tva);
+      $('#repTTC').textContent = formatEuro(ttc);
+
+      const body = $('#reportBody');
+      if (data.length === 0) {
+        body.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:1.5rem; color:var(--text-light);">Aucun devis sur cette période</td></tr>`;
+        return;
+      }
+      body.innerHTML = data.map(d => `
+        <tr>
+          <td data-label="N°">${escapeHtml(d.number || '—')}</td>
+          <td data-label="Date">${formatDate(d.date)}</td>
+          <td data-label="Client">${escapeHtml(d.clientName || '—')}</td>
+          <td data-label="Statut"><span class="status-badge status-${d.status || 'brouillon'}">${d.status || 'brouillon'}</span></td>
+          <td data-label="HT" style="text-align:right">${formatEuro(devisTotalHT(d))}</td>
+          <td data-label="TVA" style="text-align:right">${formatEuro(devisTotalTVA(d))}</td>
+          <td data-label="TTC" style="text-align:right"><strong>${formatEuro(devisTotalTTC(d))}</strong></td>
+        </tr>
+      `).join('');
+    }
+
+    function exportCSV() {
+      const data = getReportData();
+      if (data.length === 0) { toast('Aucun devis à exporter', 'warning'); return; }
+      const headers = ['Numero', 'Date', 'ValiditeJours', 'Client', 'Statut', 'TotalHT', 'TVA', 'TotalTTC', 'Paye', 'ResteAPayer'];
+      const rows = data.map(d => {
+        const ht = devisTotalHT(d);
+        const tva = devisTotalTVA(d);
+        const ttc = ht + tva;
+        const paid = (d.payments || []).reduce((s, p) => s + p.amount, 0);
+        return [d.number || '', d.date || '', d.validityDays || '', d.clientName || '', d.status || '', ht.toFixed(2), tva.toFixed(2), ttc.toFixed(2), paid.toFixed(2), (ttc - paid).toFixed(2)];
+      });
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `devis-export-${$('#reportFrom').value}_${$('#reportTo').value}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('CSV exporté');
+    }
+
+    function exportReportPDF() {
+      const data = getReportData();
+      if (data.length === 0) { toast('Aucun devis à exporter', 'warning'); return; }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const accent = hexToRgb(state.settings.accent || '#6366f1');
+
+      doc.setFillColor(accent[0], accent[1], accent[2]);
+      doc.rect(0, 0, 210, 4, 'F');
+      doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
+      doc.text('Rapport comptable', 15, 20);
+      doc.setFontSize(9); doc.setTextColor(100); doc.setFont(undefined, 'normal');
+      doc.text(`Période : ${formatDate($('#reportFrom').value)} → ${formatDate($('#reportTo').value)}`, 15, 27);
+      doc.text(`Généré le ${new Date().toLocaleString('fr-FR')}`, 15, 32);
+
+      const ht = data.reduce((s, d) => s + devisTotalHT(d), 0);
+      const tva = data.reduce((s, d) => s + devisTotalTVA(d), 0);
+      const ttc = ht + tva;
+
+      doc.setFontSize(10); doc.setTextColor(0); doc.setFont(undefined, 'bold');
+      doc.text(`Nombre de devis : ${data.length}`, 15, 45);
+      doc.text(`Total HT : ${formatEuro(ht)}`, 15, 52);
+      doc.text(`TVA collectée : ${formatEuro(tva)}`, 15, 59);
+      doc.setTextColor(accent[0], accent[1], accent[2]);
+      doc.text(`Total TTC : ${formatEuro(ttc)}`, 15, 66);
+
+      const rows = data.map(d => [d.number || '', formatDate(d.date), d.clientName || '', d.status || '', formatEuro(devisTotalHT(d)), formatEuro(devisTotalTVA(d)), formatEuro(devisTotalTTC(d))]);
+      doc.autoTable({
+        startY: 75,
+        head: [['N°', 'Date', 'Client', 'Statut', 'HT', 'TVA', 'TTC']],
+        body: rows,
+        theme: 'grid',
+        headStyles: { fillColor: accent, textColor: 255, fontSize: 8 },
+        bodyStyles: { fontSize: 7.5 },
+        columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } }
+      });
+
+      doc.save(`rapport-${$('#reportFrom').value}_${$('#reportTo').value}.pdf`);
+      toast('Rapport PDF exporté');
+    }
+
+    function renderTrash() {
+      const list = $('#trashList');
+      const total = state.trash.devis.length + state.trash.clients.length;
+      if (total === 0) {
+        list.innerHTML = `<div class="empty"><i class="fas fa-trash-can"></i><h3>Corbeille vide</h3><p>Les éléments supprimés apparaîtront ici</p></div>`;
+        return;
+      }
+      let html = '';
+      if (state.trash.devis.length > 0) {
+        html += `<div class="section-title" style="margin-top:0.75rem;"><i class="fas fa-file-invoice"></i> Devis (${state.trash.devis.length})</div>`;
+        html += state.trash.devis.map(d => `
+          <div class="trash-item">
+            <div class="info">
+              <div class="title">${escapeHtml(d.number || 'Sans numéro')}</div>
+              <div class="meta">${escapeHtml(d.clientName || '—')} · ${formatEuro(devisTotalTTC(d))} · supprimé le ${new Date(d.deletedAt).toLocaleDateString('fr-FR')}</div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-outline btn-sm" data-restore-devis="${d.id}"><i class="fas fa-undo"></i> Restaurer</button>
+              <button class="btn btn-danger btn-sm" data-purge-devis="${d.id}"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      if (state.trash.clients.length > 0) {
+        html += `<div class="section-title" style="margin-top:1rem;"><i class="fas fa-users"></i> Clients (${state.trash.clients.length})</div>`;
+        html += state.trash.clients.map(c => `
+          <div class="trash-item">
+            <div class="info">
+              <div class="title">${escapeHtml(c.name || 'Sans nom')}</div>
+              <div class="meta">${escapeHtml(c.email || '—')} · supprimé le ${new Date(c.deletedAt).toLocaleDateString('fr-FR')}</div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-outline btn-sm" data-restore-client="${c.id}"><i class="fas fa-undo"></i> Restaurer</button>
+              <button class="btn btn-danger btn-sm" data-purge-client="${c.id}"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      list.innerHTML = html;
+
+      list.querySelectorAll('[data-restore-devis]').forEach(b => b.addEventListener('click', () => {
+        const id = b.dataset.restoreDevis;
+        const d = state.trash.devis.find(x => x.id === id);
+        if (!d) return;
+        const restored = { ...d }; delete restored.deletedAt;
+        state.devis.push(restored);
+        state.trash.devis = state.trash.devis.filter(x => x.id !== id);
+        Storage.saveDevis(state.devis); Storage.saveTrash(state.trash);
+        updateBadges(); renderTrash();
+        toast('Devis restauré');
+      }));
+      list.querySelectorAll('[data-purge-devis]').forEach(b => b.addEventListener('click', () => {
+        if (!confirm('Supprimer définitivement ?')) return;
+        const id = b.dataset.purgeDevis;
+        state.trash.devis = state.trash.devis.filter(x => x.id !== id);
+        Storage.saveTrash(state.trash);
+        updateBadges(); renderTrash();
+        toast('Supprimé définitivement');
+      }));
+      list.querySelectorAll('[data-restore-client]').forEach(b => b.addEventListener('click', () => {
+        const id = b.dataset.restoreClient;
+        const c = state.trash.clients.find(x => x.id === id);
+        if (!c) return;
+        const restored = { ...c }; delete restored.deletedAt;
+        state.clients.push(restored);
+        state.trash.clients = state.trash.clients.filter(x => x.id !== id);
+        Storage.saveClients(state.clients); Storage.saveTrash(state.trash);
+        updateBadges(); renderTrash();
+        toast('Client restauré');
+      }));
+      list.querySelectorAll('[data-purge-client]').forEach(b => b.addEventListener('click', () => {
+        if (!confirm('Supprimer définitivement ?')) return;
+        const id = b.dataset.purgeClient;
+        state.trash.clients = state.trash.clients.filter(x => x.id !== id);
+        Storage.saveTrash(state.trash);
+        updateBadges(); renderTrash();
+        toast('Supprimé définitivement');
+      }));
+    }
+
+    function emptyTrash() {
+      if (!confirm('Vider entièrement la corbeille ? Action irréversible.')) return;
+      state.trash = { clients: [], devis: [] };
+      Storage.saveTrash(state.trash);
+      updateBadges(); renderTrash();
+      toast('Corbeille vidée');
+    }
+
+    function openSearchModal() {
+      $('#searchModal').classList.add('active');
+      $('#globalSearchInput').value = '';
+      renderGlobalResults('');
+      setTimeout(() => $('#globalSearchInput').focus(), 100);
+    }
+    function closeSearchModal() { $('#searchModal').classList.remove('active'); }
+
+    function renderGlobalResults(query) {
+      const container = $('#globalSearchResults');
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        container.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-light); font-size:0.85rem;"><i class="fas fa-keyboard" style="font-size:1.5rem; margin-bottom:0.4rem; display:block;"></i>Tapez pour rechercher</div>`;
+        return;
+      }
+      const clients = state.clients.filter(c => (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q)).slice(0, 5);
+      const devis = state.devis.filter(d => (d.number || '').toLowerCase().includes(q) || (d.clientName || '').toLowerCase().includes(q)).slice(0, 5);
+      const catalog = state.catalog.filter(c => (c.name || '').toLowerCase().includes(q)).slice(0, 5);
+
+      let html = '';
+      if (clients.length > 0) {
+        html += `<div class="search-category">Clients</div>`;
+        html += clients.map(c => `<div class="search-result" data-search-type="client" data-id="${c.id}"><i class="fas fa-user"></i><span>${escapeHtml(c.name)}</span></div>`).join('');
+      }
+      if (devis.length > 0) {
+        html += `<div class="search-category">Devis</div>`;
+        html += devis.map(d => `<div class="search-result" data-search-type="devis" data-id="${d.id}"><i class="fas fa-file-invoice"></i><span>${escapeHtml(d.number)} — ${escapeHtml(d.clientName || '')}</span></div>`).join('');
+      }
+      if (catalog.length > 0) {
+        html += `<div class="search-category">Catalogue</div>`;
+        html += catalog.map(c => `<div class="search-result" data-search-type="catalog" data-id="${c.id}"><i class="fas fa-box"></i><span>${escapeHtml(c.name)} — ${formatEuro(c.price)}</span></div>`).join('');
+      }
+      if (!html) {
+        html = `<div style="text-align:center; padding:1.5rem; color:var(--text-light); font-size:0.85rem;"><i class="fas fa-search" style="font-size:1.5rem; margin-bottom:0.4rem; display:block;"></i>Aucun résultat</div>`;
+      }
+      container.innerHTML = html;
+
+      container.querySelectorAll('.search-result').forEach(el => {
+        el.addEventListener('click', () => {
+          const type = el.dataset.searchType;
+          const id = el.dataset.id;
+          closeSearchModal();
+          if (type === 'client') {
+            const c = state.clients.find(x => x.id === id);
+            if (c) { navigateTo('devis-list'); $('#devisSearch').value = c.name || ''; renderDevisList(c.name || ''); }
+          } else if (type === 'devis') {
+            openEditor(id);
+          } else if (type === 'catalog') {
+            navigateTo('catalogue');
+            setTimeout(() => { $('#catalogSearch').value = ''; renderCatalogue(); }, 100);
+          }
+        });
+      });
+    }
+
+    function renderSettings() {
+      const s = state.settings;
+      $('#companyNameInput').value = s.company.name || '';
+      $('#companyEmailInput').value = s.company.email || '';
+      $('#companyPhoneInput').value = s.company.phone || '';
+      $('#companyAddressInput').value = s.company.address || '';
+      $('#companySiretInput').value = s.company.siret || '';
+      $('#companyTvaInput').value = s.company.tvaNumber || '';
+      $('#accentColorInput').value = s.accent || '#6366f1';
+      const ins = s.company.insurance || {};
+      $('#insuranceNameInput').value = ins.name || '';
+      $('#insurancePolicyInput').value = ins.policy || '';
+      $('#insuranceCoverageInput').value = ins.coverage || '';
+      $('#vatRegimeInput').value = s.company.vatRegime || 'normal';
+
+      const preview = $('#logoPreview');
+      if (s.company.logo) preview.innerHTML = `<img src="${s.company.logo}" alt="logo">`;
+      else preview.innerHTML = '<i class="fas fa-image"></i>';
+
+      const btn = $('#themeToggleBtn');
+      btn.innerHTML = s.dark ? '<i class="fas fa-sun"></i> Désactiver' : '<i class="fas fa-moon"></i> Activer';
+      const tbtn = $('#tabletToggleBtn');
+      tbtn.innerHTML = s.tablet ? '<i class="fas fa-mobile-alt"></i> Désactiver' : '<i class="fas fa-tablet-alt"></i> Activer';
+      const abtn = $('#autosaveToggleBtn');
+      abtn.innerHTML = s.autosave ? '<i class="fas fa-toggle-on" style="color:var(--success);"></i> Activée' : '<i class="fas fa-toggle-off"></i> Désactivée';
+
+      if (s.pin) {
+        $('#pinSettingInput').value = '';
+        $('#pinSettingInput').placeholder = '•••• (défini)';
+        $('#removePinBtn').style.display = '';
+      } else {
+        $('#pinSettingInput').placeholder = '4-8 chiffres';
+        $('#removePinBtn').style.display = 'none';
+      }
+    }
+
+    function saveSettings() {
+      state.settings.company = {
+        name: $('#companyNameInput').value.trim(),
+        email: $('#companyEmailInput').value.trim(),
+        phone: $('#companyPhoneInput').value.trim(),
+        address: $('#companyAddressInput').value.trim(),
+        logo: state.settings.company.logo || '',
+        siret: $('#companySiretInput').value.trim(),
+        tvaNumber: $('#companyTvaInput').value.trim(),
+        insurance: {
+          name: $('#insuranceNameInput').value.trim(),
+          policy: $('#insurancePolicyInput').value.trim(),
+          coverage: $('#insuranceCoverageInput').value.trim()
+        },
+        vatRegime: $('#vatRegimeInput').value
+      };
+      state.settings.accent = $('#accentColorInput').value;
+      Storage.saveSettings(state.settings);
+      applyTheme();
+      toast('Paramètres enregistrés');
+    }
+
+    function handleLogoUpload(file) {
+      if (!file) return;
+      if (file.size > 500000) { toast('Logo trop lourd (max 500 Ko)', 'error'); return; }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.settings.company.logo = e.target.result;
+        Storage.saveSettings(state.settings);
+        renderSettings();
+        toast('Logo chargé');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeLogo() {
+      state.settings.company.logo = '';
+      Storage.saveSettings(state.settings);
+      renderSettings();
+      toast('Logo retiré');
+    }
+
+    function savePin() {
+      const pin = $('#pinSettingInput').value.trim();
+      if (!/^\d{4,8}$/.test(pin)) { toast('PIN : 4 à 8 chiffres', 'error'); return; }
+      state.settings.pin = pin;
+      Storage.saveSettings(state.settings);
+      renderSettings();
+      toast('PIN défini');
+    }
+
+    function removePin() {
+      if (!confirm('Retirer le code PIN ?')) return;
+      state.settings.pin = null;
+      Storage.saveSettings(state.settings);
+      renderSettings();
+      toast('PIN retiré');
+    }
+
+    function lockApp() {
+      if (!state.settings.pin) { toast('Aucun PIN défini', 'warning'); return; }
+      $('#lockScreen').classList.add('active');
+      $('#lockPinInput').value = '';
+      setTimeout(() => $('#lockPinInput').focus(), 100);
+    }
+
+    function unlockApp() {
+      const input = $('#lockPinInput').value;
+      if (input === state.settings.pin) {
+        $('#lockScreen').classList.remove('active');
+        $('#lockPinInput').value = '';
+      } else {
+        toast('PIN incorrect', 'error');
+        $('#lockPinInput').value = '';
+      }
+    }
+
+    function updateBadges() {
+      $('#devisCountBadge').textContent = state.devis.length;
+      $('#clientsCountBadge').textContent = state.clients.length;
+      $('#catalogCountBadge').textContent = state.catalog.length;
+      $('#trashCountBadge').textContent = state.trash.devis.length + state.trash.clients.length;
+    }
+
+    function exportAll() {
+      const data = {
+        clients: state.clients, devis: state.devis, catalog: state.catalog,
+        trash: state.trash, settings: state.settings, exportedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `devispro-backup-${todayISO()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('Sauvegarde exportée');
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data.clients || !data.devis) throw new Error('Format invalide');
+          if (confirm(`Importer ${data.clients.length} clients, ${data.devis.length} devis ? Cela remplacera vos données actuelles.`)) {
+            state.clients = data.clients;
+            state.devis = data.devis;
+            if (data.catalog) state.catalog = data.catalog;
+            if (data.trash) state.trash = data.trash;
+            if (data.settings) state.settings = data.settings;
+            Storage.saveClients(state.clients);
+            Storage.saveDevis(state.devis);
+            Storage.saveCatalog(state.catalog);
+            Storage.saveTrash(state.trash);
+            Storage.saveSettings(state.settings);
+            updateBadges();
+            applyTheme();
+            navigateTo('devis-list');
+            toast('Données importées');
+          }
+        } catch { toast('Fichier invalide', 'error'); }
+      };
+      reader.readAsText(file);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      updateBadges();
+      updateClientSelect();
+
+      $$('.nav-item[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => navigateTo(btn.dataset.view));
+      });
+
+      $('#newClientBtn').addEventListener('click', () => openClientModal());
+      $('#saveClientBtn').addEventListener('click', saveClient);
+
+      $('#newCatalogBtn').addEventListener('click', () => openCatalogModal());
+      $('#saveCatalogBtn').addEventListener('click', saveCatalogItem);
+      $('#catalogSearch').addEventListener('input', (e) => renderCatalogue(e.target.value));
+      $('#importCatalogBtn').addEventListener('click', () => {
+        const inp = document.createElement('input');
+        inp.type = 'file'; inp.accept = '.csv';
+        inp.onchange = (e) => { if (e.target.files[0]) importCatalogCSV(e.target.files[0]); };
+        inp.click();
+      });
+      $('#openCatalogBtn').addEventListener('click', () => openCatalogPicker());
+      $('#catalogPickerSearch').addEventListener('input', (e) => renderCatalogPicker(e.target.value));
+
+      $('#addItemBtn').addEventListener('click', () => {
+        state.currentItems.push({ id: uid(), description: '', quantity: 1, unitPrice: 0, tva: 20 });
+        renderItems(); updateSummary(); updatePaymentsSummary();
+      });
+      $('#saveBtn').addEventListener('click', saveCurrentDevis);
+      $('#pdfBtn').addEventListener('click', exportPDF);
+      $('#printBtn').addEventListener('click', printDevis);
+      $('#emailBtn').addEventListener('click', sendEmail);
+      $('#historyBtn').addEventListener('click', openHistoryModal);
+      $('#duplicateBtn').addEventListener('click', () => {
+        if (!state.currentDevisId) { toast('Enregistrez d\'abord le devis', 'warning'); return; }
+        const original = state.devis.find(d => d.id === state.currentDevisId);
+        if (!original) return;
+        const copy = JSON.parse(JSON.stringify(original));
+        copy.id = uid();
+        copy.number = (original.number || 'DEV') + '-COPIE';
+        copy.createdAt = Date.now(); copy.updatedAt = Date.now();
+        copy.status = 'brouillon'; copy.history = []; copy.signature = null; copy.payments = [];
+        state.devis.push(copy);
+        Storage.saveDevis(state.devis);
+        updateBadges();
+        openEditor(copy.id);
+        toast('Devis dupliqué');
+      });
+      $('#cancelEditBtn').addEventListener('click', () => {
+        if (confirm('Annuler les modifications en cours ?')) {
+          state.currentDevisId = null;
+          stopAutosave();
+          Storage.saveDraft(null);
+          navigateTo('devis-list');
+        }
+      });
+
+      $('#addPaymentBtn').addEventListener('click', addPayment);
+      $('#clearSignatureBtn').addEventListener('click', clearSignature);
+      $('#saveSignatureBtn').addEventListener('click', saveSignature);
+      $('#invoiceDate').addEventListener('change', updateValidityInfo);
+      $('#validityDays').addEventListener('input', updateValidityInfo);
+
+      $('#devisSearch').addEventListener('input', (e) => renderDevisList(e.target.value));
+
+      ['reportFrom', 'reportTo', 'reportStatus'].forEach(id => $('#' + id).addEventListener('change', renderReports));
+      $('#exportCSVBtn').addEventListener('click', exportCSV);
+      $('#exportReportPDFBtn').addEventListener('click', exportReportPDF);
+
+      $('#emptyTrashBtn').addEventListener('click', emptyTrash);
+
+      $('#themeToggleBtn').addEventListener('click', toggleTheme);
+      $('#tabletToggleBtn').addEventListener('click', toggleTablet);
+      $('#autosaveToggleBtn').addEventListener('click', toggleAutosave);
+      $('#saveSettingsBtn').addEventListener('click', saveSettings);
+      $('#logoInput').addEventListener('change', (e) => handleLogoUpload(e.target.files[0]));
+      $('#removeLogoBtn').addEventListener('click', removeLogo);
+      $('#savePinBtn').addEventListener('click', savePin);
+      $('#removePinBtn').addEventListener('click', removePin);
+
+      $('#lockNowBtn').addEventListener('click', lockApp);
+      $('#unlockBtn').addEventListener('click', unlockApp);
+      $('#lockPinInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockApp(); });
+
+      $('#exportAllBtn').addEventListener('click', exportAll);
+      $('#importBtn').addEventListener('click', () => $('#importFile').click());
+      $('#importFile').addEventListener('change', (e) => {
+        if (e.target.files[0]) importData(e.target.files[0]);
+        e.target.value = '';
+      });
+
+      $('#searchHintBtn').addEventListener('click', openSearchModal);
+      $('#globalSearchInput').addEventListener('input', (e) => renderGlobalResults(e.target.value));
+
+      ['clientModal', 'catalogModal', 'catalogPickerModal', 'historyModal', 'searchModal'].forEach(id => {
+        const el = $('#' + id);
+        if (el) el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          openSearchModal();
+        }
+        if (e.key === 'Escape') {
+          ['clientModal','catalogModal','catalogPickerModal','historyModal','searchModal'].forEach(id => $('#'+id).classList.remove('active'));
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 's' && state.currentView === 'editor') {
+          e.preventDefault();
+          saveCurrentDevis();
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (state.currentView === 'editor' && $('#signaturePad')) {
+          const existing = state.currentSignature;
+          initSignaturePad();
+          state.currentSignature = existing;
+        }
+      });
+
+      navigateTo('devis-list');
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('activate', e => self.clients.claim());
+          self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+        `)).catch(() => {});
+      });
+    }
+
+    window.closeClientModal = closeClientModal;
+    window.closeCatalogModal = closeCatalogModal;
+    window.closeCatalogPicker = closeCatalogPicker;
+    window.closeHistoryModal = closeHistoryModal;
+  </script>
+</body>
+</html>
