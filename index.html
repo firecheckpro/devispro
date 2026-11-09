@@ -49,6 +49,7 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
       --safe-right: env(safe-area-inset-right, 0px);
+      --sidebar-w: 260px;
     }
 
     body.dark {
@@ -95,7 +96,7 @@
       max-width: 1600px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
+      grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
       gap: var(--gap);
       min-height: calc(100vh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
       min-height: calc(100dvh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
@@ -254,6 +255,24 @@
       flex-wrap: wrap;
       min-width: 0;
     }
+
+    .burger-btn {
+      display: none;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 1.15rem;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: 0.15s;
+    }
+    .burger-btn:hover { background: var(--border); }
+    .burger-btn:active { transform: scale(0.95); }
 
     .page-title { min-width: 0; flex: 1 1 200px; }
     .page-title h1 {
@@ -471,6 +490,8 @@
       color: var(--text);
     }
     .summary-line.total .value { color: var(--accent); }
+    .summary-line.sub { font-size: 0.78rem; color: var(--text-light); padding: 0.2rem 0 0.2rem 0.75rem; }
+    .summary-line.sub .value { font-weight: 500; color: var(--text-muted); }
 
     .clients-grid {
       display: grid;
@@ -603,6 +624,19 @@
       flex-wrap: wrap;
     }
 
+    .confirm-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 1.75rem);
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4);
+      animation: slideUp 0.2s ease;
+    }
+    .confirm-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .confirm-box p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.25rem; }
+    .confirm-box .actions { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; }
+
     .toast-container {
       position: fixed;
       bottom: calc(1rem + var(--safe-bottom));
@@ -730,6 +764,18 @@
     .catalog-item .meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
     .catalog-item .add { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
 
+    .catalog-cat-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.45rem;
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      margin-left: 0.35rem;
+    }
+
     .search-input-wrap { position: relative; margin-bottom: 0.75rem; }
     .search-input-wrap i {
       position: absolute;
@@ -760,7 +806,7 @@
       transition: 0.15s;
       word-break: break-word;
     }
-    .search-result:hover { background: var(--bg); }
+    .search-result:hover, .search-result.active { background: var(--bg); }
     .search-result i { color: var(--accent); width: 20px; flex-shrink: 0; }
 
     .trash-item {
@@ -932,45 +978,137 @@
       .settings-actionbar .btn { flex: 0 0 auto; }
     }
 
+    .drag-handle {
+      cursor: grab;
+      color: var(--text-light);
+      padding: 0.4rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      min-width: 32px;
+      min-height: 32px;
+      border: none;
+      background: transparent;
+    }
+    .drag-handle:active { cursor: grabbing; }
+    tr.dragging { opacity: 0.5; background: var(--bg); }
+    tr.drag-over { border-top: 2px solid var(--accent); }
+
+    .item-move-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .item-move-btns button {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      min-width: 24px;
+    }
+    .item-move-btns button:hover { background: var(--bg); color: var(--accent); }
+    .item-move-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.55);
+      backdrop-filter: blur(2px);
+      z-index: 1400;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .drawer-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
     @media (max-width: 1100px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar {
-        position: relative;
-        top: 0;
-        max-height: none;
-        padding: 0.75rem;
-        overflow: visible;
+      .app {
+        grid-template-columns: 1fr;
       }
-      .logo { padding: 0 0.25rem 0.75rem; margin-bottom: 0.5rem; }
+      .burger-btn { display: inline-flex; }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(320px, 85vw);
+        max-height: 100vh;
+        max-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 1500;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: calc(var(--pad) + var(--safe-top) + 0.5rem) var(--pad) calc(var(--pad) + var(--safe-bottom));
+        transform: translateX(-110%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 30px -10px rgba(0,0,0,0.3);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        will-change: transform;
+        margin: 0;
+      }
+      .sidebar.drawer-open {
+        transform: translateX(0);
+      }
       .sidebar nav {
         display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        gap: 0.4rem;
-        padding-bottom: 0.4rem;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
+        flex-direction: column;
+        overflow: visible;
+        gap: 0;
+        padding-bottom: 0;
       }
-      .sidebar nav::-webkit-scrollbar { height: 4px; }
       .sidebar nav .nav-section {
         display: flex;
-        flex-direction: row;
-        gap: 0.4rem;
-        margin-bottom: 0;
-        flex-shrink: 0;
+        flex-direction: column;
+        gap: 0;
+        margin-bottom: 1rem;
+        flex-shrink: 1;
       }
-      .sidebar nav .nav-title { display: none; }
+      .sidebar nav .nav-title { display: block; }
       .sidebar nav .nav-item {
-        width: auto;
-        margin-bottom: 0;
+        width: 100%;
+        margin-bottom: 0.2rem;
         flex-shrink: 0;
-        padding: 0.6rem 0.85rem;
-        font-size: 0.82rem;
+        padding: 0.7rem 0.75rem;
+        font-size: 0.9rem;
       }
-      .sidebar nav .nav-item .badge { margin-left: 0.35rem; }
+      .sidebar nav .nav-item .badge { margin-left: auto; }
       .lock-btn { margin-top: 0.5rem; }
-      .sidebar-footer { display: none; }
+      .sidebar-footer { display: block; }
+      .logo { padding: 0 0.25rem 0.75rem; margin-bottom: 0.5rem; }
+
+      .drawer-close {
+        display: inline-flex;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        transition: 0.15s;
+        margin-left: auto;
+      }
+      .drawer-close:hover { background: var(--border); }
+
       .editor-layout { grid-template-columns: 1fr; }
+      .logo-text-wrap { flex: 1; }
+    }
+
+    @media (min-width: 1101px) {
+      .drawer-close { display: none; }
+      .drawer-overlay { display: none !important; }
     }
 
     @media (max-width: 640px) {
@@ -995,7 +1133,9 @@
       table, thead, tbody, tr, th, td { display: block; width: 100%; }
       table { border-collapse: collapse; }
       thead { display: none; }
-      tbody tr {
+
+      /* Lignes normales (catalogue, rapports) : empilées avec labels */
+      tbody tr:not(#itemsBody tr) {
         background: var(--bg);
         border: 1px solid var(--border);
         border-radius: 10px;
@@ -1005,7 +1145,7 @@
         flex-direction: column;
         gap: 0.35rem;
       }
-      tbody td {
+      tbody tr:not(#itemsBody tr) td {
         border: none;
         padding: 0.15rem 0;
         display: flex;
@@ -1015,7 +1155,7 @@
         font-size: 0.82rem;
         word-break: break-word;
       }
-      tbody td::before {
+      tbody tr:not(#itemsBody tr) td::before {
         content: attr(data-label);
         font-size: 0.68rem;
         font-weight: 700;
@@ -1024,7 +1164,7 @@
         color: var(--text-muted);
         flex-shrink: 0;
       }
-      tbody td:empty::before { content: ''; }
+      tbody tr:not(#itemsBody tr) td:empty::before { content: ''; }
 
       .input-inline { font-size: 0.85rem; }
       .input-inline.small { max-width: 100%; }
@@ -1046,6 +1186,131 @@
         bottom: calc(var(--safe-bottom) + 0.25rem);
       }
       .settings-actionbar .btn { width: 100%; }
+
+      .confirm-box .actions { flex-direction: column-reverse; }
+      .confirm-box .actions .btn { width: 100%; justify-content: center; }
+
+      /* ==========================================================
+         TABLE ITEMS (lignes de devis) — MODE COMPACT MOBILE
+         Chaque ligne = une carte avec input désignation pleine largeur
+         et 4 mini-champs (Qté/Prix/TVA/Total) en dessous.
+         ========================================================== */
+      #itemsBody {
+        display: block !important;
+        width: 100%;
+      }
+      #itemsBody tr {
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem 0.35rem;
+        padding: 0.6rem !important;
+        background: var(--bg) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        margin-bottom: 0.5rem !important;
+        position: relative;
+      }
+      #itemsBody tr:last-child { margin-bottom: 0 !important; }
+      #itemsBody tr td {
+        border: none !important;
+        padding: 0 !important;
+        display: block !important;
+        width: auto !important;
+        background: transparent;
+      }
+      #itemsBody tr td::before { content: none !important; }
+
+      /* 1. Poignée + boutons ↑↓ + suppr (ordre visuel : après) */
+      #itemsBody tr td:nth-child(1) {
+        flex: 0 0 auto;
+        order: 1;
+      }
+      #itemsBody tr td:nth-child(1) > div {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0.1rem !important;
+      }
+      #itemsBody tr td:nth-child(1) .drag-handle {
+        min-width: 26px;
+        min-height: 26px;
+        padding: 0.15rem;
+      }
+
+      /* 2. Désignation : pleine largeur, prend le reste de la ligne */
+      #itemsBody tr td:nth-child(2) {
+        flex: 1 1 100%;
+        order: 2;
+      }
+      #itemsBody tr td:nth-child(2) input {
+        font-size: 0.9rem !important;
+        font-weight: 600;
+        min-height: 42px;
+        padding: 0.55rem 0.7rem;
+      }
+
+      /* 3. Qté / 4. Prix / 5. TVA / 6. Total : 4 mini-champs sur une ligne */
+      #itemsBody tr td:nth-child(3),
+      #itemsBody tr td:nth-child(4),
+      #itemsBody tr td:nth-child(5),
+      #itemsBody tr td:nth-child(6) {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex !important;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      #itemsBody tr td:nth-child(3) { order: 3; }
+      #itemsBody tr td:nth-child(4) { order: 4; }
+      #itemsBody tr td:nth-child(5) { order: 5; }
+      #itemsBody tr td:nth-child(6) { order: 6; align-items: stretch; }
+
+      #itemsBody tr td:nth-child(3)::before {
+        content: "Qté"; display: block; font-size: 0.6rem; font-weight: 700;
+        color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em;
+      }
+      #itemsBody tr td:nth-child(4)::before {
+        content: "Prix HT"; display: block; font-size: 0.6rem; font-weight: 700;
+        color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em;
+      }
+      #itemsBody tr td:nth-child(5)::before {
+        content: "TVA"; display: block; font-size: 0.6rem; font-weight: 700;
+        color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em;
+      }
+      #itemsBody tr td:nth-child(6)::before {
+        content: "Total"; display: block; font-size: 0.6rem; font-weight: 700;
+        color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em;
+      }
+
+      #itemsBody tr td:nth-child(3) input,
+      #itemsBody tr td:nth-child(4) input,
+      #itemsBody tr td:nth-child(5) select {
+        min-height: 40px !important;
+        font-size: 0.85rem !important;
+        padding: 0.4rem 0.5rem !important;
+      }
+      #itemsBody tr td:nth-child(6) strong {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 40px;
+        padding: 0 0.25rem;
+        font-size: 0.88rem;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      /* 7. Bouton suppression : en haut à droite de la carte */
+      #itemsBody tr td:nth-child(7) {
+        order: 0;
+        margin-left: auto;
+        flex: 0 0 auto;
+      }
+      #itemsBody tr td:nth-child(7) .delete-btn {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 0.3rem;
+      }
     }
 
     @media (max-width: 380px) {
@@ -1068,6 +1333,12 @@
     button, a, .btn, .nav-item, .client-card, .devis-item, .catalog-item {
       touch-action: manipulation;
     }
+
+    #printFrame { position: absolute; width: 0; height: 0; border: 0; visibility: hidden; }
+
+    body.drawer-open {
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -1082,14 +1353,17 @@
     </div>
   </div>
 
+  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="logo">
         <div class="logo-icon"><i class="fas fa-file-invoice-dollar"></i></div>
         <div class="logo-text-wrap">
           <div class="logo-text">Devis<span>Pro</span></div>
-          <span class="app-version" id="appVersion">v2.3</span>
+          <span class="app-version" id="appVersion">v2.6</span>
         </div>
+        <button class="drawer-close" id="drawerCloseBtn" aria-label="Fermer le menu"><i class="fas fa-times"></i></button>
       </div>
 
       <nav>
@@ -1122,6 +1396,9 @@
 
     <main class="main">
       <div class="topbar">
+        <button class="burger-btn" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false">
+          <i class="fas fa-bars"></i>
+        </button>
         <div class="page-title">
           <h1 id="pageTitle">Mes devis</h1>
           <p id="pageSubtitle">Consultez et gérez tous vos devis</p>
@@ -1186,7 +1463,12 @@
               <button class="btn btn-accent btn-sm" id="newCatalogBtn"><i class="fas fa-plus"></i> Nouveau</button>
             </div>
           </div>
-          <input type="text" id="catalogSearch" class="input" placeholder="🔍 Filtrer le catalogue..." style="margin-bottom:0.75rem;" aria-label="Filtrer le catalogue">
+          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:0.5rem; margin-bottom:0.75rem;">
+            <input type="text" id="catalogSearch" class="input" placeholder="🔍 Filtrer le catalogue..." aria-label="Filtrer le catalogue">
+            <select id="catalogCategoryFilter" class="input" aria-label="Filtrer par catégorie">
+              <option value="">Toutes catégories</option>
+            </select>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -1325,6 +1607,7 @@
                 <table>
                   <thead>
                     <tr>
+                      <th style="width:44px;"></th>
                       <th>Désignation</th>
                       <th style="width:70px;">Qté</th>
                       <th style="width:100px;">Prix HT</th>
@@ -1388,7 +1671,7 @@
               <div class="section-title"><i class="fas fa-receipt"></i> Récapitulatif</div>
               <div class="summary" id="summaryBox">
                 <div class="summary-line"><span>Total HT</span><span class="value" id="sumHT">0,00 €</span></div>
-                <div class="summary-line"><span>TVA</span><span class="value" id="sumTVA">0,00 €</span></div>
+                <div id="sumTVABreakdown"></div>
                 <div class="summary-line total"><span>Total TTC</span><span class="value" id="sumTTC">0,00 €</span></div>
               </div>
 
@@ -1424,7 +1707,7 @@
           <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; flex-wrap:wrap; gap:0.75rem;">
             <div>
               <div style="font-weight:600;">Sauvegarde automatique</div>
-              <div style="font-size:0.8rem; color:var(--text-muted);">Toutes les 30 secondes</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Toutes les 30 secondes + debounce sur frappe</div>
             </div>
             <button class="btn btn-outline" id="autosaveToggleBtn"><i class="fas fa-toggle-on"></i> Activée</button>
           </div>
@@ -1551,6 +1834,11 @@
       </div>
       <div style="display:flex; flex-direction:column; gap:0.75rem;">
         <div class="field-group"><label>Désignation *</label><input type="text" id="catalogNameInput" class="input" placeholder="Ex: Développement site vitrine"></div>
+        <div class="field-group">
+          <label>Catégorie</label>
+          <input type="text" id="catalogCategoryInput" class="input" list="catalogCategoryList" placeholder="Ex: Développement, Design…">
+          <datalist id="catalogCategoryList"></datalist>
+        </div>
         <div class="grid-2">
           <div class="field-group"><label>Prix HT</label><input type="number" id="catalogPriceInput" class="input" min="0" step="0.01" value="0"></div>
           <div class="field-group">
@@ -1578,7 +1866,12 @@
         <h2><i class="fas fa-boxes-stacked"></i> Choisir dans le catalogue</h2>
         <button class="modal-close" onclick="closeCatalogPicker()" aria-label="Fermer"><i class="fas fa-times"></i></button>
       </div>
-      <input type="text" id="catalogPickerSearch" class="input" placeholder="🔍 Rechercher..." style="margin-bottom:0.75rem;" aria-label="Rechercher un article">
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:0.5rem; margin-bottom:0.75rem;">
+        <input type="text" id="catalogPickerSearch" class="input" placeholder="🔍 Rechercher..." aria-label="Rechercher un article">
+        <select id="catalogPickerCategory" class="input" aria-label="Filtrer par catégorie">
+          <option value="">Toutes catégories</option>
+        </select>
+      </div>
       <div class="catalog-grid" id="catalogPickerGrid"></div>
     </div>
   </div>
@@ -1607,14 +1900,34 @@
     </div>
   </div>
 
-  <div class="toast-container" id="toastContainer"></div>
+  <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="confirm-box">
+      <h3 id="confirmTitle">Confirmer</h3>
+      <p id="confirmMessage">Êtes-vous sûr ?</p>
+      <div class="actions">
+        <button class="btn btn-outline" id="confirmCancelBtn">Annuler</button>
+        <button class="btn btn-danger" id="confirmOkBtn">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <iframe id="printFrame" title="Impression" aria-hidden="true"></iframe>
 
   <script>
-    const APP_VERSION = '2.3';
+    const APP_VERSION = '2.6';
     const STORAGE_LIMIT_MB = 5;
     const EXPORT_REMINDER_DAYS = 7;
     const PIN_VERIFIER_SALT = 'DevisPro_v2_pin_salt';
     const PBKDF2_ITERATIONS = 10000;
+    const TRASH_RETENTION_DAYS = 30;
+    const PIN_MAX_ATTEMPTS_BEFORE_COOLDOWN = 5;
+    const PIN_COOLDOWN_MS = 60 * 1000;
+    const PIN_MAX_ATTEMPTS_BEFORE_LONG = 10;
+    const PIN_COOLDOWN_LONG_MS = 15 * 60 * 1000;
+    const PIN_ATTEMPTS_KEY = 'devispro_pin_attempts';
+    const DRAFT_DEBOUNCE_MS = 500;
 
     const DEFAULT_KEY = 'DevisPro_NO_PIN_INSECURE_DEFAULT_KEY_v2';
 
@@ -1649,6 +1962,28 @@
 
     let activeKey = DEFAULT_KEY;
 
+    let quotaWarned = false;
+    function safeSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        if (e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014)) {
+          if (!quotaWarned) {
+            quotaWarned = true;
+            toast(
+              'Stockage plein ! Exportez vos données et videz la corbeille.',
+              'error'
+            );
+            setTimeout(() => { quotaWarned = false; }, 10000);
+          }
+          return false;
+        }
+        console.error('Storage error', e);
+        return false;
+      }
+    }
+
     const Storage = {
       KEY_CLIENTS: 'devispro_clients_enc',
       KEY_DEVIS: 'devispro_devis_enc',
@@ -1661,17 +1996,20 @@
       decrypt(str, fallback = null) { return Crypto.decrypt(str, activeKey, fallback); },
 
       loadClients() { return this.decrypt(localStorage.getItem(this.KEY_CLIENTS), []); },
-      saveClients(c) { localStorage.setItem(this.KEY_CLIENTS, this.encrypt(c)); },
+      saveClients(c) { safeSetItem(this.KEY_CLIENTS, this.encrypt(c)); },
       loadDevis() { return this.decrypt(localStorage.getItem(this.KEY_DEVIS), []); },
-      saveDevis(d) { localStorage.setItem(this.KEY_DEVIS, this.encrypt(d)); },
+      saveDevis(d) { safeSetItem(this.KEY_DEVIS, this.encrypt(d)); },
       loadCatalog() { return this.decrypt(localStorage.getItem(this.KEY_CATALOG), []); },
-      saveCatalog(c) { localStorage.setItem(this.KEY_CATALOG, this.encrypt(c)); },
+      saveCatalog(c) { safeSetItem(this.KEY_CATALOG, this.encrypt(c)); },
       loadTrash() { return this.decrypt(localStorage.getItem(this.KEY_TRASH), { clients: [], devis: [] }); },
-      saveTrash(t) { localStorage.setItem(this.KEY_TRASH, this.encrypt(t)); },
+      saveTrash(t) { safeSetItem(this.KEY_TRASH, this.encrypt(t)); },
       loadDraft() { return this.decrypt(localStorage.getItem(this.KEY_DRAFT), null); },
-      saveDraft(d) { if (d) localStorage.setItem(this.KEY_DRAFT, this.encrypt(d)); else localStorage.removeItem(this.KEY_DRAFT); },
+      saveDraft(d) {
+        if (d) safeSetItem(this.KEY_DRAFT, this.encrypt(d));
+        else localStorage.removeItem(this.KEY_DRAFT);
+      },
       loadSettings() { return this.decrypt(localStorage.getItem(this.KEY_SETTINGS), defaultSettings()); },
-      saveSettings(s) { localStorage.setItem(this.KEY_SETTINGS, this.encrypt(s)); }
+      saveSettings(s) { safeSetItem(this.KEY_SETTINGS, this.encrypt(s)); }
     };
 
     function defaultSettings() {
@@ -1703,6 +2041,25 @@
       return total;
     }
 
+    const ConfirmDialog = {
+      resolver: null,
+      open({ title = 'Confirmer', message = 'Êtes-vous sûr ?', okText = 'Confirmer', okClass = 'btn-danger' }) {
+        return new Promise((resolve) => {
+          this.resolver = resolve;
+          $('#confirmTitle').textContent = title;
+          $('#confirmMessage').textContent = message;
+          const okBtn = $('#confirmOkBtn');
+          okBtn.textContent = okText;
+          okBtn.className = 'btn ' + okClass;
+          $('#confirmModal').classList.add('active');
+        });
+      },
+      close(result) {
+        $('#confirmModal').classList.remove('active');
+        if (this.resolver) { this.resolver(result); this.resolver = null; }
+      }
+    };
+
     const UndoStack = {
       stack: [],
       MAX: 50,
@@ -1731,12 +2088,19 @@
       editingCatalogId: null,
       currentView: 'devis-list',
       autosaveTimer: null,
-      loaded: false
+      draftDebounceTimer: null,
+      editorDirty: false,
+      loaded: false,
+      searchActiveIndex: -1,
+      drawerOpen: false
     };
 
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
-    const uid = () => Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    const uid = () => {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return Date.now().toString(36) + Math.random().toString(36).substring(2, 12);
+    };
 
     const escapeHtml = (t) => {
       if (t === null || t === undefined) return '';
@@ -1748,31 +2112,73 @@
       return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n);
     };
 
+    const formatEuroPdf = (a) => formatEuro(a).replace(/\u202f/g, ' ').replace(/\u00a0/g, ' ');
+
     const formatDate = (d) => {
       if (!d) return '—';
       const [y, m, day] = d.split('-');
       return `${day}/${m}/${y}`;
     };
 
-    const todayISO = () => new Date().toISOString().split('T')[0];
+    const todayISO = () => {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
 
     const computeValidityDate = (dateISO, days) => {
       if (!dateISO) return '';
-      const d = new Date(dateISO + 'T00:00:00');
       const n = parseInt(days) || 0;
       if (!n) return '';
+      const parts = dateISO.split('-');
+      if (parts.length !== 3) return '';
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
       d.setDate(d.getDate() + n);
-      return d.toISOString().split('T')[0];
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
     };
 
     const devisTotalTTC = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice) * (1 + it.tva/100), 0);
     const devisTotalHT = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice), 0);
     const devisTotalTVA = (d) => devisTotalTTC(d) - devisTotalHT(d);
 
+    function computeTVABreakdown(items) {
+      const map = {};
+      (items || []).forEach(it => {
+        const rate = Number(it.tva) || 0;
+        const baseHT = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
+        const tva = baseHT * rate / 100;
+        if (!map[rate]) map[rate] = { baseHT: 0, tva: 0 };
+        map[rate].baseHT += baseHT;
+        map[rate].tva += tva;
+      });
+      return Object.keys(map)
+        .map(Number)
+        .sort((a, b) => b - a)
+        .map(rate => ({ rate, ...map[rate] }));
+    }
+
+    function renderTVABreakdown(items, container) {
+      const breakdown = computeTVABreakdown(items);
+      if (breakdown.length === 0) { container.innerHTML = ''; return; }
+      if (breakdown.length === 1) {
+        const b = breakdown[0];
+        container.innerHTML = `<div class="summary-line"><span>TVA (${b.rate}%)</span><span class="value">${formatEuro(b.tva)}</span></div>`;
+        return;
+      }
+      container.innerHTML = `<div class="summary-line"><span>TVA</span><span class="value">${formatEuro(breakdown.reduce((s, b) => s + b.tva, 0))}</span></div>` +
+        breakdown.map(b => `<div class="summary-line sub"><span>dont ${b.rate}% sur ${formatEuro(b.baseHT)}</span><span class="value">${formatEuro(b.tva)}</span></div>`).join('');
+    }
+
     function toast(msg, type = 'success', options = {}) {
       const container = $('#toastContainer');
       const el = document.createElement('div');
       el.className = `toast ${type}`;
+      el.setAttribute('role', 'alert');
       const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-info-circle';
       el.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(msg)}</span>`;
 
@@ -1798,6 +2204,24 @@
       }, timeout);
     }
 
+    function purgeOldTrash() {
+      const cutoff = Date.now() - TRASH_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+      let changed = false;
+      const beforeD = state.trash.devis.length;
+      const beforeC = state.trash.clients.length;
+      state.trash.devis = state.trash.devis.filter(d => {
+        const t = d.deletedAt || Date.now();
+        return t > cutoff;
+      });
+      state.trash.clients = state.trash.clients.filter(c => {
+        const t = c.deletedAt || Date.now();
+        return t > cutoff;
+      });
+      if (state.trash.devis.length !== beforeD || state.trash.clients.length !== beforeC) changed = true;
+      if (changed) Storage.saveTrash(state.trash);
+      return changed;
+    }
+
     function loadAllData() {
       state.clients = Storage.loadClients();
       state.devis = Storage.loadDevis();
@@ -1806,6 +2230,7 @@
       state.settings = Storage.loadSettings();
       state.loaded = true;
       ensureNextNumber();
+      purgeOldTrash();
     }
 
     function ensureNextNumber() {
@@ -1852,6 +2277,29 @@
       toast(`Sauvegarde automatique ${state.settings.autosave ? 'activée' : 'désactivée'}`);
     }
 
+    function openDrawer() {
+      if (state.drawerOpen) return;
+      state.drawerOpen = true;
+      $('#sidebar').classList.add('drawer-open');
+      $('#drawerOverlay').classList.add('active');
+      document.body.classList.add('drawer-open');
+      $('#burgerBtn').setAttribute('aria-expanded', 'true');
+    }
+
+    function closeDrawer() {
+      if (!state.drawerOpen) return;
+      state.drawerOpen = false;
+      $('#sidebar').classList.remove('drawer-open');
+      $('#drawerOverlay').classList.remove('active');
+      document.body.classList.remove('drawer-open');
+      $('#burgerBtn').setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleDrawer() {
+      if (state.drawerOpen) closeDrawer();
+      else openDrawer();
+    }
+
     const pageInfo = {
       'devis-list': { title: 'Mes devis', subtitle: 'Consultez et gérez tous vos devis' },
       clients: { title: 'Clients', subtitle: 'Gérez votre base clients' },
@@ -1862,7 +2310,24 @@
       settings: { title: 'Paramètres', subtitle: 'Personnalisez votre application' }
     };
 
-    function navigateTo(view) {
+    async function navigateTo(view) {
+      if (state.currentView === 'editor' && view !== 'editor' && state.editorDirty && state.loaded) {
+        const leave = await ConfirmDialog.open({
+          title: 'Quitter sans enregistrer ?',
+          message: 'Vous avez des modifications non enregistrées dans ce devis. Elles seront perdues.',
+          okText: 'Quitter',
+          okClass: 'btn-danger'
+        });
+        if (!leave) return;
+        Storage.saveDraft(null);
+        state.editorDirty = false;
+        stopAutosave();
+        state.currentDevisId = null;
+      }
+
+      if (view !== 'editor') stopAutosave();
+
+      closeDrawer();
       state.currentView = view;
       $$('.view').forEach(v => v.classList.remove('active'));
       const v = $(`#view-${view}`);
@@ -1925,14 +2390,21 @@
     }
 
     function getFilteredDevis() {
-      const search = ($('#devisSearch')?.value || '').toLowerCase();
+      const search = ($('#devisSearch')?.value || '').toLowerCase().trim();
       const status = $('#devisFilterStatus')?.value || '';
       const from = $('#devisFilterFrom')?.value || '';
       const to = $('#devisFilterTo')?.value || '';
       const sortBy = $('#devisSortBy')?.value || 'date-desc';
 
       let list = state.devis.filter(d => {
-        if (search && !(d.number || '').toLowerCase().includes(search) && !(d.clientName || '').toLowerCase().includes(search)) return false;
+        if (search) {
+          const inNumber = (d.number || '').toLowerCase().includes(search);
+          const inClient = (d.clientName || '').toLowerCase().includes(search);
+          const inItems = (d.items || []).some(it =>
+            (it.description || '').toLowerCase().includes(search)
+          );
+          if (!inNumber && !inClient && !inItems) return false;
+        }
         if (status && d.status !== status) return false;
         if (from && d.date < from) return false;
         if (to && d.date > to) return false;
@@ -2006,10 +2478,15 @@
           openEditor(id);
         });
         item.querySelector('[data-action="edit"]')?.addEventListener('click', () => openEditor(id));
-        item.querySelector('[data-action="delete"]')?.addEventListener('click', () => {
+        item.querySelector('[data-action="delete"]')?.addEventListener('click', async () => {
           const d = state.devis.find(x => x.id === id);
           if (!d) return;
-          if (!confirm('Déplacer ce devis dans la corbeille ?')) return;
+          const ok = await ConfirmDialog.open({
+            title: 'Supprimer ce devis ?',
+            message: `Le devis ${d.number || ''} sera placé dans la corbeille (conservé 30 jours).`,
+            okText: 'Supprimer'
+          });
+          if (!ok) return;
           state.devis = state.devis.filter(x => x.id !== id);
           state.trash.devis.push({ ...d, deletedAt: Date.now() });
           Storage.saveDevis(state.devis);
@@ -2064,16 +2541,22 @@
           if (e.target.closest('button')) return;
           const client = state.clients.find(c => c.id === id);
           if (client) {
-            navigateTo('devis-list');
-            $('#devisSearch').value = client.name || '';
-            renderDevisList();
+            navigateTo('devis-list').then(() => {
+              $('#devisSearch').value = client.name || '';
+              renderDevisList();
+            });
           }
         });
         card.querySelector('[data-action="edit-client"]')?.addEventListener('click', () => openClientModal(id));
-        card.querySelector('[data-action="delete-client"]')?.addEventListener('click', () => {
+        card.querySelector('[data-action="delete-client"]')?.addEventListener('click', async () => {
           const c = state.clients.find(x => x.id === id);
           if (!c) return;
-          if (!confirm('Déplacer ce client dans la corbeille ?')) return;
+          const ok = await ConfirmDialog.open({
+            title: 'Supprimer ce client ?',
+            message: `Le client "${c.name || ''}" sera placé dans la corbeille (conservé 30 jours).`,
+            okText: 'Supprimer'
+          });
+          if (!ok) return;
           state.clients = state.clients.filter(x => x.id !== id);
           state.trash.clients.push({ ...c, deletedAt: Date.now() });
           Storage.saveClients(state.clients);
@@ -2152,17 +2635,39 @@
       }
     }
 
-    function renderCatalogue(filter = '') {
+    function getCatalogCategories() {
+      const set = new Set();
+      state.catalog.forEach(c => { if (c.category) set.add(c.category); });
+      return Array.from(set).sort();
+    }
+
+    function refreshCategorySelects() {
+      const cats = getCatalogCategories();
+      const opts = '<option value="">Toutes catégories</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      const filter = $('#catalogCategoryFilter');
+      if (filter) { const cur = filter.value; filter.innerHTML = opts; filter.value = cur; }
+      const picker = $('#catalogPickerCategory');
+      if (picker) { const cur = picker.value; picker.innerHTML = opts; picker.value = cur; }
+      const dl = $('#catalogCategoryList');
+      if (dl) dl.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">`).join('');
+    }
+
+    function renderCatalogue(filter = '', categoryFilter = '') {
+      refreshCategorySelects();
       const tbody = $('#catalogBody');
-      const filtered = state.catalog.filter(c => !filter || (c.name || '').toLowerCase().includes(filter.toLowerCase()));
+      const filtered = state.catalog.filter(c => {
+        if (filter && !(c.name || '').toLowerCase().includes(filter.toLowerCase())) return false;
+        if (categoryFilter && c.category !== categoryFilter) return false;
+        return true;
+      });
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-light);">${filter ? 'Aucun résultat' : 'Catalogue vide'}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-light);">${filter || categoryFilter ? 'Aucun résultat' : 'Catalogue vide'}</td></tr>`;
         return;
       }
       tbody.innerHTML = filtered.sort((a, b) => (b.usage || 0) - (a.usage || 0)).map(c => `
         <tr>
           <td data-label="Désignation">
-            <div style="font-weight:600;">${escapeHtml(c.name)}</div>
+            <div style="font-weight:600;">${escapeHtml(c.name)}${c.category ? `<span class="catalog-cat-badge">${escapeHtml(c.category)}</span>` : ''}</div>
             ${c.description ? `<div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(c.description)}</div>` : ''}
           </td>
           <td data-label="Prix HT">${formatEuro(c.price)}</td>
@@ -2176,20 +2681,25 @@
       `).join('');
 
       tbody.querySelectorAll('[data-action="edit-catalog"]').forEach(b => b.addEventListener('click', () => openCatalogModal(b.dataset.id)));
-      tbody.querySelectorAll('[data-action="delete-catalog"]').forEach(b => b.addEventListener('click', () => {
-        if (!confirm('Supprimer cet article du catalogue ?')) return;
+      tbody.querySelectorAll('[data-action="delete-catalog"]').forEach(b => b.addEventListener('click', async () => {
         const id = b.dataset.id;
         const item = state.catalog.find(x => x.id === id);
+        const ok = await ConfirmDialog.open({
+          title: 'Supprimer cet article ?',
+          message: `"${item?.name || ''}" sera retiré du catalogue.`,
+          okText: 'Supprimer'
+        });
+        if (!ok) return;
         state.catalog = state.catalog.filter(c => c.id !== id);
         Storage.saveCatalog(state.catalog);
         updateBadges();
-        renderCatalogue($('#catalogSearch').value);
+        renderCatalogue($('#catalogSearch').value, $('#catalogCategoryFilter').value);
         UndoStack.push('Suppression article ' + (item?.name || ''), () => {
           if (item) {
             state.catalog.push(item);
             Storage.saveCatalog(state.catalog);
             updateBadges();
-            renderCatalogue($('#catalogSearch').value);
+            renderCatalogue($('#catalogSearch').value, $('#catalogCategoryFilter').value);
           }
         });
         toast('Article supprimé', 'warning');
@@ -2199,11 +2709,13 @@
     function openCatalogModal(id = null) {
       state.editingCatalogId = id;
       const title = $('#catalogModalTitle');
+      refreshCategorySelects();
       if (id) {
         const c = state.catalog.find(x => x.id === id);
         if (c) {
           title.textContent = 'Modifier l\'article';
           $('#catalogNameInput').value = c.name || '';
+          $('#catalogCategoryInput').value = c.category || '';
           $('#catalogPriceInput').value = c.price || 0;
           $('#catalogTvaInput').value = c.tva ?? 20;
           $('#catalogDescInput').value = c.description || '';
@@ -2211,6 +2723,7 @@
       } else {
         title.textContent = 'Nouvel article';
         $('#catalogNameInput').value = '';
+        $('#catalogCategoryInput').value = '';
         $('#catalogPriceInput').value = 0;
         $('#catalogTvaInput').value = 20;
         $('#catalogDescInput').value = '';
@@ -2226,6 +2739,7 @@
       if (!name) { toast('La désignation est obligatoire', 'error'); return; }
       const data = {
         name,
+        category: $('#catalogCategoryInput').value.trim(),
         price: parseFloat($('#catalogPriceInput').value) || 0,
         tva: parseFloat($('#catalogTvaInput').value) || 0,
         description: $('#catalogDescInput').value.trim()
@@ -2240,7 +2754,7 @@
       }
       Storage.saveCatalog(state.catalog);
       updateBadges();
-      renderCatalogue($('#catalogSearch')?.value || '');
+      renderCatalogue($('#catalogSearch')?.value || '', $('#catalogCategoryFilter')?.value || '');
       closeCatalogModal();
     }
 
@@ -2257,6 +2771,7 @@
           state.catalog.push({
             id: uid(),
             name: parts[0],
+            category: parts[4] || '',
             price: parseFloat(parts[1]) || 0,
             tva: parseFloat(parts[2]) || 20,
             description: parts[3] || '',
@@ -2275,14 +2790,19 @@
 
     function openCatalogPicker() {
       $('#catalogPickerModal').classList.add('active');
-      renderCatalogPicker('');
+      renderCatalogPicker('', '');
       setTimeout(() => $('#catalogPickerSearch').focus(), 100);
     }
     function closeCatalogPicker() { $('#catalogPickerModal').classList.remove('active'); }
 
-    function renderCatalogPicker(filter = '') {
+    function renderCatalogPicker(filter = '', categoryFilter = '') {
+      refreshCategorySelects();
       const grid = $('#catalogPickerGrid');
-      const filtered = state.catalog.filter(c => !filter || (c.name || '').toLowerCase().includes(filter.toLowerCase()));
+      const filtered = state.catalog.filter(c => {
+        if (filter && !(c.name || '').toLowerCase().includes(filter.toLowerCase())) return false;
+        if (categoryFilter && c.category !== categoryFilter) return false;
+        return true;
+      });
       if (filtered.length === 0) {
         grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><i class="fas fa-boxes-stacked"></i><h3>Catalogue vide</h3><p>Ajoutez des articles dans l'onglet Catalogue</p></div>`;
         return;
@@ -2291,7 +2811,7 @@
         <div class="catalog-item" data-catalog-id="${c.id}">
           <div class="info">
             <div class="title">${escapeHtml(c.name)}</div>
-            <div class="meta">${formatEuro(c.price)} · TVA ${c.tva}%</div>
+            <div class="meta">${formatEuro(c.price)} · TVA ${c.tva}%${c.category ? ' · ' + escapeHtml(c.category) : ''}</div>
           </div>
           <i class="fas fa-plus-circle add"></i>
         </div>
@@ -2313,6 +2833,7 @@
           updateSummary();
           updatePaymentsSummary();
           updateDepositInfo();
+          markEditorDirty();
           closeCatalogPicker();
           toast(`"${item.name}" ajouté`);
         });
@@ -2364,10 +2885,24 @@
       Storage.saveSettings(state.settings);
     }
 
+    function markEditorDirty() {
+      state.editorDirty = true;
+      scheduleDraftSave();
+    }
+
+    function scheduleDraftSave() {
+      if (!state.settings.autosave) return;
+      clearTimeout(state.draftDebounceTimer);
+      state.draftDebounceTimer = setTimeout(() => {
+        saveDraft();
+      }, DRAFT_DEBOUNCE_MS);
+    }
+
     function openEditor(devisId = null) {
       state.currentDevisId = devisId;
       state.currentItems = [];
       state.currentPayments = [];
+      state.editorDirty = false;
 
       if (devisId) {
         const d = state.devis.find(d => d.id === devisId);
@@ -2391,22 +2926,32 @@
       } else {
         const draft = Storage.loadDraft();
         if (draft && draft.items && draft.items.length > 0) {
-          if (confirm('Un brouillon non enregistré a été trouvé. Le restaurer ?')) {
-            $('#invoiceNumber').value = draft.number || nextDevisNumber();
-            $('#invoiceDate').value = draft.date || todayISO();
-            $('#invoiceStatus').value = draft.status || 'brouillon';
-            $('#invoiceNotes').value = draft.notes || '';
-            $('#depositPercent').value = draft.depositPercent ?? 30;
-            $('#validityDays').value = draft.validityDays || 30;
-            $('#acceptedDate').value = draft.acceptedDate || '';
-            state.currentItems = draft.items;
-            state.currentPayments = draft.payments || [];
-            updateClientSelect();
-            setTimeout(() => { $('#clientSelect').value = draft.clientId || ''; updateValidityInfo(); updateDepositInfo(); }, 0);
-          } else {
-            Storage.saveDraft(null);
-            initNewEditor();
-          }
+          (async () => {
+            const restore = await ConfirmDialog.open({
+              title: 'Brouillon trouvé',
+              message: 'Un brouillon non enregistré a été trouvé. Voulez-vous le restaurer ?',
+              okText: 'Restaurer',
+              okClass: 'btn-accent'
+            });
+            if (restore) {
+              $('#invoiceNumber').value = draft.number || nextDevisNumber();
+              $('#invoiceDate').value = draft.date || todayISO();
+              $('#invoiceStatus').value = draft.status || 'brouillon';
+              $('#invoiceNotes').value = draft.notes || '';
+              $('#depositPercent').value = draft.depositPercent ?? 30;
+              $('#validityDays').value = draft.validityDays || 30;
+              $('#acceptedDate').value = draft.acceptedDate || '';
+              state.currentItems = draft.items;
+              state.currentPayments = draft.payments || [];
+              updateClientSelect();
+              setTimeout(() => { $('#clientSelect').value = draft.clientId || ''; updateValidityInfo(); updateDepositInfo(); }, 0);
+            } else {
+              Storage.saveDraft(null);
+              initNewEditor();
+            }
+            finishOpenEditor();
+          })();
+          return;
         } else {
           initNewEditor();
         }
@@ -2429,29 +2974,43 @@
         updateDepositInfo();
       }
 
-      $('#pageTitle').textContent = devisId ? 'Modifier le devis' : 'Nouveau devis';
-      $('#pageSubtitle').textContent = devisId ? $('#invoiceNumber').value : 'Créez un nouveau devis';
+      finishOpenEditor();
 
-      renderItems();
-      renderPayments();
-      updateSummary();
-      updatePaymentsSummary();
-      updateValidityInfo();
-      updateDepositInfo();
-      navigateTo('editor');
-      startAutosave();
+      function finishOpenEditor() {
+        $('#pageTitle').textContent = devisId ? 'Modifier le devis' : 'Nouveau devis';
+        $('#pageSubtitle').textContent = devisId ? $('#invoiceNumber').value : 'Créez un nouveau devis';
+        renderItems();
+        renderPayments();
+        updateSummary();
+        updatePaymentsSummary();
+        updateValidityInfo();
+        updateDepositInfo();
+        navigateTo('editor');
+        startAutosave();
+      }
     }
 
     function renderItems() {
       const tbody = $('#itemsBody');
       if (state.currentItems.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1.5rem; color:var(--text-light);">Aucune ligne</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:1.5rem; color:var(--text-light);">Aucune ligne</td></tr>`;
         return;
       }
-      tbody.innerHTML = state.currentItems.map((item) => {
+      tbody.innerHTML = state.currentItems.map((item, idx) => {
         const total = item.quantity * item.unitPrice;
+        const isFirst = idx === 0;
+        const isLast = idx === state.currentItems.length - 1;
         return `
-          <tr data-item-id="${item.id}">
+          <tr data-item-id="${item.id}" draggable="true">
+            <td data-label="" style="padding:0.3rem;">
+              <div style="display:flex; align-items:center; gap:2px;">
+                <span class="drag-handle" title="Glisser pour réordonner" aria-hidden="true"><i class="fas fa-grip-vertical"></i></span>
+                <div class="item-move-btns">
+                  <button data-action="move-up" ${isFirst ? 'disabled' : ''} title="Monter" aria-label="Monter"><i class="fas fa-chevron-up"></i></button>
+                  <button data-action="move-down" ${isLast ? 'disabled' : ''} title="Descendre" aria-label="Descendre"><i class="fas fa-chevron-down"></i></button>
+                </div>
+              </div>
+            </td>
             <td data-label="Désignation"><input type="text" class="input-inline" data-field="description" value="${escapeHtml(item.description)}" placeholder="Description..." aria-label="Désignation"></td>
             <td data-label="Qté"><input type="number" class="input-inline small" data-field="quantity" value="${item.quantity}" min="0" step="1" aria-label="Quantité"></td>
             <td data-label="Prix HT"><input type="number" class="input-inline small" data-field="unitPrice" value="${item.unitPrice}" min="0" step="0.01" aria-label="Prix HT"></td>
@@ -2484,13 +3043,69 @@
           updateSummary();
           updatePaymentsSummary();
           updateDepositInfo();
+          markEditorDirty();
           if (removed) {
             UndoStack.push('Suppression ligne', () => {
               state.currentItems.splice(idx, 0, removed);
-              renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo();
+              renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo(); markEditorDirty();
             });
             toast('Ligne supprimée', 'warning');
           }
+        });
+      });
+
+      tbody.querySelectorAll('[data-action="move-up"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const row = btn.closest('tr');
+          const id = row.dataset.itemId;
+          const idx = state.currentItems.findIndex(i => i.id === id);
+          if (idx > 0) {
+            [state.currentItems[idx-1], state.currentItems[idx]] = [state.currentItems[idx], state.currentItems[idx-1]];
+            renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo(); markEditorDirty();
+          }
+        });
+      });
+      tbody.querySelectorAll('[data-action="move-down"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const row = btn.closest('tr');
+          const id = row.dataset.itemId;
+          const idx = state.currentItems.findIndex(i => i.id === id);
+          if (idx < state.currentItems.length - 1) {
+            [state.currentItems[idx+1], state.currentItems[idx]] = [state.currentItems[idx], state.currentItems[idx+1]];
+            renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo(); markEditorDirty();
+          }
+        });
+      });
+
+      let dragSrcId = null;
+      tbody.querySelectorAll('tr[draggable="true"]').forEach(row => {
+        row.addEventListener('dragstart', (e) => {
+          dragSrcId = row.dataset.itemId;
+          row.classList.add('dragging');
+          try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', dragSrcId); } catch {}
+        });
+        row.addEventListener('dragend', () => {
+          row.classList.remove('dragging');
+          tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+          dragSrcId = null;
+        });
+        row.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          try { e.dataTransfer.dropEffect = 'move'; } catch {}
+          if (dragSrcId && row.dataset.itemId !== dragSrcId) row.classList.add('drag-over');
+        });
+        row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+        row.addEventListener('drop', (e) => {
+          e.preventDefault();
+          row.classList.remove('drag-over');
+          const targetId = row.dataset.itemId;
+          if (!dragSrcId || dragSrcId === targetId) return;
+          const fromIdx = state.currentItems.findIndex(i => i.id === dragSrcId);
+          const toIdx = state.currentItems.findIndex(i => i.id === targetId);
+          if (fromIdx < 0 || toIdx < 0) return;
+          const [moved] = state.currentItems.splice(fromIdx, 1);
+          state.currentItems.splice(toIdx, 0, moved);
+          renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo(); markEditorDirty();
         });
       });
     }
@@ -2509,18 +3124,19 @@
       updateSummary();
       updatePaymentsSummary();
       updateDepositInfo();
+      markEditorDirty();
     }
 
     function updateSummary() {
-      let ht = 0, tva = 0;
+      let ht = 0;
       state.currentItems.forEach(i => {
-        const lh = (i.quantity || 0) * (i.unitPrice || 0);
-        ht += lh;
-        tva += lh * ((i.tva || 0) / 100);
+        ht += (i.quantity || 0) * (i.unitPrice || 0);
       });
+      const breakdown = computeTVABreakdown(state.currentItems);
+      const tvaTotal = breakdown.reduce((s, b) => s + b.tva, 0);
       $('#sumHT').textContent = formatEuro(ht);
-      $('#sumTVA').textContent = formatEuro(tva);
-      $('#sumTTC').textContent = formatEuro(ht + tva);
+      renderTVABreakdown(state.currentItems, $('#sumTVABreakdown'));
+      $('#sumTTC').textContent = formatEuro(ht + tvaTotal);
     }
 
     function renderPayments() {
@@ -2543,10 +3159,11 @@
           state.currentPayments.splice(idx, 1);
           renderPayments();
           updatePaymentsSummary();
+          markEditorDirty();
           if (removed) {
             UndoStack.push('Suppression paiement', () => {
               state.currentPayments.splice(idx, 0, removed);
-              renderPayments(); updatePaymentsSummary();
+              renderPayments(); updatePaymentsSummary(); markEditorDirty();
             });
             toast('Paiement supprimé', 'warning');
           }
@@ -2572,6 +3189,7 @@
       $('#paymentDate').value = '';
       renderPayments();
       updatePaymentsSummary();
+      markEditorDirty();
       toast('Paiement ajouté');
     }
 
@@ -2626,6 +3244,7 @@
 
       Storage.saveDevis(state.devis);
       Storage.saveDraft(null);
+      state.editorDirty = false;
       updateBadges();
       $('#pageTitle').textContent = 'Modifier le devis';
       $('#pageSubtitle').textContent = devisData.number;
@@ -2653,8 +3272,14 @@
       $('#historyModal').classList.add('active');
     }
 
-    function restoreVersion(version) {
-      if (!confirm(`Restaurer la version ${version} ?`)) return;
+    async function restoreVersion(version) {
+      const ok = await ConfirmDialog.open({
+        title: `Restaurer la version ${version} ?`,
+        message: 'La version actuelle sera sauvegardée dans l\'historique avant restauration.',
+        okText: 'Restaurer',
+        okClass: 'btn-accent'
+      });
+      if (!ok) return;
       const d = state.devis.find(d => d.id === state.currentDevisId);
       if (!d) return;
       const h = (d.history || []).find(x => x.version === version);
@@ -2675,9 +3300,6 @@
 
     function closeHistoryModal() { $('#historyModal').classList.remove('active'); }
 
-    // ============================================================
-    // PDF — LOGO CORRIGÉ
-    // ============================================================
     function buildDevisDataForPDF() {
       const clientId = $('#clientSelect').value;
       const client = state.clients.find(c => c.id === clientId);
@@ -2696,7 +3318,8 @@
         number: $('#invoiceNumber').value,
         date: $('#invoiceDate').value,
         status: $('#invoiceStatus').value,
-        notes: $('#invoiceNotes').value
+        notes: $('#invoiceNotes').value,
+        vatBreakdown: computeTVABreakdown(items)
       };
     }
 
@@ -2713,33 +3336,29 @@
       const pageW = 210, margin = 15;
       let y = margin;
 
-      // Bande d'accent
       doc.setFillColor(accent[0], accent[1], accent[2]);
       doc.rect(0, 0, pageW, 4, 'F');
 
-      // --- LOGO : calcul des proportions réelles + placement en haut à gauche ---
       let logoHeight = 0;
       if (state.settings.company.logo) {
         try {
           const imgProps = doc.getImageProperties(state.settings.company.logo);
-          const MAX_W = 35;  // largeur max en mm
-          const MAX_H = 18;  // hauteur max en mm
+          const MAX_W = 35;
+          const MAX_H = 18;
           let logoW = MAX_W;
           let logoH = (imgProps.height / imgProps.width) * logoW;
           if (logoH > MAX_H) {
             logoH = MAX_H;
             logoW = (imgProps.width / imgProps.height) * logoH;
           }
-          // Placer le logo en haut à gauche, sur la marge
           doc.addImage(state.settings.company.logo, 'PNG', margin, y, logoW, logoH);
-          logoHeight = logoH + 4; // marge sous le logo
+          logoHeight = logoH + 4;
         } catch (e) {
           console.warn('Logo non ajouté au PDF', e);
           logoHeight = 0;
         }
       }
 
-      // --- ENTREPRISE (décalée sous le logo) ---
       doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
       doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8 + logoHeight);
       doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.setFont(undefined, 'normal');
@@ -2755,7 +3374,6 @@
         doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4;
       }
 
-      // --- INFO DEVIS (à droite) ---
       const infoX = pageW - margin;
       doc.setFontSize(14); doc.setTextColor(0); doc.setFont(undefined, 'bold');
       doc.text(`DEVIS ${data.number}`, infoX, y + 8, { align: 'right' });
@@ -2764,7 +3382,6 @@
       if (data.validityDate) doc.text(`Valable jusqu'au : ${formatDate(data.validityDate)}`, infoX, y + 19, { align: 'right' });
       doc.text(`Statut : ${data.status}`, infoX, y + 24, { align: 'right' });
 
-      // --- Ligne de séparation + client ---
       y = Math.max(cy + 5, y + 25 + logoHeight) + 10;
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
       doc.line(margin, y, pageW - margin, y); y += 8;
@@ -2780,14 +3397,13 @@
         doc.text('—', margin, y); y += 4;
       }
 
-      // --- Tableau articles ---
       y += 5;
       const rows = data.items.map(i => [
         i.description || '',
         String(i.quantity),
-        formatEuro(i.unitPrice),
+        formatEuroPdf(i.unitPrice),
         i.tva + '%',
-        formatEuro(i.quantity * i.unitPrice)
+        formatEuroPdf(i.quantity * i.unitPrice)
       ]);
 
       doc.autoTable({
@@ -2802,43 +3418,54 @@
       });
       y = doc.lastAutoTable.finalY + 10;
 
-      // --- Totaux ---
       const boxX = pageW - margin - 80;
       doc.setFontSize(9); doc.setTextColor(100);
       doc.text('Total HT', boxX, y);
-      doc.text(formatEuro(data.ht), pageW - margin, y, { align: 'right' }); y += 5;
-      doc.text('TVA', boxX, y);
-      doc.text(formatEuro(data.tva), pageW - margin, y, { align: 'right' }); y += 5;
+      doc.text(formatEuroPdf(data.ht), pageW - margin, y, { align: 'right' }); y += 5;
+
+      if (data.vatBreakdown.length === 1) {
+        const b = data.vatBreakdown[0];
+        doc.text(`TVA (${b.rate}%)`, boxX, y);
+        doc.text(formatEuroPdf(b.tva), pageW - margin, y, { align: 'right' }); y += 5;
+      } else {
+        doc.text('TVA', boxX, y);
+        doc.text(formatEuroPdf(data.tva), pageW - margin, y, { align: 'right' }); y += 4;
+        doc.setFontSize(7.5); doc.setTextColor(130);
+        data.vatBreakdown.forEach(b => {
+          doc.text(`  dont ${b.rate}% sur ${formatEuroPdf(b.baseHT)}`, boxX + 2, y);
+          doc.text(formatEuroPdf(b.tva), pageW - margin, y, { align: 'right' }); y += 3.5;
+        });
+        doc.setFontSize(9); doc.setTextColor(100); y += 1.5;
+      }
+
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
       doc.line(boxX, y, pageW - margin, y); y += 6;
       doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(accent[0], accent[1], accent[2]);
       doc.text('Total TTC', boxX, y);
-      doc.text(formatEuro(data.ttc), pageW - margin, y, { align: 'right' }); y += 7;
+      doc.text(formatEuroPdf(data.ttc), pageW - margin, y, { align: 'right' }); y += 7;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
 
-      // Acompte
       if (data.depositPct > 0 && data.depositAmount > 0) {
         doc.setTextColor(100);
         doc.text(`Acompte (${data.depositPct}%)`, boxX, y);
-        doc.text(formatEuro(data.depositAmount), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text(formatEuroPdf(data.depositAmount), pageW - margin, y, { align: 'right' }); y += 5;
         doc.text('Solde après acompte', boxX, y);
-        doc.text(formatEuro(data.ttc - data.depositAmount), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text(formatEuroPdf(data.ttc - data.depositAmount), pageW - margin, y, { align: 'right' }); y += 5;
         doc.setTextColor(30);
       }
 
       if (data.paid > 0) {
         doc.setTextColor(16, 185, 129);
         doc.text('Payé', boxX, y);
-        doc.text(formatEuro(data.paid), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text(formatEuroPdf(data.paid), pageW - margin, y, { align: 'right' }); y += 5;
       }
       if (data.remaining > 0 && data.paid > 0) {
         doc.setTextColor(245, 158, 11);
         doc.text('Reste à payer', boxX, y);
-        doc.text(formatEuro(data.remaining), pageW - margin, y, { align: 'right' }); y += 5;
+        doc.text(formatEuroPdf(data.remaining), pageW - margin, y, { align: 'right' }); y += 5;
       }
       doc.setTextColor(30);
 
-      // --- Notes ---
       if (data.notes) {
         y = Math.max(y, doc.lastAutoTable.finalY + 40);
         doc.setFillColor(248, 250, 252); doc.roundedRect(margin, y, pageW - margin * 2, 20, 2, 2, 'F');
@@ -2850,7 +3477,6 @@
         y += 25;
       }
 
-      // --- Assurance ---
       const ins = state.settings.company.insurance || {};
       if (ins.name || ins.policy || ins.coverage) {
         y = Math.max(y + 5, doc.lastAutoTable.finalY + 50);
@@ -2864,8 +3490,8 @@
         y += split.length * 3.5 + 3;
       }
 
-      // --- Zone Bon pour accord ---
       y = Math.max(y + 6, doc.lastAutoTable.finalY + 55);
+      if (y > 250) { doc.addPage(); y = 20; }
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.3);
       const boxY = y;
       const boxH = 38;
@@ -2971,7 +3597,6 @@
 
     function printDevis() {
       const data = buildDevisDataForPDF();
-      // Logo dans l'impression : on l'affiche en <img> avec max-height 60px
       const logoHtml = state.settings.company.logo ? `<img src="${state.settings.company.logo}" style="max-height:60px; max-width:150px; object-fit:contain; margin-bottom:8px; display:block;">` : '';
       const accent = state.settings.accent || '#6366f1';
       const ins = state.settings.company.insurance || {};
@@ -2985,8 +3610,19 @@
       }
       const rows = data.items.map(i => `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${i.quantity}</td><td style="text-align:right">${formatEuro(i.unitPrice)}</td><td style="text-align:center">${i.tva}%</td><td style="text-align:right">${formatEuro(i.quantity * i.unitPrice)}</td></tr>`).join('');
 
-      const win = window.open('', '_blank');
-      win.document.write(`
+      let tvaHtml = '';
+      if (data.vatBreakdown.length === 1) {
+        const b = data.vatBreakdown[0];
+        tvaHtml = `<div><span>TVA (${b.rate}%)</span><span>${formatEuro(b.tva)}</span></div>`;
+      } else {
+        tvaHtml = `<div><span>TVA</span><span>${formatEuro(data.tva)}</span></div>`;
+        data.vatBreakdown.forEach(b => {
+          tvaHtml += `<div style="font-size:11px; color:#94a3b8; padding:2px 0 2px 15px;"><span>dont ${b.rate}% sur ${formatEuro(b.baseHT)}</span><span>${formatEuro(b.tva)}</span></div>`;
+        });
+      }
+
+      const html = `
+        <!DOCTYPE html>
         <html><head><title>Devis ${escapeHtml(data.number)}</title>
         <style>* { box-sizing: border-box; }
         body { font-family: 'Inter', Arial, sans-serif; padding: 40px; color: #0f172a; max-width: 800px; margin: auto; }
@@ -3006,7 +3642,7 @@
         .totals .paid { color: #10b981; font-weight: 600; }
         .totals .remaining { color: #f59e0b; font-weight: 600; }
         .notes { margin-top: 40px; padding: 15px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #64748b; }
-        .accord-box { margin-top: 40px; border: 2px solid ${accent}; border-radius: 8px; padding: 15px; page-break-before: always; page-break-inside: avoid; }
+        .accord-box { margin-top: 40px; border: 2px solid ${accent}; border-radius: 8px; padding: 15px; page-break-inside: avoid; }
         .accord-box .title { font-weight: 800; color: ${accent}; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; }
         .accord-box .hint { font-size: 12px; color: #64748b; margin-bottom: 20px; }
         .accord-lines { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -3014,15 +3650,8 @@
         .accord-line .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
         .accord-line .line { border-bottom: 1px solid #94a3b8; height: 40px; }
         .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; }
-        @media print {
-          body { padding: 15px; }
-          .accord-box { page-break-before: always; }
-        }
-        @media (max-width: 600px) {
-          body { padding: 15px; }
-          .header .client { text-align: left; }
-          .totals { width: 100%; }
-        }
+        @media print { body { padding: 15px; } }
+        @media (max-width: 600px) { body { padding: 15px; } .header .client { text-align: left; } .totals { width: 100%; } }
         </style></head><body>
         <div class="header">
           <div class="company">${logoHtml}<strong>${escapeHtml(state.settings.company.name || 'Mon entreprise')}</strong>${escapeHtml(state.settings.company.address || '').replace(/\n/g, '<br>')}<br>${state.settings.company.email ? escapeHtml(state.settings.company.email) + '<br>' : ''}${state.settings.company.phone ? escapeHtml(state.settings.company.phone) : ''}${state.settings.company.siret ? '<br>SIRET : ' + escapeHtml(state.settings.company.siret) : ''}${vatMention}</div>
@@ -3031,7 +3660,7 @@
         <table><thead><tr><th>Désignation</th><th style="text-align:center">Qté</th><th style="text-align:right">Prix HT</th><th style="text-align:center">TVA</th><th style="text-align:right">Total HT</th></tr></thead><tbody>${rows}</tbody></table>
         <div class="totals">
           <div><span>Total HT</span><span>${formatEuro(data.ht)}</span></div>
-          <div><span>TVA</span><span>${formatEuro(data.tva)}</span></div>
+          ${tvaHtml}
           <div class="total"><span>Total TTC</span><span>${formatEuro(data.ttc)}</span></div>
           ${data.depositPct > 0 && data.depositAmount > 0 ? `
             <div class="deposit"><span>Acompte (${data.depositPct}%)</span><span>${formatEuro(data.depositAmount)}</span></div>
@@ -3046,21 +3675,42 @@
           <div class="title">Bon pour accord</div>
           <div class="hint">Lu et approuvé, bon pour accord. À retourner signé et daté.</div>
           <div class="accord-lines">
-            <div class="accord-line">
-              <div class="label">Date</div>
-              <div class="line"></div>
-            </div>
-            <div class="accord-line">
-              <div class="label">Signature du client</div>
-              <div class="line"></div>
-            </div>
+            <div class="accord-line"><div class="label">Date</div><div class="line"></div></div>
+            <div class="accord-line"><div class="label">Signature du client</div><div class="line"></div></div>
           </div>
         </div>
         <div class="footer">Devis généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}</div>
         </body></html>
-      `);
-      win.document.close();
-      setTimeout(() => win.print(), 300);
+      `;
+
+      const frame = document.getElementById('printFrame');
+      frame.onload = null;
+      const frameDoc = frame.contentDocument || frame.contentWindow.document;
+      frameDoc.open();
+      frameDoc.write(html);
+      frameDoc.close();
+
+      const doPrint = () => {
+        try {
+          frame.contentWindow.focus();
+          frame.contentWindow.print();
+        } catch (e) {
+          console.error('Erreur impression', e);
+          toast('Impression non disponible sur ce navigateur', 'error');
+        }
+      };
+      const imgs = frameDoc.querySelectorAll('img');
+      if (imgs.length === 0) {
+        setTimeout(doPrint, 300);
+      } else {
+        let loaded = 0;
+        const total = imgs.length;
+        imgs.forEach(img => {
+          if (img.complete) { loaded++; if (loaded === total) setTimeout(doPrint, 300); return; }
+          img.addEventListener('load', () => { loaded++; if (loaded === total) setTimeout(doPrint, 300); });
+          img.addEventListener('error', () => { loaded++; if (loaded === total) setTimeout(doPrint, 300); });
+        });
+      }
     }
 
     function getReportData() {
@@ -3154,12 +3804,12 @@
 
       doc.setFontSize(10); doc.setTextColor(0); doc.setFont(undefined, 'bold');
       doc.text(`Nombre de devis : ${data.length}`, 15, 45);
-      doc.text(`Total HT : ${formatEuro(ht)}`, 15, 52);
-      doc.text(`TVA collectée : ${formatEuro(tva)}`, 15, 59);
+      doc.text(`Total HT : ${formatEuroPdf(ht)}`, 15, 52);
+      doc.text(`TVA collectée : ${formatEuroPdf(tva)}`, 15, 59);
       doc.setTextColor(accent[0], accent[1], accent[2]);
-      doc.text(`Total TTC : ${formatEuro(ttc)}`, 15, 66);
+      doc.text(`Total TTC : ${formatEuroPdf(ttc)}`, 15, 66);
 
-      const rows = data.map(d => [d.number || '', formatDate(d.date), d.clientName || '', d.status || '', formatEuro(devisTotalHT(d)), formatEuro(devisTotalTVA(d)), formatEuro(devisTotalTTC(d))]);
+      const rows = data.map(d => [d.number || '', formatDate(d.date), d.clientName || '', d.status || '', formatEuroPdf(devisTotalHT(d)), formatEuroPdf(devisTotalTVA(d)), formatEuroPdf(devisTotalTTC(d))]);
       doc.autoTable({
         startY: 75,
         head: [['N°', 'Date', 'Client', 'Statut', 'HT', 'TVA', 'TTC']],
@@ -3175,6 +3825,7 @@
     }
 
     function renderTrash() {
+      purgeOldTrash();
       const list = $('#trashList');
       const total = state.trash.devis.length + state.trash.clients.length;
       if (total === 0) {
@@ -3184,33 +3835,39 @@
       let html = '';
       if (state.trash.devis.length > 0) {
         html += `<div class="section-title" style="margin-top:0.75rem;"><i class="fas fa-file-invoice"></i> Devis (${state.trash.devis.length})</div>`;
-        html += state.trash.devis.map(d => `
+        html += state.trash.devis.map(d => {
+          const dt = d.deletedAt || Date.now();
+          const daysLeft = Math.max(0, TRASH_RETENTION_DAYS - Math.floor((Date.now() - dt) / (24 * 60 * 60 * 1000)));
+          return `
           <div class="trash-item">
             <div class="info">
               <div class="title">${escapeHtml(d.number || 'Sans numéro')}</div>
-              <div class="meta">${escapeHtml(d.clientName || '—')} · ${formatEuro(devisTotalTTC(d))} · supprimé le ${new Date(d.deletedAt).toLocaleDateString('fr-FR')}</div>
+              <div class="meta">${escapeHtml(d.clientName || '—')} · ${formatEuro(devisTotalTTC(d))} · supprimé le ${new Date(dt).toLocaleDateString('fr-FR')} · purge dans ${daysLeft}j</div>
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-devis="${d.id}"><i class="fas fa-undo"></i> Restaurer</button>
               <button class="btn btn-danger btn-sm" data-purge-devis="${d.id}" aria-label="Supprimer définitivement"><i class="fas fa-times"></i></button>
             </div>
           </div>
-        `).join('');
+        `}).join('');
       }
       if (state.trash.clients.length > 0) {
         html += `<div class="section-title" style="margin-top:1rem;"><i class="fas fa-users"></i> Clients (${state.trash.clients.length})</div>`;
-        html += state.trash.clients.map(c => `
+        html += state.trash.clients.map(c => {
+          const dt = c.deletedAt || Date.now();
+          const daysLeft = Math.max(0, TRASH_RETENTION_DAYS - Math.floor((Date.now() - dt) / (24 * 60 * 60 * 1000)));
+          return `
           <div class="trash-item">
             <div class="info">
               <div class="title">${escapeHtml(c.name || 'Sans nom')}</div>
-              <div class="meta">${escapeHtml(c.email || '—')} · supprimé le ${new Date(c.deletedAt).toLocaleDateString('fr-FR')}</div>
+              <div class="meta">${escapeHtml(c.email || '—')} · supprimé le ${new Date(dt).toLocaleDateString('fr-FR')} · purge dans ${daysLeft}j</div>
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-client="${c.id}"><i class="fas fa-undo"></i> Restaurer</button>
               <button class="btn btn-danger btn-sm" data-purge-client="${c.id}" aria-label="Supprimer définitivement"><i class="fas fa-times"></i></button>
             </div>
           </div>
-        `).join('');
+        `}).join('');
       }
       list.innerHTML = html;
 
@@ -3225,8 +3882,13 @@
         updateBadges(); renderTrash();
         toast('Devis restauré');
       }));
-      list.querySelectorAll('[data-purge-devis]').forEach(b => b.addEventListener('click', () => {
-        if (!confirm('Supprimer définitivement ?')) return;
+      list.querySelectorAll('[data-purge-devis]').forEach(b => b.addEventListener('click', async () => {
+        const ok = await ConfirmDialog.open({
+          title: 'Supprimer définitivement ?',
+          message: 'Cette action est irréversible.',
+          okText: 'Supprimer'
+        });
+        if (!ok) return;
         const id = b.dataset.purgeDevis;
         state.trash.devis = state.trash.devis.filter(x => x.id !== id);
         Storage.saveTrash(state.trash);
@@ -3244,8 +3906,13 @@
         updateBadges(); renderTrash();
         toast('Client restauré');
       }));
-      list.querySelectorAll('[data-purge-client]').forEach(b => b.addEventListener('click', () => {
-        if (!confirm('Supprimer définitivement ?')) return;
+      list.querySelectorAll('[data-purge-client]').forEach(b => b.addEventListener('click', async () => {
+        const ok = await ConfirmDialog.open({
+          title: 'Supprimer définitivement ?',
+          message: 'Cette action est irréversible.',
+          okText: 'Supprimer'
+        });
+        if (!ok) return;
         const id = b.dataset.purgeClient;
         state.trash.clients = state.trash.clients.filter(x => x.id !== id);
         Storage.saveTrash(state.trash);
@@ -3254,8 +3921,13 @@
       }));
     }
 
-    function emptyTrash() {
-      if (!confirm('Vider entièrement la corbeille ? Action irréversible.')) return;
+    async function emptyTrash() {
+      const ok = await ConfirmDialog.open({
+        title: 'Vider la corbeille ?',
+        message: 'Tous les éléments de la corbeille seront définitivement supprimés. Action irréversible.',
+        okText: 'Vider'
+      });
+      if (!ok) return;
       state.trash = { clients: [], devis: [] };
       Storage.saveTrash(state.trash);
       updateBadges(); renderTrash();
@@ -3265,10 +3937,11 @@
     function openSearchModal() {
       $('#searchModal').classList.add('active');
       $('#globalSearchInput').value = '';
+      state.searchActiveIndex = -1;
       renderGlobalResults('');
       setTimeout(() => $('#globalSearchInput').focus(), 100);
     }
-    function closeSearchModal() { $('#searchModal').classList.remove('active'); }
+    function closeSearchModal() { $('#searchModal').classList.remove('active'); state.searchActiveIndex = -1; }
 
     function renderGlobalResults(query) {
       const container = $('#globalSearchResults');
@@ -3278,7 +3951,12 @@
         return;
       }
       const clients = state.clients.filter(c => (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q)).slice(0, 5);
-      const devis = state.devis.filter(d => (d.number || '').toLowerCase().includes(q) || (d.clientName || '').toLowerCase().includes(q)).slice(0, 5);
+      const devis = state.devis.filter(d => {
+        const inNum = (d.number || '').toLowerCase().includes(q);
+        const inCli = (d.clientName || '').toLowerCase().includes(q);
+        const inItems = (d.items || []).some(it => (it.description || '').toLowerCase().includes(q));
+        return inNum || inCli || inItems;
+      }).slice(0, 5);
       const catalog = state.catalog.filter(c => (c.name || '').toLowerCase().includes(q)).slice(0, 5);
 
       let html = '';
@@ -3298,6 +3976,7 @@
         html = `<div style="text-align:center; padding:1.5rem; color:var(--text-light); font-size:0.85rem;"><i class="fas fa-search" style="font-size:1.5rem; margin-bottom:0.4rem; display:block;"></i>Aucun résultat</div>`;
       }
       container.innerHTML = html;
+      state.searchActiveIndex = -1;
 
       container.querySelectorAll('.search-result').forEach(el => {
         el.addEventListener('click', () => {
@@ -3306,7 +3985,7 @@
           closeSearchModal();
           if (type === 'client') {
             const c = state.clients.find(x => x.id === id);
-            if (c) { navigateTo('devis-list'); $('#devisSearch').value = c.name || ''; renderDevisList(); }
+            if (c) { navigateTo('devis-list').then(() => { $('#devisSearch').value = c.name || ''; renderDevisList(); }); }
           } else if (type === 'devis') {
             openEditor(id);
           } else if (type === 'catalog') {
@@ -3315,6 +3994,23 @@
           }
         });
       });
+    }
+
+    function handleSearchKey(e) {
+      const results = document.querySelectorAll('#globalSearchResults .search-result');
+      if (results.length === 0) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        state.searchActiveIndex = Math.min(results.length - 1, state.searchActiveIndex + 1);
+        results.forEach((r, i) => r.classList.toggle('active', i === state.searchActiveIndex));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        state.searchActiveIndex = Math.max(-1, state.searchActiveIndex - 1);
+        results.forEach((r, i) => r.classList.toggle('active', i === state.searchActiveIndex));
+      } else if (e.key === 'Enter' && state.searchActiveIndex >= 0) {
+        e.preventDefault();
+        results[state.searchActiveIndex].click();
+      }
     }
 
     function renderSettings() {
@@ -3502,13 +4198,21 @@
       Storage.saveSettings(state.settings);
       if (draft) Storage.saveDraft(draft);
 
+      localStorage.removeItem(PIN_ATTEMPTS_KEY);
+
       renderSettings();
       updateBadges();
       toast('PIN défini et données re-chiffrées');
     }
 
-    function removePin() {
-      if (!confirm('Retirer le code PIN ? Les données seront re-chiffrées avec la clé par défaut non sécurisée.')) return;
+    async function removePin() {
+      const ok = await ConfirmDialog.open({
+        title: 'Retirer le code PIN ?',
+        message: 'Les données seront re-chiffrées avec la clé par défaut non sécurisée. Vos données ne seront plus protégées.',
+        okText: 'Retirer',
+        okClass: 'btn-danger'
+      });
+      if (!ok) return;
 
       const oldKey = activeKey;
       activeKey = DEFAULT_KEY;
@@ -3542,12 +4246,39 @@
 
     function lockApp() {
       if (!state.settings.hasPin) { toast('Aucun PIN défini', 'warning'); return; }
+      closeDrawer();
       $('#lockScreen').classList.add('active');
       $('#lockPinInput').value = '';
       setTimeout(() => $('#lockPinInput').focus(), 100);
     }
 
+    function getPinAttempts() {
+      try {
+        const raw = localStorage.getItem(PIN_ATTEMPTS_KEY);
+        if (!raw) return { count: 0, until: 0 };
+        return JSON.parse(raw);
+      } catch { return { count: 0, until: 0 }; }
+    }
+    function setPinAttempts(data) {
+      try { localStorage.setItem(PIN_ATTEMPTS_KEY, JSON.stringify(data)); } catch {}
+    }
+    function resetPinAttempts() {
+      try { localStorage.removeItem(PIN_ATTEMPTS_KEY); } catch {}
+    }
+    function checkPinCooldown() {
+      const a = getPinAttempts();
+      const now = Date.now();
+      if (a.until && a.until > now) {
+        const mins = Math.ceil((a.until - now) / 60000);
+        toast(`Trop de tentatives. Réessayez dans ${mins} min.`, 'error');
+        return false;
+      }
+      return true;
+    }
+
     function unlockAppRobust() {
+      if (!checkPinCooldown()) return;
+
       const pin = $('#lockPinInput').value.trim();
       if (!pin) return;
 
@@ -3560,6 +4291,7 @@
         state.settings = { ...defaultSettings(), ...decryptedSettings };
         state.settings.hasPin = true;
         state.settings.pinHash = Crypto.hashPin(pin);
+        resetPinAttempts();
         loadAllData();
         $('#lockScreen').classList.remove('active');
         $('#lockPinInput').value = '';
@@ -3571,6 +4303,7 @@
       if (defaultProbe && !defaultProbe.hasPin) {
         activeKey = DEFAULT_KEY;
         state.settings = { ...defaultSettings(), ...defaultProbe };
+        resetPinAttempts();
         loadAllData();
         $('#lockScreen').classList.remove('active');
         $('#lockPinInput').value = '';
@@ -3578,7 +4311,22 @@
         return;
       }
 
-      toast('PIN incorrect', 'error');
+      const attempts = getPinAttempts();
+      attempts.count = (attempts.count || 0) + 1;
+      if (attempts.count >= PIN_MAX_ATTEMPTS_BEFORE_LONG) {
+        attempts.until = Date.now() + PIN_COOLDOWN_LONG_MS;
+        attempts.count = 0;
+        setPinAttempts(attempts);
+        toast(`Trop de tentatives. Verrouillé 15 minutes.`, 'error');
+      } else if (attempts.count >= PIN_MAX_ATTEMPTS_BEFORE_COOLDOWN) {
+        attempts.until = Date.now() + PIN_COOLDOWN_MS;
+        setPinAttempts(attempts);
+        toast(`Trop de tentatives. Verrouillé 1 minute.`, 'error');
+      } else {
+        setPinAttempts(attempts);
+        const remaining = PIN_MAX_ATTEMPTS_BEFORE_COOLDOWN - attempts.count;
+        toast(`PIN incorrect. ${remaining} tentative(s) restante(s).`, 'error');
+      }
       $('#lockPinInput').value = '';
     }
 
@@ -3590,8 +4338,13 @@
       renderExportReminder();
     }
 
-    function resetAppFromLock() {
-      if (!confirm('Réinitialiser l\'application ? TOUTES les données locales seront définitivement supprimées. Cette action est irréversible.')) return;
+    async function resetAppFromLock() {
+      const ok = await ConfirmDialog.open({
+        title: 'Réinitialiser l\'application ?',
+        message: 'TOUTES les données locales seront définitivement supprimées. Cette action est irréversible.',
+        okText: 'Tout supprimer'
+      });
+      if (!ok) return;
       localStorage.clear();
       location.reload();
     }
@@ -3624,20 +4377,37 @@
       toast('Sauvegarde exportée');
     }
 
-    function importData(file) {
+    async function importData(file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const data = JSON.parse(e.target.result);
           if (!data.clients || !data.devis) throw new Error('Format invalide');
 
+          let proceed = true;
           if (!data.version) {
-            if (!confirm('Ce fichier ne contient pas d\'indication de version. L\'import peut être incompatible. Continuer ?')) return;
+            proceed = await ConfirmDialog.open({
+              title: 'Version inconnue',
+              message: 'Ce fichier ne contient pas d\'indication de version. L\'import peut être incompatible. Continuer ?',
+              okText: 'Continuer',
+              okClass: 'btn-accent'
+            });
           } else if (data.version !== APP_VERSION) {
-            if (!confirm(`Ce fichier provient de la version ${data.version}, vous utilisez la ${APP_VERSION}. L'import peut nécessiter une migration. Continuer ?`)) return;
+            proceed = await ConfirmDialog.open({
+              title: 'Version différente',
+              message: `Ce fichier provient de la version ${data.version}, vous utilisez la ${APP_VERSION}. L'import peut nécessiter une migration. Continuer ?`,
+              okText: 'Continuer',
+              okClass: 'btn-accent'
+            });
           } else {
-            if (!confirm(`Importer ${data.clients.length} clients, ${data.devis.length} devis ? Cela remplacera vos données actuelles.`)) return;
+            proceed = await ConfirmDialog.open({
+              title: 'Importer les données ?',
+              message: `Importer ${data.clients.length} clients, ${data.devis.length} devis ? Cela remplacera vos données actuelles.`,
+              okText: 'Importer',
+              okClass: 'btn-accent'
+            });
           }
+          if (!proceed) return;
 
           state.clients = data.clients;
           state.devis = data.devis;
@@ -3656,6 +4426,7 @@
           Storage.saveSettings(state.settings);
 
           ensureNextNumber();
+          purgeOldTrash();
           updateBadges();
           applyTheme();
           navigateTo('devis-list');
@@ -3673,7 +4444,7 @@
       if (!state.settings.autosave) return;
       state.autosaveTimer = setInterval(() => {
         if (state.currentView !== 'editor') return;
-        if (!hasEditorChanges()) return;
+        if (!state.editorDirty) return;
         saveDraft();
       }, 30000);
     }
@@ -3683,11 +4454,6 @@
         clearInterval(state.autosaveTimer);
         state.autosaveTimer = null;
       }
-    }
-
-    function hasEditorChanges() {
-      const num = $('#invoiceNumber')?.value;
-      return num || state.currentItems.length > 0;
     }
 
     function saveDraft() {
@@ -3776,6 +4542,10 @@
       const verEl = $('#appVersion');
       if (verEl) verEl.textContent = `v${APP_VERSION}`;
 
+      $('#burgerBtn').addEventListener('click', toggleDrawer);
+      $('#drawerOverlay').addEventListener('click', closeDrawer);
+      $('#drawerCloseBtn').addEventListener('click', closeDrawer);
+
       $$('.nav-item[data-view]').forEach(btn => {
         btn.addEventListener('click', () => navigateTo(btn.dataset.view));
       });
@@ -3786,7 +4556,8 @@
 
       $('#newCatalogBtn').addEventListener('click', () => openCatalogModal());
       $('#saveCatalogBtn').addEventListener('click', saveCatalogItem);
-      $('#catalogSearch').addEventListener('input', (e) => renderCatalogue(e.target.value));
+      $('#catalogSearch').addEventListener('input', (e) => renderCatalogue(e.target.value, $('#catalogCategoryFilter').value));
+      $('#catalogCategoryFilter').addEventListener('change', (e) => renderCatalogue($('#catalogSearch').value, e.target.value));
       $('#importCatalogBtn').addEventListener('click', () => {
         const inp = document.createElement('input');
         inp.type = 'file'; inp.accept = '.csv';
@@ -3794,11 +4565,12 @@
         inp.click();
       });
       $('#openCatalogBtn').addEventListener('click', () => openCatalogPicker());
-      $('#catalogPickerSearch').addEventListener('input', (e) => renderCatalogPicker(e.target.value));
+      $('#catalogPickerSearch').addEventListener('input', (e) => renderCatalogPicker(e.target.value, $('#catalogPickerCategory').value));
+      $('#catalogPickerCategory').addEventListener('change', (e) => renderCatalogPicker($('#catalogPickerSearch').value, e.target.value));
 
       $('#addItemBtn').addEventListener('click', () => {
         state.currentItems.push({ id: uid(), description: '', quantity: 1, unitPrice: 0, tva: 20 });
-        renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo();
+        renderItems(); updateSummary(); updatePaymentsSummary(); updateDepositInfo(); markEditorDirty();
       });
       $('#saveBtn').addEventListener('click', saveCurrentDevis);
       $('#pdfBtn').addEventListener('click', exportPDF);
@@ -3823,18 +4595,31 @@
         openEditor(copy.id);
         toast('Devis dupliqué');
       });
-      $('#cancelEditBtn').addEventListener('click', () => {
-        if (confirm('Annuler les modifications en cours ?')) {
+      $('#cancelEditBtn').addEventListener('click', async () => {
+        const ok = await ConfirmDialog.open({
+          title: 'Annuler les modifications ?',
+          message: 'Le brouillon non enregistré sera perdu.',
+          okText: 'Annuler les modifs',
+          okClass: 'btn-danger'
+        });
+        if (ok) {
           state.currentDevisId = null;
+          state.editorDirty = false;
           stopAutosave();
           Storage.saveDraft(null);
           navigateTo('devis-list');
         }
       });
       $('#addPaymentBtn').addEventListener('click', addPayment);
-      $('#invoiceDate').addEventListener('change', updateValidityInfo);
-      $('#validityDays').addEventListener('input', updateValidityInfo);
-      $('#depositPercent').addEventListener('input', updateDepositInfo);
+      $('#invoiceDate').addEventListener('change', () => { updateValidityInfo(); markEditorDirty(); });
+      $('#validityDays').addEventListener('input', () => { updateValidityInfo(); markEditorDirty(); });
+      $('#depositPercent').addEventListener('input', () => { updateDepositInfo(); markEditorDirty(); });
+
+      ['invoiceNumber','invoiceDate','invoiceStatus','invoiceNotes','clientSelect','acceptedDate'].forEach(id => {
+        const el = $('#' + id);
+        if (el) el.addEventListener('input', markEditorDirty);
+        if (el) el.addEventListener('change', markEditorDirty);
+      });
 
       ['devisSearch', 'devisFilterStatus', 'devisFilterFrom', 'devisFilterTo', 'devisSortBy'].forEach(id => {
         const el = $('#' + id);
@@ -3872,6 +4657,10 @@
 
       $('#searchHintBtn').addEventListener('click', openSearchModal);
       $('#globalSearchInput').addEventListener('input', (e) => renderGlobalResults(e.target.value));
+      $('#globalSearchInput').addEventListener('keydown', handleSearchKey);
+
+      $('#confirmOkBtn').addEventListener('click', () => ConfirmDialog.close(true));
+      $('#confirmCancelBtn').addEventListener('click', () => ConfirmDialog.close(false));
 
       ['clientModal', 'catalogModal', 'catalogPickerModal', 'historyModal', 'searchModal'].forEach(id => {
         const el = $('#' + id);
@@ -3890,7 +4679,9 @@
           UndoStack.undo();
         }
         if (e.key === 'Escape') {
+          if (state.drawerOpen) { closeDrawer(); return; }
           ['clientModal','catalogModal','catalogPickerModal','historyModal','searchModal'].forEach(id => $('#'+id).classList.remove('active'));
+          if ($('#confirmModal').classList.contains('active')) ConfirmDialog.close(false);
         }
         if ((e.ctrlKey || e.metaKey) && e.key === 's' && state.currentView === 'editor') {
           e.preventDefault();
@@ -3898,8 +4689,12 @@
         }
       });
 
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1100 && state.drawerOpen) closeDrawer();
+      });
+
       window.addEventListener('beforeunload', (e) => {
-        if (state.currentView === 'editor' && state.loaded && hasEditorChanges()) {
+        if (state.currentView === 'editor' && state.loaded && state.editorDirty) {
           try { saveDraft(); } catch {}
           e.preventDefault();
           e.returnValue = '';
