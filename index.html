@@ -53,10 +53,10 @@
     }
 
     body.dark {
-      --primary: #818cf8;
-      --primary-light: #6366f1;
-      --accent: #818cf8;
-      --accent-light: #a5b4fc;
+      --primary: #93c5fd;
+      --primary-light: #60a5fa;
+      --accent: #60a5fa;
+      --accent-light: #93c5fd;
       --bg: #0b1120;
       --card: #111827;
       --border: #1f2937;
@@ -136,6 +136,7 @@
       color: white; font-size: 1.2rem;
       flex-shrink: 0;
     }
+    body.dark .logo-icon { color: #0b1120; }
 
     .logo-text-wrap {
       display: flex;
@@ -194,7 +195,9 @@
     }
     .nav-item:hover { background: var(--bg); color: var(--text); }
     .nav-item.active { background: var(--primary); color: white; }
+    body.dark .nav-item.active { color: #0b1120; }
     .nav-item.active i { color: white; }
+    body.dark .nav-item.active i { color: #0b1120; }
     .nav-item i { width: 20px; font-size: 0.9rem; text-align: center; flex-shrink: 0; }
     .nav-item .badge {
       margin-left: auto;
@@ -206,7 +209,9 @@
       font-weight: 700;
       flex-shrink: 0;
     }
+    body.dark .nav-item .badge { color: #0b1120; }
     .nav-item.active .badge { background: rgba(255,255,255,0.25); }
+    body.dark .nav-item.active .badge { color: #0b1120; }
 
     .lock-btn {
       display: flex; align-items: center; justify-content: center; gap: 0.5rem;
@@ -334,16 +339,19 @@
       text-overflow: ellipsis;
     }
     .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-light); }
+    body.dark .btn-primary { color: #0b1120; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-light); }
     .btn-accent { background: var(--accent); color: white; }
-    .btn-accent:hover { background: #4f46e5; }
+    body.dark .btn-accent { color: #0b1120; }
+    .btn-accent:hover:not(:disabled) { background: var(--accent-light); }
     .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: #059669; }
+    .btn-success:hover:not(:disabled) { background: #059669; }
     .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #dc2626; }
+    .btn-danger:hover:not(:disabled) { background: #dc2626; }
     .btn-outline { background: var(--card); color: var(--text); border: 1.5px solid var(--border); }
-    .btn-outline:hover { background: var(--bg); border-color: #cbd5e1; }
+    .btn-outline:hover:not(:disabled) { background: var(--bg); border-color: #cbd5e1; }
     .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.78rem; border-radius: 8px; min-height: 36px; }
     .btn-icon { padding: 0.5rem; width: 38px; height: 38px; justify-content: center; }
 
@@ -395,7 +403,7 @@
     }
     .input:focus, .field-group input:focus, .field-group textarea:focus, .field-group select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+      box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
     }
     textarea { resize: vertical; min-height: 70px; }
 
@@ -448,6 +456,7 @@
     }
     .input-inline:focus { border-color: var(--accent); }
     .input-inline.small { max-width: 100%; }
+    .input-inline:disabled { opacity: 0.6; cursor: not-allowed; background: var(--bg); }
 
     .delete-btn {
       background: transparent;
@@ -464,6 +473,7 @@
       justify-content: center;
     }
     .delete-btn:hover { background: #fee2e2; color: var(--danger); }
+    body.dark .delete-btn:hover { background: #422006; }
 
     .summary {
       background: var(--bg);
@@ -517,6 +527,7 @@
       color: white; font-weight: 700; font-size: 1rem;
       margin-bottom: 0.6rem;
     }
+    body.dark .client-avatar { color: #0b1120; }
     .client-name { font-weight: 700; font-size: 0.98rem; margin-bottom: 0.2rem; word-break: break-word; }
     .client-info { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.15rem; word-break: break-word; }
     .client-stats {
@@ -566,6 +577,22 @@
     .status-envoye { background: #dbeafe; color: #1d4ed8; }
     .status-accepte { background: #d1fae5; color: #047857; }
     .status-refuse { background: #fee2e2; color: #b91c1c; }
+    .status-facture { background: #e0e7ff; color: #4338ca; }
+    .status-emise { background: #dbeafe; color: #1d4ed8; }
+    .status-payee { background: #d1fae5; color: #047857; }
+    .status-partielle { background: #fef3c7; color: #b45309; }
+    .status-en_retard { background: #fee2e2; color: #b91c1c; }
+    .status-annulee { background: #e5e7eb; color: #4b5563; }
+    body.dark .status-brouillon { background: #422006; color: #fcd34d; }
+    body.dark .status-envoye { background: #1e3a8a; color: #93c5fd; }
+    body.dark .status-accepte { background: #064e3b; color: #6ee7b7; }
+    body.dark .status-refuse { background: #7f1d1d; color: #fca5a5; }
+    body.dark .status-facture { background: #1e3a8a; color: #93c5fd; }
+    body.dark .status-emise { background: #1e3a8a; color: #93c5fd; }
+    body.dark .status-payee { background: #064e3b; color: #6ee7b7; }
+    body.dark .status-partielle { background: #422006; color: #fcd34d; }
+    body.dark .status-en_retard { background: #7f1d1d; color: #fca5a5; }
+    body.dark .status-annulee { background: #1f2937; color: #9ca3af; }
 
     .empty { text-align: center; padding: 2rem 1rem; color: var(--text-light); }
     .empty i { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
@@ -617,6 +644,7 @@
       min-height: 36px;
     }
     .modal-close:hover { background: #fee2e2; color: var(--danger); }
+    body.dark .modal-close:hover { background: #422006; }
     .modal-actions {
       display: flex; gap: 0.5rem; justify-content: flex-end;
       margin-top: 1.25rem; padding-top: 1rem;
@@ -666,14 +694,16 @@
       pointer-events: auto;
       word-break: break-word;
     }
-    .toast.success { background: var(--success); }
-    .toast.error { background: var(--danger); }
-    .toast.warning { background: var(--warning); }
-    .toast.info { background: var(--accent); }
+    body.dark .toast { color: #0b1120; }
+    .toast.success { background: var(--success); color: white; }
+    .toast.error { background: var(--danger); color: white; }
+    .toast.warning { background: var(--warning); color: #0f172a; }
+    .toast.info { background: var(--accent); color: white; }
+    body.dark .toast.info { color: #0b1120; }
     .toast-undo {
       background: transparent;
       border: 1.5px solid rgba(255,255,255,0.5);
-      color: white;
+      color: inherit;
       padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.75rem;
@@ -914,6 +944,55 @@
       color: #fcd34d;
     }
 
+    .danger-note {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      border-radius: 10px;
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    body.dark .danger-note {
+      background: #7f1d1d;
+      border-color: #b91c1c;
+      color: #fecaca;
+    }
+
+    .invoice-banner {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border: 1.5px solid #3b82f6;
+      border-radius: 12px;
+      padding: 0.75rem;
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      color: #1e40af;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    body.dark .invoice-banner {
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+      border-color: #60a5fa;
+      color: #dbeafe;
+    }
+    .invoice-banner i { font-size: 1.1rem; flex-shrink: 0; }
+    .invoice-banner .txt { flex: 1 1 200px; min-width: 0; }
+
+    .invoice-banner.locked {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+    body.dark .invoice-banner.locked {
+      background: linear-gradient(135deg, #7f1d1d, #991b1b);
+      border-color: #ef4444;
+      color: #fecaca;
+    }
+
     .export-reminder {
       background: linear-gradient(135deg, #fef3c7, #fde68a);
       border: 1.5px solid #f59e0b;
@@ -1134,7 +1213,6 @@
       table { border-collapse: collapse; }
       thead { display: none; }
 
-      /* Lignes normales (catalogue, rapports) : empilées avec labels */
       tbody tr:not(#itemsBody tr) {
         background: var(--bg);
         border: 1px solid var(--border);
@@ -1190,11 +1268,6 @@
       .confirm-box .actions { flex-direction: column-reverse; }
       .confirm-box .actions .btn { width: 100%; justify-content: center; }
 
-      /* ==========================================================
-         TABLE ITEMS (lignes de devis) — MODE COMPACT MOBILE
-         Chaque ligne = une carte avec input désignation pleine largeur
-         et 4 mini-champs (Qté/Prix/TVA/Total) en dessous.
-         ========================================================== */
       #itemsBody {
         display: block !important;
         width: 100%;
@@ -1221,7 +1294,6 @@
       }
       #itemsBody tr td::before { content: none !important; }
 
-      /* 1. Poignée + boutons ↑↓ + suppr (ordre visuel : après) */
       #itemsBody tr td:nth-child(1) {
         flex: 0 0 auto;
         order: 1;
@@ -1237,7 +1309,6 @@
         padding: 0.15rem;
       }
 
-      /* 2. Désignation : pleine largeur, prend le reste de la ligne */
       #itemsBody tr td:nth-child(2) {
         flex: 1 1 100%;
         order: 2;
@@ -1249,7 +1320,6 @@
         padding: 0.55rem 0.7rem;
       }
 
-      /* 3. Qté / 4. Prix / 5. TVA / 6. Total : 4 mini-champs sur une ligne */
       #itemsBody tr td:nth-child(3),
       #itemsBody tr td:nth-child(4),
       #itemsBody tr td:nth-child(5),
@@ -1300,7 +1370,6 @@
         white-space: nowrap;
       }
 
-      /* 7. Bouton suppression : en haut à droite de la carte */
       #itemsBody tr td:nth-child(7) {
         order: 0;
         margin-left: auto;
@@ -1361,7 +1430,7 @@
         <div class="logo-icon"><i class="fas fa-file-invoice-dollar"></i></div>
         <div class="logo-text-wrap">
           <div class="logo-text">Devis<span>Pro</span></div>
-          <span class="app-version" id="appVersion">v2.6</span>
+          <span class="app-version" id="appVersion">v2.8</span>
         </div>
         <button class="drawer-close" id="drawerCloseBtn" aria-label="Fermer le menu"><i class="fas fa-times"></i></button>
       </div>
@@ -1370,6 +1439,7 @@
         <div class="nav-section">
           <div class="nav-title">Navigation</div>
           <button class="nav-item active" data-view="devis-list"><i class="fas fa-file-invoice"></i> Mes devis <span class="badge" id="devisCountBadge">0</span></button>
+          <button class="nav-item" data-view="invoices"><i class="fas fa-file-invoice-dollar"></i> Factures <span class="badge" id="invoicesCountBadge">0</span></button>
           <button class="nav-item" data-view="clients"><i class="fas fa-users"></i> Clients <span class="badge" id="clientsCountBadge">0</span></button>
           <button class="nav-item" data-view="catalogue"><i class="fas fa-boxes-stacked"></i> Catalogue <span class="badge" id="catalogCountBadge">0</span></button>
           <button class="nav-item" data-view="editor"><i class="fas fa-plus-circle"></i> Nouveau devis</button>
@@ -1441,6 +1511,41 @@
             </select>
           </div>
           <div class="devis-list" id="devisList"></div>
+        </div>
+      </div>
+
+      <div class="view" id="view-invoices">
+        <div class="card" style="margin-bottom:var(--gap);">
+          <div class="grid-4">
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-file-invoice-dollar"></i> Factures</div><div style="font-size:1.4rem; font-weight:800;" id="invCount">0</div></div>
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-euro-sign"></i> CA facturé</div><div style="font-size:1.4rem; font-weight:800;" id="invTotalTTC">0 €</div></div>
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-check-circle"></i> Encaissé</div><div style="font-size:1.4rem; font-weight:800; color:var(--success);" id="invTotalPaid">0 €</div></div>
+            <div><div class="section-title" style="margin:0;"><i class="fas fa-clock"></i> En attente</div><div style="font-size:1.4rem; font-weight:800; color:var(--warning);" id="invTotalPending">0 €</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title" style="margin:0 0 0.5rem;"><i class="fas fa-list"></i> Toutes les factures</div>
+          <div class="filters-bar">
+            <input type="text" id="invoiceSearch" class="input" placeholder="🔍 Rechercher…" aria-label="Rechercher une facture">
+            <select id="invoiceFilterStatus" class="input" aria-label="Filtrer par statut">
+              <option value="">Tous statuts</option>
+              <option value="emise">Émise</option>
+              <option value="payee">Payée</option>
+              <option value="partielle">Partielle</option>
+              <option value="en_retard">En retard</option>
+              <option value="annulee">Annulée</option>
+            </select>
+            <input type="date" id="invoiceFilterFrom" class="input" aria-label="Date de début">
+            <input type="date" id="invoiceFilterTo" class="input" aria-label="Date de fin">
+            <select id="invoiceSortBy" class="input" aria-label="Trier par">
+              <option value="date-desc">Date ↓</option>
+              <option value="date-asc">Date ↑</option>
+              <option value="amount-desc">Montant ↓</option>
+              <option value="amount-asc">Montant ↑</option>
+            </select>
+          </div>
+          <div class="devis-list" id="invoicesList"></div>
         </div>
       </div>
 
@@ -1558,6 +1663,8 @@
       <div class="view" id="view-editor">
         <div class="editor-layout">
           <div>
+            <div id="invoiceLockBanner"></div>
+
             <div class="card" style="margin-bottom:var(--gap);">
               <div class="section-title"><i class="fas fa-info-circle"></i> Informations devis</div>
               <div class="grid-2">
@@ -1654,9 +1761,7 @@
               <div class="section-title"><i class="fas fa-envelope"></i> Envoi au client</div>
               <div class="info-note">
                 <i class="fas fa-info-circle"></i> L'application n'intègre pas de signature électronique certifiée.
-                Envoyez le PDF par email et demandez au client de le retourner <strong>signé avec la mention « Bon pour accord »</strong>,
-                ou de répondre à l'email avec cette mention. Sur mobile, le bouton « Partager le PDF » permet de joindre
-                directement le fichier à un email.
+                Envoyez le PDF par email et demandez au client de le retourner <strong>signé avec la mention « Bon pour accord »</strong>.
               </div>
               <div style="display:flex; flex-direction:column; gap:0.5rem;">
                 <button class="btn btn-success" id="emailBtn"><i class="fas fa-envelope"></i> Générer le PDF et préparer l'email</button>
@@ -1675,10 +1780,12 @@
                 <div class="summary-line total"><span>Total TTC</span><span class="value" id="sumTTC">0,00 €</span></div>
               </div>
 
+              <div id="invoiceBannerContainer"></div>
+
               <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;">
                 <button class="btn btn-success" id="saveBtn"><i class="fas fa-save"></i> Enregistrer</button>
-                <button class="btn btn-accent" id="pdfBtn"><i class="fas fa-file-pdf"></i> Export PDF</button>
-                <button class="btn btn-outline" id="duplicateBtn"><i class="fas fa-copy"></i> Dupliquer</button>
+                <button class="btn btn-accent" id="pdfBtn"><i class="fas fa-file-pdf"></i> Export PDF devis</button>
+                <button class="btn btn-primary" id="generateInvoiceBtn"><i class="fas fa-file-invoice-dollar"></i> Émettre la facture</button>
                 <button class="btn btn-outline" id="historyBtn"><i class="fas fa-history"></i> Historique</button>
                 <button class="btn btn-outline" id="cancelEditBtn" style="color: var(--danger);"><i class="fas fa-times"></i> Annuler</button>
               </div>
@@ -1719,7 +1826,7 @@
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
               <div>
                 <div style="font-weight:600;">Code PIN</div>
-                <div style="font-size:0.8rem; color:var(--text-muted);">Le PIN sert à dériver la clé de chiffrement AES. Sans PIN, les données ne sont pas protégées de manière robuste.</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">Le PIN sert à dériver la clé de chiffrement AES.</div>
               </div>
               <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
                 <input type="password" id="pinSettingInput" class="input" placeholder="4-8 chiffres" maxlength="8" inputmode="numeric" style="width:140px;" aria-label="Nouveau code PIN">
@@ -1789,12 +1896,8 @@
         <div class="card" style="margin-top:var(--gap);">
           <div class="section-title"><i class="fas fa-signature"></i> Signature & acceptation</div>
           <div class="info-note">
-            <strong>Pas de signature électronique certifiée intégrée.</strong> L'application ne permet pas de signer
-            au sens du règlement eIDAS. La méthode recommandée est l'envoi du devis par email et le retour par le
-            client avec la mention manuscrite <em>« Bon pour accord »</em> et sa signature sur le PDF. Le retour
-            vaut acceptation et vous pouvez passer le devis au statut <em>Accepté</em> avec la date de réception.
-            Pour une valeur juridique renforcée (notamment à distance), utilisez un service tiers gratuit comme
-            Youtrust ou Certyneo (2 envois/mois gratuits).
+            <strong>Pas de signature électronique certifiée intégrée.</strong> La méthode recommandée est l'envoi
+            du devis par email et le retour par le client avec la mention manuscrite <em>« Bon pour accord »</em>.
           </div>
         </div>
 
@@ -1847,7 +1950,9 @@
               <option value="0">0%</option>
               <option value="5.5">5,5%</option>
               <option value="10">10%</option>
+              <option value="12.3">12,3%</option>
               <option value="20" selected>20%</option>
+              <option value="21.2">21,20%</option>
             </select>
           </div>
         </div>
@@ -1890,10 +1995,10 @@
     <div class="modal" style="max-width:650px;">
       <div class="search-input-wrap">
         <i class="fas fa-search"></i>
-        <input type="text" id="globalSearchInput" class="input" placeholder="Rechercher clients, devis, articles…" autocomplete="off" aria-label="Rechercher">
+        <input type="text" id="globalSearchInput" class="input" placeholder="Rechercher clients, devis, factures…" autocomplete="off" aria-label="Rechercher">
       </div>
       <div class="search-results" id="globalSearchResults"></div>
-      <div style="display:flex; justify-content:flex-end; gap:0.4rem; margin-top:0.75rem;">
+      <div style="display:flex; justify-content: flex-end; gap:0.4rem; margin-top:0.75rem;">
         <kbd style="background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:0.15rem 0.35rem; font-size:0.72rem;">ESC</kbd>
         <span style="font-size:0.72rem; color:var(--text-muted);">pour fermer</span>
       </div>
@@ -1916,7 +2021,7 @@
   <iframe id="printFrame" title="Impression" aria-hidden="true"></iframe>
 
   <script>
-    const APP_VERSION = '2.6';
+    const APP_VERSION = '2.8';
     const STORAGE_LIMIT_MB = 5;
     const EXPORT_REMINDER_DAYS = 7;
     const PIN_VERIFIER_SALT = 'DevisPro_v2_pin_salt';
@@ -1928,6 +2033,7 @@
     const PIN_COOLDOWN_LONG_MS = 15 * 60 * 1000;
     const PIN_ATTEMPTS_KEY = 'devispro_pin_attempts';
     const DRAFT_DEBOUNCE_MS = 500;
+    const INVOICE_DUE_DAYS = 30;
 
     const DEFAULT_KEY = 'DevisPro_NO_PIN_INSECURE_DEFAULT_KEY_v2';
 
@@ -1971,10 +2077,7 @@
         if (e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014)) {
           if (!quotaWarned) {
             quotaWarned = true;
-            toast(
-              'Stockage plein ! Exportez vos données et videz la corbeille.',
-              'error'
-            );
+            toast('Stockage plein ! Exportez vos données et videz la corbeille.', 'error');
             setTimeout(() => { quotaWarned = false; }, 10000);
           }
           return false;
@@ -1987,6 +2090,7 @@
     const Storage = {
       KEY_CLIENTS: 'devispro_clients_enc',
       KEY_DEVIS: 'devispro_devis_enc',
+      KEY_INVOICES: 'devispro_invoices_enc',
       KEY_SETTINGS: 'devispro_settings_enc',
       KEY_CATALOG: 'devispro_catalog_enc',
       KEY_TRASH: 'devispro_trash_enc',
@@ -1999,9 +2103,11 @@
       saveClients(c) { safeSetItem(this.KEY_CLIENTS, this.encrypt(c)); },
       loadDevis() { return this.decrypt(localStorage.getItem(this.KEY_DEVIS), []); },
       saveDevis(d) { safeSetItem(this.KEY_DEVIS, this.encrypt(d)); },
+      loadInvoices() { return this.decrypt(localStorage.getItem(this.KEY_INVOICES), []); },
+      saveInvoices(d) { safeSetItem(this.KEY_INVOICES, this.encrypt(d)); },
       loadCatalog() { return this.decrypt(localStorage.getItem(this.KEY_CATALOG), []); },
       saveCatalog(c) { safeSetItem(this.KEY_CATALOG, this.encrypt(c)); },
-      loadTrash() { return this.decrypt(localStorage.getItem(this.KEY_TRASH), { clients: [], devis: [] }); },
+      loadTrash() { return this.decrypt(localStorage.getItem(this.KEY_TRASH), { clients: [], devis: [], invoices: [] }); },
       saveTrash(t) { safeSetItem(this.KEY_TRASH, this.encrypt(t)); },
       loadDraft() { return this.decrypt(localStorage.getItem(this.KEY_DRAFT), null); },
       saveDraft(d) {
@@ -2018,7 +2124,8 @@
           name: 'DevisPro SAS', email: '', phone: '', address: '', logo: '',
           siret: '', tvaNumber: '',
           insurance: { name: '', policy: '', coverage: '' },
-          vatRegime: 'normal'
+          vatRegime: 'normal',
+          paymentTerms: 'Paiement à réception de facture. Pénalités de retard : 3× le taux d\'intérêt légal. Indemnité forfaitaire de recouvrement : 40 €.'
         },
         accent: '#6366f1',
         dark: false,
@@ -2027,6 +2134,8 @@
         pinHash: null,
         hasPin: false,
         nextNumber: 1,
+        nextInvoiceNumber: 1,
+        nextAvoirNumber: 1,
         lastExportAt: 0
       };
     }
@@ -2078,8 +2187,9 @@
     let state = {
       clients: [],
       devis: [],
+      invoices: [],
       catalog: [],
-      trash: { clients: [], devis: [] },
+      trash: { clients: [], devis: [], invoices: [] },
       settings: null,
       currentDevisId: null,
       currentItems: [],
@@ -2128,18 +2238,22 @@
       return `${y}-${m}-${day}`;
     };
 
-    const computeValidityDate = (dateISO, days) => {
+    const addDaysISO = (dateISO, days) => {
       if (!dateISO) return '';
-      const n = parseInt(days) || 0;
-      if (!n) return '';
       const parts = dateISO.split('-');
       if (parts.length !== 3) return '';
       const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      d.setDate(d.getDate() + n);
+      d.setDate(d.getDate() + days);
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       return `${y}-${m}-${day}`;
+    };
+
+    const computeValidityDate = (dateISO, days) => {
+      const n = parseInt(days) || 0;
+      if (!dateISO || !n) return '';
+      return addDaysISO(dateISO, n);
     };
 
     const devisTotalTTC = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice) * (1 + it.tva/100), 0);
@@ -2207,17 +2321,15 @@
     function purgeOldTrash() {
       const cutoff = Date.now() - TRASH_RETENTION_DAYS * 24 * 60 * 60 * 1000;
       let changed = false;
-      const beforeD = state.trash.devis.length;
-      const beforeC = state.trash.clients.length;
-      state.trash.devis = state.trash.devis.filter(d => {
-        const t = d.deletedAt || Date.now();
-        return t > cutoff;
-      });
-      state.trash.clients = state.trash.clients.filter(c => {
-        const t = c.deletedAt || Date.now();
-        return t > cutoff;
-      });
-      if (state.trash.devis.length !== beforeD || state.trash.clients.length !== beforeC) changed = true;
+      const before = {
+        d: state.trash.devis.length,
+        c: state.trash.clients.length,
+        i: (state.trash.invoices || []).length
+      };
+      state.trash.devis = state.trash.devis.filter(d => (d.deletedAt || Date.now()) > cutoff);
+      state.trash.clients = state.trash.clients.filter(c => (c.deletedAt || Date.now()) > cutoff);
+      state.trash.invoices = (state.trash.invoices || []).filter(i => (i.deletedAt || Date.now()) > cutoff);
+      if (state.trash.devis.length !== before.d || state.trash.clients.length !== before.c || state.trash.invoices.length !== before.i) changed = true;
       if (changed) Storage.saveTrash(state.trash);
       return changed;
     }
@@ -2225,12 +2337,52 @@
     function loadAllData() {
       state.clients = Storage.loadClients();
       state.devis = Storage.loadDevis();
+      state.invoices = Storage.loadInvoices();
       state.catalog = Storage.loadCatalog();
       state.trash = Storage.loadTrash();
+      if (!state.trash.invoices) state.trash.invoices = [];
       state.settings = Storage.loadSettings();
       state.loaded = true;
+      migrateLegacyInvoices();
       ensureNextNumber();
+      ensureNextInvoiceNumber();
+      ensureNextAvoirNumber();
       purgeOldTrash();
+    }
+
+    // Migration : les devis avec invoiceNumber deviennent des entités factures
+    function migrateLegacyInvoices() {
+      let migrated = 0;
+      state.devis.forEach(d => {
+        if (d.invoiceNumber && !d.invoiceId) {
+          // Créer une entité facture
+          const inv = {
+            id: uid(),
+            number: d.invoiceNumber,
+            devisId: d.id,
+            devisNumber: d.number || '',
+            clientId: d.clientId || null,
+            clientName: d.clientName || '',
+            date: d.invoiceDate || d.date || todayISO(),
+            dueDate: addDaysISO(d.invoiceDate || d.date || todayISO(), INVOICE_DUE_DAYS),
+            status: 'emise',
+            items: JSON.parse(JSON.stringify(d.items || [])),
+            notes: d.notes || '',
+            depositPercent: d.depositPercent || 0,
+            emittedAt: d.invoiceGeneratedAt || Date.now(),
+            locked: true,
+            payments: JSON.parse(JSON.stringify(d.payments || [])),
+            originalInvoiceId: null
+          };
+          state.invoices.push(inv);
+          d.invoiceId = inv.id;
+          migrated++;
+        }
+      });
+      if (migrated > 0) {
+        Storage.saveInvoices(state.invoices);
+        Storage.saveDevis(state.devis);
+      }
     }
 
     function ensureNextNumber() {
@@ -2246,6 +2398,36 @@
       Storage.saveSettings(state.settings);
     }
 
+    function ensureNextInvoiceNumber() {
+      let max = state.settings.nextInvoiceNumber || 1;
+      state.invoices.forEach(i => {
+        if (i.number && i.number.startsWith('FAC-')) {
+          const m = i.number.match(/(\d+)\s*$/);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (n >= max) max = n + 1;
+          }
+        }
+      });
+      state.settings.nextInvoiceNumber = max;
+      Storage.saveSettings(state.settings);
+    }
+
+    function ensureNextAvoirNumber() {
+      let max = state.settings.nextAvoirNumber || 1;
+      state.invoices.forEach(i => {
+        if (i.number && i.number.startsWith('AV-')) {
+          const m = i.number.match(/(\d+)\s*$/);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (n >= max) max = n + 1;
+          }
+        }
+      });
+      state.settings.nextAvoirNumber = max;
+      Storage.saveSettings(state.settings);
+    }
+
     function applyTheme() {
       document.body.classList.toggle('dark', state.settings.dark);
       document.body.classList.toggle('tablet-mode', state.settings.tablet);
@@ -2254,6 +2436,9 @@
       const tbtn = $('#tabletToggleBtn');
       if (tbtn) tbtn.innerHTML = state.settings.tablet ? '<i class="fas fa-mobile-alt"></i> Désactiver' : '<i class="fas fa-tablet-alt"></i> Activer';
       if (state.settings.accent) document.documentElement.style.setProperty('--accent', state.settings.accent);
+      if (state.settings.dark && state.settings.accent === '#6366f1') {
+        document.documentElement.style.setProperty('--accent', '#60a5fa');
+      }
     }
 
     function toggleTheme() {
@@ -2302,6 +2487,7 @@
 
     const pageInfo = {
       'devis-list': { title: 'Mes devis', subtitle: 'Consultez et gérez tous vos devis' },
+      invoices: { title: 'Factures', subtitle: 'Factures émises, payées et avoirs' },
       clients: { title: 'Clients', subtitle: 'Gérez votre base clients' },
       catalogue: { title: 'Catalogue', subtitle: 'Bibliothèque de produits et services' },
       editor: { title: 'Devis', subtitle: 'Créez ou modifiez un devis' },
@@ -2341,6 +2527,7 @@
       renderTopbarActions(view);
 
       if (view === 'devis-list') { renderDevisList(); renderExportReminder(); }
+      if (view === 'invoices') renderInvoices();
       if (view === 'clients') renderClients();
       if (view === 'catalogue') renderCatalogue();
       if (view === 'reports') renderReports();
@@ -2389,6 +2576,9 @@
       $('#exportReminderBtn').addEventListener('click', exportAll);
     }
 
+    // ==========================================================
+    // DEVIS
+    // ==========================================================
     function getFilteredDevis() {
       const search = ($('#devisSearch')?.value || '').toLowerCase().trim();
       const status = $('#devisFilterStatus')?.value || '';
@@ -2400,9 +2590,7 @@
         if (search) {
           const inNumber = (d.number || '').toLowerCase().includes(search);
           const inClient = (d.clientName || '').toLowerCase().includes(search);
-          const inItems = (d.items || []).some(it =>
-            (it.description || '').toLowerCase().includes(search)
-          );
+          const inItems = (d.items || []).some(it => (it.description || '').toLowerCase().includes(search));
           if (!inNumber && !inClient && !inItems) return false;
         }
         if (status && d.status !== status) return false;
@@ -2450,6 +2638,7 @@
               ${escapeHtml(d.number || 'Sans numéro')}
               <span class="status-badge status-${d.status || 'brouillon'}">${statusLabels[d.status] || 'Brouillon'}</span>
               ${expired ? '<span class="status-badge status-refuse"><i class="fas fa-clock"></i> Expiré</span>' : ''}
+              ${d.invoiceId ? `<span class="status-badge status-facture"><i class="fas fa-file-invoice-dollar"></i> Facturé</span>` : ''}
             </div>
             <div class="devis-meta">
               <span><i class="fas fa-user"></i> ${escapeHtml(d.clientName || 'Aucun client')}</span>
@@ -2458,7 +2647,6 @@
               ${validityDate ? `<span><i class="fas fa-hourglass-half"></i> Valide jusqu'au ${formatDate(validityDate)}</span>` : ''}
               ${d.acceptedDate ? `<span style="color:var(--success);"><i class="fas fa-check-circle"></i> Accepté le ${formatDate(d.acceptedDate)}</span>` : ''}
               ${paid > 0 ? `<span style="color:var(--success);"><i class="fas fa-coins"></i> ${formatEuro(paid)} payé</span>` : ''}
-              ${remaining > 0 && paid > 0 ? `<span style="color:var(--warning);"><i class="fas fa-clock"></i> ${formatEuro(remaining)} restant</span>` : ''}
             </div>
           </div>
           <div class="devis-total">${formatEuro(total)}</div>
@@ -2481,6 +2669,10 @@
         item.querySelector('[data-action="delete"]')?.addEventListener('click', async () => {
           const d = state.devis.find(x => x.id === id);
           if (!d) return;
+          if (d.invoiceId) {
+            toast('Ce devis est facturé. Annulez la facture avant de supprimer le devis.', 'error');
+            return;
+          }
           const ok = await ConfirmDialog.open({
             title: 'Supprimer ce devis ?',
             message: `Le devis ${d.number || ''} sera placé dans la corbeille (conservé 30 jours).`,
@@ -2507,6 +2699,144 @@
       });
     }
 
+    // ==========================================================
+    // FACTURES
+    // ==========================================================
+    function computeInvoiceStatus(inv) {
+      if (inv.status === 'annulee') return 'annulee';
+      const total = devisTotalTTC({ items: inv.items });
+      const paid = (inv.payments || []).reduce((s, p) => s + p.amount, 0);
+      if (paid >= total && total > 0) return 'payee';
+      if (paid > 0) return 'partielle';
+      if (inv.dueDate && inv.dueDate < todayISO()) return 'en_retard';
+      return inv.status || 'emise';
+    }
+
+    function getFilteredInvoices() {
+      const search = ($('#invoiceSearch')?.value || '').toLowerCase().trim();
+      const status = $('#invoiceFilterStatus')?.value || '';
+      const from = $('#invoiceFilterFrom')?.value || '';
+      const to = $('#invoiceFilterTo')?.value || '';
+      const sortBy = $('#invoiceSortBy')?.value || 'date-desc';
+
+      let list = state.invoices.filter(i => {
+        if (search) {
+          const inNumber = (i.number || '').toLowerCase().includes(search);
+          const inClient = (i.clientName || '').toLowerCase().includes(search);
+          if (!inNumber && !inClient) return false;
+        }
+        if (status) {
+          const autoStatus = computeInvoiceStatus(i);
+          if (autoStatus !== status) return false;
+        }
+        if (from && i.date < from) return false;
+        if (to && i.date > to) return false;
+        return true;
+      });
+
+      list.sort((a, b) => {
+        switch (sortBy) {
+          case 'date-asc': return (a.date || '').localeCompare(b.date || '');
+          case 'amount-desc': return devisTotalTTC({items: b.items}) - devisTotalTTC({items: a.items});
+          case 'amount-asc': return devisTotalTTC({items: a.items}) - devisTotalTTC({items: b.items});
+          case 'date-desc':
+          default: return (b.date || '').localeCompare(a.date || '');
+        }
+      });
+      return list;
+    }
+
+    function renderInvoices() {
+      const list = $('#invoicesList');
+      if (!list) return;
+
+      const all = state.invoices;
+      const totalFacture = all.filter(i => i.status !== 'annulee').reduce((s, i) => s + devisTotalTTC({items: i.items}), 0);
+      const totalPaid = all.reduce((s, i) => {
+        if (i.status === 'annulee') return s;
+        const p = (i.payments || []).reduce((a, b) => a + b.amount, 0);
+        return s + p;
+      }, 0);
+      const totalPending = Math.max(0, totalFacture - totalPaid);
+
+      $('#invCount').textContent = all.length;
+      $('#invTotalTTC').textContent = formatEuro(totalFacture);
+      $('#invTotalPaid').textContent = formatEuro(totalPaid);
+      $('#invTotalPending').textContent = formatEuro(totalPending);
+
+      const filtered = getFilteredInvoices();
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty"><i class="fas fa-file-invoice-dollar"></i><h3>Aucune facture</h3><p>Émettez une facture depuis un devis accepté</p></div>`;
+        return;
+      }
+
+      const statusLabels = {
+        emise: 'Émise',
+        payee: 'Payée',
+        partielle: 'Partielle',
+        en_retard: 'En retard',
+        annulee: 'Annulée'
+      };
+
+      list.innerHTML = filtered.map(inv => {
+        const st = computeInvoiceStatus(inv);
+        const total = devisTotalTTC({items: inv.items});
+        const paid = (inv.payments || []).reduce((s, p) => s + p.amount, 0);
+        const remaining = Math.max(0, total - paid);
+        return `
+          <div class="devis-item" data-invoice-id="${inv.id}">
+            <div class="devis-info">
+              <div class="devis-number">
+                <i class="fas fa-file-invoice-dollar" style="color: var(--accent);"></i>
+                ${escapeHtml(inv.number || 'Sans numéro')}
+                <span class="status-badge status-${st}">${statusLabels[st] || st}</span>
+              </div>
+              <div class="devis-meta">
+                <span><i class="fas fa-user"></i> ${escapeHtml(inv.clientName || '—')}</span>
+                <span><i class="far fa-calendar"></i> Émise le ${formatDate(inv.date)}</span>
+                ${inv.dueDate ? `<span><i class="fas fa-hourglass-half"></i> Échéance ${formatDate(inv.dueDate)}</span>` : ''}
+                ${inv.devisNumber ? `<span><i class="fas fa-link"></i> Devis ${escapeHtml(inv.devisNumber)}</span>` : ''}
+                ${paid > 0 ? `<span style="color:var(--success);"><i class="fas fa-coins"></i> ${formatEuro(paid)} payé</span>` : ''}
+                ${remaining > 0 && paid > 0 ? `<span style="color:var(--warning);"><i class="fas fa-clock"></i> ${formatEuro(remaining)} restant</span>` : ''}
+              </div>
+            </div>
+            <div class="devis-total">${formatEuro(total)}</div>
+            <div style="display:flex; gap:0.25rem;">
+              <button class="btn btn-outline btn-icon btn-sm" data-action="pdf-invoice" title="Télécharger PDF" aria-label="PDF"><i class="fas fa-file-pdf"></i></button>
+              <button class="btn btn-outline btn-icon btn-sm" data-action="cancel-invoice" title="Émettre un avoir" aria-label="Avoir" ${st === 'annulee' ? 'disabled' : ''}><i class="fas fa-ban"></i></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      list.querySelectorAll('.devis-item').forEach(el => {
+        const id = el.dataset.invoiceId;
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('button')) return;
+          const inv = state.invoices.find(x => x.id === id);
+          if (inv) {
+            const devis = state.devis.find(d => d.id === inv.devisId);
+            if (devis) {
+              navigateTo('editor').then(() => openEditor(devis.id));
+            } else {
+              toast('Devis d\'origine introuvable', 'warning');
+            }
+          }
+        });
+        el.querySelector('[data-action="pdf-invoice"]')?.addEventListener('click', () => {
+          const inv = state.invoices.find(x => x.id === id);
+          if (inv) downloadInvoicePDF(inv);
+        });
+        el.querySelector('[data-action="cancel-invoice"]')?.addEventListener('click', () => {
+          const inv = state.invoices.find(x => x.id === id);
+          if (inv) cancelInvoice(inv.id);
+        });
+      });
+    }
+
+    // ==========================================================
+    // CLIENTS
+    // ==========================================================
     function renderClients() {
       const grid = $('#clientsGrid');
       if (state.clients.length === 0) {
@@ -2635,6 +2965,9 @@
       }
     }
 
+    // ==========================================================
+    // CATALOGUE
+    // ==========================================================
     function getCatalogCategories() {
       const set = new Set();
       state.catalog.forEach(c => { if (c.category) set.add(c.category); });
@@ -2840,6 +3173,9 @@
       });
     }
 
+    // ==========================================================
+    // EDITOR
+    // ==========================================================
     function updateClientSelect() {
       const select = $('#clientSelect');
       if (!select) return;
@@ -2880,8 +3216,30 @@
       return `DEV-${year}-${String(n).padStart(3, '0')}`;
     }
 
+    function nextInvoiceNumber() {
+      const year = new Date().getFullYear();
+      const n = state.settings.nextInvoiceNumber || 1;
+      return `FAC-${year}-${String(n).padStart(3, '0')}`;
+    }
+
+    function nextAvoirNumber() {
+      const year = new Date().getFullYear();
+      const n = state.settings.nextAvoirNumber || 1;
+      return `AV-${year}-${String(n).padStart(3, '0')}`;
+    }
+
     function consumeDevisNumber() {
       state.settings.nextNumber = (state.settings.nextNumber || 1) + 1;
+      Storage.saveSettings(state.settings);
+    }
+
+    function consumeInvoiceNumber() {
+      state.settings.nextInvoiceNumber = (state.settings.nextInvoiceNumber || 1) + 1;
+      Storage.saveSettings(state.settings);
+    }
+
+    function consumeAvoirNumber() {
+      state.settings.nextAvoirNumber = (state.settings.nextAvoirNumber || 1) + 1;
       Storage.saveSettings(state.settings);
     }
 
@@ -2896,6 +3254,47 @@
       state.draftDebounceTimer = setTimeout(() => {
         saveDraft();
       }, DRAFT_DEBOUNCE_MS);
+    }
+
+    function renderInvoiceBanner() {
+      const c = $('#invoiceBannerContainer');
+      if (!c) return;
+      if (!state.currentDevisId) { c.innerHTML = ''; return; }
+      const d = state.devis.find(x => x.id === state.currentDevisId);
+      if (!d || !d.invoiceId) { c.innerHTML = ''; return; }
+      const inv = state.invoices.find(i => i.id === d.invoiceId);
+      if (!inv) { c.innerHTML = ''; return; }
+      c.innerHTML = `
+        <div class="invoice-banner">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <div class="txt">
+            <div style="font-weight:700;">Facture liée : ${escapeHtml(inv.number)}</div>
+            <div style="font-size:0.75rem; opacity:0.85;">Émise le ${formatDate(inv.date)} · Échéance ${formatDate(inv.dueDate)}</div>
+          </div>
+          <button class="btn btn-sm btn-accent" id="viewInvoiceBtn" style="margin-left:auto;">
+            <i class="fas fa-file-pdf"></i> Télécharger
+          </button>
+        </div>
+      `;
+      $('#viewInvoiceBtn').addEventListener('click', () => downloadInvoicePDF(inv));
+    }
+
+    function renderInvoiceLockBanner() {
+      const c = $('#invoiceLockBanner');
+      if (!c) return;
+      if (!state.currentDevisId) { c.innerHTML = ''; return; }
+      const d = state.devis.find(x => x.id === state.currentDevisId);
+      if (!d || !d.invoiceId) { c.innerHTML = ''; return; }
+      c.innerHTML = `
+        <div class="danger-note" style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
+          <i class="fas fa-lock"></i>
+          <div style="flex:1 1 200px;">
+            <strong>Devis facturé.</strong> La facture est immuable (art. L123-22 code de commerce).
+            Toute modification du devis ne met pas à jour la facture.
+            Pour corriger, émettez un avoir depuis l'onglet Factures.
+          </div>
+        </div>
+      `;
     }
 
     function openEditor(devisId = null) {
@@ -2985,6 +3384,8 @@
         updatePaymentsSummary();
         updateValidityInfo();
         updateDepositInfo();
+        renderInvoiceBanner();
+        renderInvoiceLockBanner();
         navigateTo('editor');
         startAutosave();
       }
@@ -3019,7 +3420,9 @@
                 <option value="0" ${item.tva == 0 ? 'selected' : ''}>0%</option>
                 <option value="5.5" ${item.tva == 5.5 ? 'selected' : ''}>5,5%</option>
                 <option value="10" ${item.tva == 10 ? 'selected' : ''}>10%</option>
+                <option value="12.3" ${item.tva == 12.3 ? 'selected' : ''}>12,3%</option>
                 <option value="20" ${item.tva == 20 ? 'selected' : ''}>20%</option>
+                <option value="21.2" ${item.tva == 21.2 ? 'selected' : ''}>21,20%</option>
               </select>
             </td>
             <td data-label="Total HT"><strong>${formatEuro(total)}</strong></td>
@@ -3217,6 +3620,8 @@
         const idx = state.devis.findIndex(d => d.id === state.currentDevisId);
         if (idx >= 0) {
           const old = state.devis[idx];
+          // Conserver les refs facture
+          if (old.invoiceId) devisData.invoiceId = old.invoiceId;
           if (!old.history) old.history = [];
           old.history.push({
             version: (old.history.length + 1),
@@ -3242,64 +3647,167 @@
         toast('Devis enregistré');
       }
 
+      // Sync paiements vers facture liée si elle existe
+      const currentDevis = state.devis.find(d => d.id === state.currentDevisId);
+      if (currentDevis && currentDevis.invoiceId) {
+        const inv = state.invoices.find(i => i.id === currentDevis.invoiceId);
+        if (inv) {
+          inv.payments = JSON.parse(JSON.stringify(state.currentPayments));
+          Storage.saveInvoices(state.invoices);
+        }
+      }
+
       Storage.saveDevis(state.devis);
       Storage.saveDraft(null);
       state.editorDirty = false;
       updateBadges();
       $('#pageTitle').textContent = 'Modifier le devis';
       $('#pageSubtitle').textContent = devisData.number;
+      renderInvoiceBanner();
+      renderInvoiceLockBanner();
     }
 
-    function openHistoryModal() {
-      if (!state.currentDevisId) { toast('Enregistrez le devis d\'abord', 'warning'); return; }
-      const d = state.devis.find(d => d.id === state.currentDevisId);
-      if (!d) return;
-      const list = $('#historyList');
-      const hist = d.history || [];
-      if (hist.length === 0) {
-        list.innerHTML = `<div class="empty"><i class="fas fa-history"></i><h3>Aucune version antérieure</h3><p>L'historique se remplit à chaque enregistrement.</p></div>`;
-      } else {
-        list.innerHTML = hist.slice().reverse().map(h => `
-          <div class="history-item" data-version-id="${h.version}">
-            <div class="version"><i class="fas fa-code-branch"></i> Version ${h.version}</div>
-            <div class="meta">${new Date(h.savedAt).toLocaleString('fr-FR')} · ${formatEuro(devisTotalTTC({ items: h.snapshot.items || [] }))}</div>
-          </div>
-        `).join('');
-        list.querySelectorAll('.history-item').forEach(el => {
-          el.addEventListener('click', () => restoreVersion(parseInt(el.dataset.versionId)));
-        });
+    // ==========================================================
+    // FACTURE : ÉMISSION
+    // ==========================================================
+    async function emitInvoice() {
+      // Exiger un devis enregistré
+      if (!state.currentDevisId) {
+        toast('Enregistrez d\'abord le devis avant d\'émettre la facture.', 'warning');
+        const saveBtn = $('#saveBtn');
+        if (saveBtn) {
+          saveBtn.style.boxShadow = '0 0 0 4px rgba(239,68,68,0.35)';
+          setTimeout(() => { saveBtn.style.boxShadow = ''; }, 1500);
+          saveBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
       }
-      $('#historyModal').classList.add('active');
-    }
 
-    async function restoreVersion(version) {
+      const devis = state.devis.find(d => d.id === state.currentDevisId);
+      if (!devis) { toast('Devis introuvable', 'error'); return; }
+
+      if (devis.invoiceId) {
+        // Déjà facturé : confirmer pour télécharger, pas pour régénérer
+        const inv = state.invoices.find(i => i.id === devis.invoiceId);
+        if (inv) {
+          const ok = await ConfirmDialog.open({
+            title: 'Facture déjà émise',
+            message: `La facture ${inv.number} existe déjà et est immuable. Voulez-vous télécharger le PDF de la facture d'origine ?`,
+            okText: 'Télécharger',
+            okClass: 'btn-accent'
+          });
+          if (ok) downloadInvoicePDF(inv);
+        }
+        return;
+      }
+
+      // Première émission : confirmer
+      const client = state.clients.find(c => c.id === devis.clientId);
+      if (!client) {
+        toast('Sélectionnez un client avant d\'émettre la facture.', 'error');
+        return;
+      }
+      if (!state.currentItems || state.currentItems.length === 0 || state.currentItems.every(i => !i.description && !i.unitPrice)) {
+        toast('Le devis est vide. Ajoutez des lignes avant de facturer.', 'error');
+        return;
+      }
+
       const ok = await ConfirmDialog.open({
-        title: `Restaurer la version ${version} ?`,
-        message: 'La version actuelle sera sauvegardée dans l\'historique avant restauration.',
-        okText: 'Restaurer',
-        okClass: 'btn-accent'
+        title: 'Émettre la facture ?',
+        message: `Cette action va créer une facture ${nextInvoiceNumber()} et figer définitivement son contenu (immuable après émission). Continuer ?`,
+        okText: 'Émettre la facture',
+        okClass: 'btn-primary'
       });
       if (!ok) return;
-      const d = state.devis.find(d => d.id === state.currentDevisId);
-      if (!d) return;
-      const h = (d.history || []).find(x => x.version === version);
-      if (!h) return;
-      const snap = h.snapshot;
-      if (!d.history) d.history = [];
-      d.history.push({
-        version: d.history.length + 1, savedAt: Date.now(),
-        snapshot: { number: d.number, date: d.date, status: d.status, notes: d.notes, clientId: d.clientId, clientName: d.clientName, items: JSON.parse(JSON.stringify(d.items || [])), payments: JSON.parse(JSON.stringify(d.payments || [])), depositPercent: d.depositPercent, validityDays: d.validityDays, acceptedDate: d.acceptedDate }
-      });
-      Object.assign(d, snap);
-      d.updatedAt = Date.now();
+
+      // Créer l'entité facture
+      const inv = {
+        id: uid(),
+        number: nextInvoiceNumber(),
+        devisId: devis.id,
+        devisNumber: devis.number || '',
+        clientId: devis.clientId,
+        clientName: client.name || '',
+        date: todayISO(),
+        dueDate: addDaysISO(todayISO(), INVOICE_DUE_DAYS),
+        status: 'emise',
+        items: JSON.parse(JSON.stringify(state.currentItems)),
+        notes: $('#invoiceNotes').value.trim(),
+        depositPercent: parseFloat($('#depositPercent').value) || 0,
+        emittedAt: Date.now(),
+        locked: true,
+        payments: JSON.parse(JSON.stringify(state.currentPayments)),
+        originalInvoiceId: null
+      };
+
+      state.invoices.push(inv);
+      consumeInvoiceNumber();
+      devis.invoiceId = inv.id;
+      Storage.saveInvoices(state.invoices);
       Storage.saveDevis(state.devis);
-      closeHistoryModal();
-      openEditor(d.id);
-      toast(`Version ${version} restaurée`);
+      updateBadges();
+
+      // Mettre à jour l'interface
+      renderInvoiceBanner();
+      renderInvoiceLockBanner();
+      renderItems(); // visuellement rien mais recharge
+
+      toast(`Facture ${inv.number} émise et verrouillée`, 'success');
+
+      // Télécharger le PDF immédiatement
+      setTimeout(() => downloadInvoicePDF(inv), 400);
     }
 
-    function closeHistoryModal() { $('#historyModal').classList.remove('active'); }
+    async function cancelInvoice(invoiceId) {
+      const inv = state.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+      if (inv.status === 'annulee') {
+        toast('Cette facture est déjà annulée.', 'warning');
+        return;
+      }
+      const ok = await ConfirmDialog.open({
+        title: 'Annuler cette facture ?',
+        message: `Un avoir ${nextAvoirNumber()} sera créé avec le montant négatif. La facture ${inv.number} passera en statut "Annulée". Cette action est irréversible.`,
+        okText: 'Émettre un avoir',
+        okClass: 'btn-danger'
+      });
+      if (!ok) return;
 
+      const avoir = {
+        id: uid(),
+        number: nextAvoirNumber(),
+        devisId: inv.devisId,
+        devisNumber: inv.devisNumber,
+        clientId: inv.clientId,
+        clientName: inv.clientName,
+        date: todayISO(),
+        dueDate: todayISO(),
+        status: 'emise',
+        items: inv.items.map(it => ({
+          ...it,
+          quantity: -it.quantity
+        })),
+        notes: `Avoir sur facture ${inv.number}`,
+        depositPercent: 0,
+        emittedAt: Date.now(),
+        locked: true,
+        payments: [],
+        originalInvoiceId: inv.id,
+        isAvoir: true
+      };
+      state.invoices.push(avoir);
+      consumeAvoirNumber();
+      inv.status = 'annulee';
+      inv.cancelledBy = avoir.id;
+      Storage.saveInvoices(state.invoices);
+      updateBadges();
+      renderInvoices();
+      toast(`Avoir ${avoir.number} émis. Facture ${inv.number} annulée.`, 'success');
+    }
+
+    // ==========================================================
+    // PDF DEVIS
+    // ==========================================================
     function buildDevisDataForPDF() {
       const clientId = $('#clientSelect').value;
       const client = state.clients.find(c => c.id === clientId);
@@ -3328,11 +3836,17 @@
       return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
     }
 
+    function getAccentRgb() {
+      let hex = state.settings.accent || '#6366f1';
+      if (state.settings.dark && hex === '#6366f1') hex = '#60a5fa';
+      return hexToRgb(hex);
+    }
+
     function generatePDFDoc() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
       const data = buildDevisDataForPDF();
-      const accent = hexToRgb(state.settings.accent || '#6366f1');
+      const accent = getAccentRgb();
       const pageW = 210, margin = 15;
       let y = margin;
 
@@ -3343,20 +3857,13 @@
       if (state.settings.company.logo) {
         try {
           const imgProps = doc.getImageProperties(state.settings.company.logo);
-          const MAX_W = 35;
-          const MAX_H = 18;
+          const MAX_W = 35, MAX_H = 18;
           let logoW = MAX_W;
           let logoH = (imgProps.height / imgProps.width) * logoW;
-          if (logoH > MAX_H) {
-            logoH = MAX_H;
-            logoW = (imgProps.width / imgProps.height) * logoH;
-          }
+          if (logoH > MAX_H) { logoH = MAX_H; logoW = (imgProps.width / imgProps.height) * logoH; }
           doc.addImage(state.settings.company.logo, 'PNG', margin, y, logoW, logoH);
           logoHeight = logoH + 4;
-        } catch (e) {
-          console.warn('Logo non ajouté au PDF', e);
-          logoHeight = 0;
-        }
+        } catch (e) { logoHeight = 0; }
       }
 
       doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
@@ -3523,15 +4030,201 @@
       }
     }
 
+    // ==========================================================
+    // PDF FACTURE (figée)
+    // ==========================================================
+    function generateInvoicePDFDoc(invoice) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const accent = getAccentRgb();
+      const pageW = 210, margin = 15;
+      let y = margin;
+      const isAvoir = invoice.isAvoir || invoice.number.startsWith('AV-');
+
+      // Données figées à l'émission
+      const items = invoice.items || [];
+      const ht = items.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
+      const tva = items.reduce((s, i) => s + (i.quantity * i.unitPrice) * (i.tva/100), 0);
+      const ttc = ht + tva;
+      const paid = (invoice.payments || []).reduce((s, p) => s + p.amount, 0);
+      const remaining = Math.max(0, ttc - paid);
+      const vatBreakdown = computeTVABreakdown(items);
+      const client = state.clients.find(c => c.id === invoice.clientId);
+
+      const title = isAvoir ? 'AVOIR' : 'FACTURE';
+      const titleColor = isAvoir ? [220, 38, 38] : accent;
+
+      doc.setFillColor(titleColor[0], titleColor[1], titleColor[2]);
+      doc.rect(0, 0, pageW, 4, 'F');
+
+      let logoHeight = 0;
+      if (state.settings.company.logo) {
+        try {
+          const imgProps = doc.getImageProperties(state.settings.company.logo);
+          const MAX_W = 35, MAX_H = 18;
+          let logoW = MAX_W;
+          let logoH = (imgProps.height / imgProps.width) * logoW;
+          if (logoH > MAX_H) { logoH = MAX_H; logoW = (imgProps.width / imgProps.height) * logoH; }
+          doc.addImage(state.settings.company.logo, 'PNG', margin, y, logoW, logoH);
+          logoHeight = logoH + 4;
+        } catch (e) { logoHeight = 0; }
+      }
+
+      doc.setFontSize(16); doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]); doc.setFont(undefined, 'bold');
+      doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8 + logoHeight);
+      doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.setFont(undefined, 'normal');
+      let cy = y + 13 + logoHeight;
+      const compAddr = (state.settings.company.address || '').split('\n');
+      compAddr.forEach(l => { if (l.trim()) { doc.text(l, margin, cy); cy += 4; } });
+      if (state.settings.company.email) { doc.text(state.settings.company.email, margin, cy); cy += 4; }
+      if (state.settings.company.phone) { doc.text(state.settings.company.phone, margin, cy); cy += 4; }
+      if (state.settings.company.siret) { doc.text(`SIRET : ${state.settings.company.siret}`, margin, cy); cy += 4; }
+      if (state.settings.company.vatRegime === 'franchise') {
+        doc.text('TVA non applicable, art. 293 B du CGI', margin, cy); cy += 4;
+      } else if (state.settings.company.tvaNumber) {
+        doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4;
+      }
+
+      const infoX = pageW - margin;
+      doc.setFontSize(16); doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]); doc.setFont(undefined, 'bold');
+      doc.text(`${title} ${invoice.number}`, infoX, y + 8, { align: 'right' });
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80);
+      doc.text(`Date : ${formatDate(invoice.date)}`, infoX, y + 14, { align: 'right' });
+      if (!isAvoir && invoice.dueDate) {
+        doc.text(`Échéance : ${formatDate(invoice.dueDate)}`, infoX, y + 19, { align: 'right' });
+      }
+      if (invoice.devisNumber) {
+        doc.text(`Réf. devis : ${invoice.devisNumber}`, infoX, y + 24, { align: 'right' });
+      }
+      if (isAvoir && invoice.originalInvoiceId) {
+        const orig = state.invoices.find(i => i.id === invoice.originalInvoiceId);
+        if (orig) doc.text(`Annule la facture : ${orig.number}`, infoX, y + 29, { align: 'right' });
+      }
+
+      y = Math.max(cy + 5, y + 30 + logoHeight) + 10;
+      doc.setDrawColor(titleColor[0], titleColor[1], titleColor[2]); doc.setLineWidth(0.5);
+      doc.line(margin, y, pageW - margin, y); y += 8;
+      doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
+      doc.text(isAvoir ? 'ÉMIS PAR' : 'FACTURÉ À', margin, y); y += 6;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
+      doc.text(invoice.clientName || '—', margin, y); y += 4;
+      if (client) {
+        if (client.email) { doc.text(client.email, margin, y); y += 4; }
+        if (client.phone) { doc.text(client.phone, margin, y); y += 4; }
+        if (client.address) client.address.split('\n').forEach(l => { doc.text(l, margin, y); y += 4; });
+      }
+
+      y += 5;
+      const rows = items.map(i => [
+        i.description || '',
+        String(i.quantity),
+        formatEuroPdf(i.unitPrice),
+        i.tva + '%',
+        formatEuroPdf(i.quantity * i.unitPrice)
+      ]);
+
+      doc.autoTable({
+        startY: y,
+        head: [['Désignation', 'Qté', 'Prix HT', 'TVA', 'Total HT']],
+        body: rows,
+        theme: 'grid',
+        headStyles: { fillColor: titleColor, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+        bodyStyles: { fontSize: 8.5 },
+        columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'center' }, 4: { halign: 'right' } },
+        margin: { left: margin, right: margin }
+      });
+      y = doc.lastAutoTable.finalY + 10;
+
+      const boxX = pageW - margin - 80;
+      doc.setFontSize(9); doc.setTextColor(100);
+      doc.text('Total HT', boxX, y);
+      doc.text(formatEuroPdf(ht), pageW - margin, y, { align: 'right' }); y += 5;
+
+      if (vatBreakdown.length === 1) {
+        const b = vatBreakdown[0];
+        doc.text(`TVA (${b.rate}%)`, boxX, y);
+        doc.text(formatEuroPdf(b.tva), pageW - margin, y, { align: 'right' }); y += 5;
+      } else if (vatBreakdown.length > 1) {
+        doc.text('TVA', boxX, y);
+        doc.text(formatEuroPdf(tva), pageW - margin, y, { align: 'right' }); y += 4;
+        doc.setFontSize(7.5); doc.setTextColor(130);
+        vatBreakdown.forEach(b => {
+          doc.text(`  dont ${b.rate}% sur ${formatEuroPdf(b.baseHT)}`, boxX + 2, y);
+          doc.text(formatEuroPdf(b.tva), pageW - margin, y, { align: 'right' }); y += 3.5;
+        });
+        doc.setFontSize(9); doc.setTextColor(100); y += 1.5;
+      }
+
+      doc.setDrawColor(titleColor[0], titleColor[1], titleColor[2]); doc.setLineWidth(0.5);
+      doc.line(boxX, y, pageW - margin, y); y += 6;
+      doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]);
+      doc.text('Total TTC', boxX, y);
+      doc.text(formatEuroPdf(ttc), pageW - margin, y, { align: 'right' }); y += 7;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
+
+      if (!isAvoir && invoice.depositPercent > 0) {
+        const dep = Math.round(ttc * invoice.depositPercent) / 100;
+        if (dep > 0) {
+          doc.setTextColor(100);
+          doc.text(`Acompte (${invoice.depositPercent}%)`, boxX, y);
+          doc.text(formatEuroPdf(dep), pageW - margin, y, { align: 'right' }); y += 5;
+        }
+      }
+      if (paid > 0) {
+        doc.setTextColor(16, 185, 129);
+        doc.text('Déjà payé', boxX, y);
+        doc.text(formatEuroPdf(paid), pageW - margin, y, { align: 'right' }); y += 5;
+      }
+      doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]);
+      doc.setFont(undefined, 'bold');
+      doc.text('Net à payer', boxX, y);
+      doc.text(formatEuroPdf(remaining), pageW - margin, y, { align: 'right' }); y += 7;
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(30);
+
+      // Mentions légales obligatoires
+      y = Math.max(y + 6, doc.lastAutoTable.finalY + 45);
+      doc.setFontSize(7.5); doc.setTextColor(120);
+      let mentions = '';
+      if (isAvoir) {
+        mentions = `Avoir émis en annulation de la facture ${(() => {
+          const orig = state.invoices.find(i => i.id === invoice.originalInvoiceId);
+          return orig ? orig.number : '';
+        })()}.`;
+      } else {
+        mentions = state.settings.company.paymentTerms || 'Paiement à réception de facture. En cas de retard de paiement, des pénalités au taux d\'intérêt légal seront appliquées, ainsi qu\'une indemnité forfaitaire de recouvrement de 40 €.';
+        if (invoice.dueDate) {
+          mentions = `Échéance : ${formatDate(invoice.dueDate)}. ` + mentions;
+        }
+      }
+      const split = doc.splitTextToSize(mentions, pageW - margin * 2);
+      doc.text(split, margin, y);
+      y += split.length * 3.5 + 3;
+
+      doc.setFontSize(7); doc.setTextColor(150);
+      doc.text(`${title} généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}`, pageW/2, 290, { align: 'center' });
+
+      return { doc, filename: `${title}_${invoice.number}.pdf` };
+    }
+
+    function downloadInvoicePDF(invoice) {
+      try {
+        const { doc, filename } = generateInvoicePDFDoc(invoice);
+        doc.save(filename);
+        toast(`${invoice.number} téléchargée`);
+      } catch (e) {
+        console.error(e);
+        toast('Erreur génération PDF facture', 'error');
+      }
+    }
+
     function prepareEmailWithPDF() {
       const clientId = $('#clientSelect').value;
       const client = state.clients.find(c => c.id === clientId);
       if (!client || !client.email) { toast('Aucun email client défini', 'error'); return; }
 
-      let pdfFilename = '';
       try {
         const { doc, filename } = generatePDFDoc();
-        pdfFilename = filename;
         doc.save(filename);
       } catch (e) {
         console.error(e);
@@ -3541,31 +4234,10 @@
 
       const data = buildDevisDataForPDF();
       const companyName = state.settings.company.name || '';
-      const lines = data.items.map(i =>
-        `- ${i.description || 'Sans nom'} : ${i.quantity} × ${formatEuro(i.unitPrice)} HT (TVA ${i.tva}%) = ${formatEuro(i.quantity * i.unitPrice * (1 + i.tva/100))} TTC`
-      ).join('\n');
-
-      let body = `Bonjour ${client.name || ''},\n\n`;
-      body += `Veuillez trouver ci-joint le devis ${data.number} du ${formatDate(data.date)} :\n\n`;
-      body += lines + `\n\n`;
-      body += `Total HT : ${formatEuro(data.ht)}\n`;
-      body += `Total TTC : ${formatEuro(data.ttc)}\n`;
-      if (data.depositPct > 0 && data.depositAmount > 0) {
-        body += `Acompte demandé (${data.depositPct}%) : ${formatEuro(data.depositAmount)}\n`;
-      }
-      if (data.validityDate) body += `\nCe devis est valable jusqu'au ${formatDate(data.validityDate)}.\n`;
-      if (data.notes) body += `\nNotes / conditions :\n${data.notes}\n`;
-
-      body += `\n--- Pour accord ---\n`;
-      body += `Merci de nous retourner ce devis :\n`;
-      body += `  • soit signé, daté et précédé de la mention « Bon pour accord » (par email ou courrier),\n`;
-      body += `  • soit en répondant simplement à cet email avec la mention « Bon pour accord » et la date.\n\n`;
-      if (data.validityDate) body += `Sans retour de votre part avant le ${formatDate(data.validityDate)}, ce devis sera considéré comme caduc.\n\n`;
-      body += `Cordialement,\n${companyName}`;
-
       const subject = encodeURIComponent(`Devis ${data.number} - ${companyName}`);
+      const body = `Bonjour ${client.name || ''},\n\nVeuillez trouver ci-joint le devis ${data.number} du ${formatDate(data.date)}.\n\nTotal TTC : ${formatEuro(data.ttc)}\n\nCordialement,\n${companyName}`;
 
-      toast(`PDF téléchargé (${pdfFilename}). Attachez-le à l'email qui s'ouvre.`, 'success');
+      toast('PDF téléchargé. Attachez-le à l\'email qui s\'ouvre.', 'success');
       setTimeout(() => {
         window.location.href = `mailto:${client.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
       }, 800);
@@ -3576,13 +4248,8 @@
         const { doc, filename } = generatePDFDoc();
         const blob = doc.output('blob');
         const file = new File([blob], filename, { type: 'application/pdf' });
-
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: `Devis ${$('#invoiceNumber').value}`,
-            text: `Devis ${$('#invoiceNumber').value} - ${state.settings.company.name || ''}`
-          });
+          await navigator.share({ files: [file], title: `Devis ${$('#invoiceNumber').value}` });
           toast('PDF partagé');
         } else {
           doc.save(filename);
@@ -3597,122 +4264,34 @@
 
     function printDevis() {
       const data = buildDevisDataForPDF();
-      const logoHtml = state.settings.company.logo ? `<img src="${state.settings.company.logo}" style="max-height:60px; max-width:150px; object-fit:contain; margin-bottom:8px; display:block;">` : '';
       const accent = state.settings.accent || '#6366f1';
-      const ins = state.settings.company.insurance || {};
-      let insuranceHtml = '';
-      if (ins.name || ins.policy || ins.coverage) {
-        insuranceHtml = `<div style="margin-top:20px; padding:10px; background:#f8fafc; border-radius:6px; font-size:11px; color:#64748b;"><strong>Assurance professionnelle</strong> : ${escapeHtml(ins.name || '')}${ins.policy ? ' — Police n° ' + escapeHtml(ins.policy) : ''}${ins.coverage ? ' — Couverture : ' + escapeHtml(ins.coverage) : ''}</div>`;
-      }
-      let vatMention = '';
-      if (state.settings.company.vatRegime === 'franchise') {
-        vatMention = `<div style="font-size:11px; color:#64748b; margin-top:8px;">TVA non applicable, art. 293 B du CGI</div>`;
-      }
       const rows = data.items.map(i => `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${i.quantity}</td><td style="text-align:right">${formatEuro(i.unitPrice)}</td><td style="text-align:center">${i.tva}%</td><td style="text-align:right">${formatEuro(i.quantity * i.unitPrice)}</td></tr>`).join('');
 
-      let tvaHtml = '';
-      if (data.vatBreakdown.length === 1) {
-        const b = data.vatBreakdown[0];
-        tvaHtml = `<div><span>TVA (${b.rate}%)</span><span>${formatEuro(b.tva)}</span></div>`;
-      } else {
-        tvaHtml = `<div><span>TVA</span><span>${formatEuro(data.tva)}</span></div>`;
-        data.vatBreakdown.forEach(b => {
-          tvaHtml += `<div style="font-size:11px; color:#94a3b8; padding:2px 0 2px 15px;"><span>dont ${b.rate}% sur ${formatEuro(b.baseHT)}</span><span>${formatEuro(b.tva)}</span></div>`;
-        });
-      }
-
       const html = `
-        <!DOCTYPE html>
-        <html><head><title>Devis ${escapeHtml(data.number)}</title>
-        <style>* { box-sizing: border-box; }
-        body { font-family: 'Inter', Arial, sans-serif; padding: 40px; color: #0f172a; max-width: 800px; margin: auto; }
-        .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid ${accent}; padding-bottom: 20px; gap: 20px; flex-wrap: wrap; }
-        .header .company strong { color: ${accent}; font-size: 18px; display: block; margin-bottom: 6px; }
-        .header .company, .header .client { font-size: 13px; }
-        .header .client { text-align: right; }
-        .header .client strong { color: #0f172a; display: block; font-size: 15px; margin-bottom: 4px; }
+        <!DOCTYPE html><html><head><title>Devis ${escapeHtml(data.number)}</title>
+        <style>* { box-sizing: border-box; } body { font-family: Arial, sans-serif; padding: 40px; color: #0f172a; max-width: 800px; margin: auto; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th { background: ${accent}; color: white; padding: 10px; text-align: left; font-size: 12px; text-transform: uppercase; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
-        tr { page-break-inside: avoid; }
-        .totals { margin-left: auto; width: 320px; margin-top: 20px; }
-        .totals div { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
-        .totals .total { border-top: 2px solid #0f172a; font-weight: 800; font-size: 18px; padding-top: 12px; color: ${accent}; }
-        .totals .deposit { color: #6366f1; font-weight: 600; }
-        .totals .paid { color: #10b981; font-weight: 600; }
-        .totals .remaining { color: #f59e0b; font-weight: 600; }
-        .notes { margin-top: 40px; padding: 15px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #64748b; }
-        .accord-box { margin-top: 40px; border: 2px solid ${accent}; border-radius: 8px; padding: 15px; page-break-inside: avoid; }
-        .accord-box .title { font-weight: 800; color: ${accent}; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; }
-        .accord-box .hint { font-size: 12px; color: #64748b; margin-bottom: 20px; }
-        .accord-lines { display: flex; gap: 20px; flex-wrap: wrap; }
-        .accord-line { flex: 1; min-width: 180px; }
-        .accord-line .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
-        .accord-line .line { border-bottom: 1px solid #94a3b8; height: 40px; }
-        .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; }
-        @media print { body { padding: 15px; } }
-        @media (max-width: 600px) { body { padding: 15px; } .header .client { text-align: left; } .totals { width: 100%; } }
+        th { background: ${accent}; color: white; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
         </style></head><body>
-        <div class="header">
-          <div class="company">${logoHtml}<strong>${escapeHtml(state.settings.company.name || 'Mon entreprise')}</strong>${escapeHtml(state.settings.company.address || '').replace(/\n/g, '<br>')}<br>${state.settings.company.email ? escapeHtml(state.settings.company.email) + '<br>' : ''}${state.settings.company.phone ? escapeHtml(state.settings.company.phone) : ''}${state.settings.company.siret ? '<br>SIRET : ' + escapeHtml(state.settings.company.siret) : ''}${vatMention}</div>
-          <div class="client"><strong>Devis ${escapeHtml(data.number)}</strong>${formatDate(data.date)}${data.validityDate ? '<br>Valable jusqu\'au ' + formatDate(data.validityDate) : ''}<br>Statut: ${data.status}<br><br><strong>Client</strong>${escapeHtml(data.client?.name || '—')}<br>${escapeHtml(data.client?.email || '')}<br>${escapeHtml(data.client?.address || '').replace(/\n/g, '<br>')}</div>
-        </div>
-        <table><thead><tr><th>Désignation</th><th style="text-align:center">Qté</th><th style="text-align:right">Prix HT</th><th style="text-align:center">TVA</th><th style="text-align:right">Total HT</th></tr></thead><tbody>${rows}</tbody></table>
-        <div class="totals">
-          <div><span>Total HT</span><span>${formatEuro(data.ht)}</span></div>
-          ${tvaHtml}
-          <div class="total"><span>Total TTC</span><span>${formatEuro(data.ttc)}</span></div>
-          ${data.depositPct > 0 && data.depositAmount > 0 ? `
-            <div class="deposit"><span>Acompte (${data.depositPct}%)</span><span>${formatEuro(data.depositAmount)}</span></div>
-            <div><span>Solde après acompte</span><span>${formatEuro(data.ttc - data.depositAmount)}</span></div>
-          ` : ''}
-          ${data.paid > 0 ? `<div class="paid"><span>Déjà payé</span><span>${formatEuro(data.paid)}</span></div>` : ''}
-          ${data.paid > 0 && data.remaining > 0 ? `<div class="remaining"><span>Reste à payer</span><span>${formatEuro(data.remaining)}</span></div>` : ''}
-        </div>
-        ${data.notes ? `<div class="notes"><strong>Notes :</strong><br>${escapeHtml(data.notes).replace(/\n/g, '<br>')}</div>` : ''}
-        ${insuranceHtml}
-        <div class="accord-box">
-          <div class="title">Bon pour accord</div>
-          <div class="hint">Lu et approuvé, bon pour accord. À retourner signé et daté.</div>
-          <div class="accord-lines">
-            <div class="accord-line"><div class="label">Date</div><div class="line"></div></div>
-            <div class="accord-line"><div class="label">Signature du client</div><div class="line"></div></div>
-          </div>
-        </div>
-        <div class="footer">Devis généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}</div>
+        <h1>Devis ${escapeHtml(data.number)}</h1>
+        <table><thead><tr><th>Désignation</th><th>Qté</th><th>Prix HT</th><th>TVA</th><th>Total HT</th></tr></thead><tbody>${rows}</tbody></table>
+        <p>Total HT : ${formatEuro(data.ht)} | TVA : ${formatEuro(data.tva)} | TTC : ${formatEuro(data.ttc)}</p>
         </body></html>
       `;
 
       const frame = document.getElementById('printFrame');
-      frame.onload = null;
       const frameDoc = frame.contentDocument || frame.contentWindow.document;
-      frameDoc.open();
-      frameDoc.write(html);
-      frameDoc.close();
-
-      const doPrint = () => {
-        try {
-          frame.contentWindow.focus();
-          frame.contentWindow.print();
-        } catch (e) {
-          console.error('Erreur impression', e);
-          toast('Impression non disponible sur ce navigateur', 'error');
-        }
-      };
-      const imgs = frameDoc.querySelectorAll('img');
-      if (imgs.length === 0) {
-        setTimeout(doPrint, 300);
-      } else {
-        let loaded = 0;
-        const total = imgs.length;
-        imgs.forEach(img => {
-          if (img.complete) { loaded++; if (loaded === total) setTimeout(doPrint, 300); return; }
-          img.addEventListener('load', () => { loaded++; if (loaded === total) setTimeout(doPrint, 300); });
-          img.addEventListener('error', () => { loaded++; if (loaded === total) setTimeout(doPrint, 300); });
-        });
-      }
+      frameDoc.open(); frameDoc.write(html); frameDoc.close();
+      setTimeout(() => {
+        try { frame.contentWindow.focus(); frame.contentWindow.print(); }
+        catch (e) { toast('Impression indisponible', 'error'); }
+      }, 300);
     }
 
+    // ==========================================================
+    // RAPPORTS
+    // ==========================================================
     function getReportData() {
       const from = $('#reportFrom').value;
       const to = $('#reportTo').value;
@@ -3764,22 +4343,20 @@
     function exportCSV() {
       const data = getReportData();
       if (data.length === 0) { toast('Aucun devis à exporter', 'warning'); return; }
-      const headers = ['Numero', 'Date', 'ValiditeJours', 'AccepteLe', 'Client', 'Statut', 'TotalHT', 'TVA', 'TotalTTC', 'Paye', 'ResteAPayer'];
+      const headers = ['Numero', 'Date', 'Client', 'Statut', 'TotalHT', 'TVA', 'TotalTTC', 'Paye', 'ResteAPayer'];
       const rows = data.map(d => {
         const ht = devisTotalHT(d);
         const tva = devisTotalTVA(d);
         const ttc = ht + tva;
         const paid = (d.payments || []).reduce((s, p) => s + p.amount, 0);
-        return [d.number || '', d.date || '', d.validityDays || '', d.acceptedDate || '', d.clientName || '', d.status || '', ht.toFixed(2), tva.toFixed(2), ttc.toFixed(2), paid.toFixed(2), (ttc - paid).toFixed(2)];
+        return [d.number || '', d.date || '', d.clientName || '', d.status || '', ht.toFixed(2), tva.toFixed(2), ttc.toFixed(2), paid.toFixed(2), (ttc - paid).toFixed(2)];
       });
       const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n');
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `devis-export-${$('#reportFrom').value}_${$('#reportTo').value}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      a.href = url; a.download = `devis-export-${$('#reportFrom').value}_${$('#reportTo').value}.csv`;
+      a.click(); URL.revokeObjectURL(url);
       toast('CSV exporté');
     }
 
@@ -3788,46 +4365,29 @@
       if (data.length === 0) { toast('Aucun devis à exporter', 'warning'); return; }
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-      const accent = hexToRgb(state.settings.accent || '#6366f1');
-
-      doc.setFillColor(accent[0], accent[1], accent[2]);
-      doc.rect(0, 0, 210, 4, 'F');
+      const accent = getAccentRgb();
       doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
       doc.text('Rapport comptable', 15, 20);
-      doc.setFontSize(9); doc.setTextColor(100); doc.setFont(undefined, 'normal');
-      doc.text(`Période : ${formatDate($('#reportFrom').value)} → ${formatDate($('#reportTo').value)}`, 15, 27);
-      doc.text(`Généré le ${new Date().toLocaleString('fr-FR')}`, 15, 32);
-
-      const ht = data.reduce((s, d) => s + devisTotalHT(d), 0);
-      const tva = data.reduce((s, d) => s + devisTotalTVA(d), 0);
-      const ttc = ht + tva;
-
-      doc.setFontSize(10); doc.setTextColor(0); doc.setFont(undefined, 'bold');
-      doc.text(`Nombre de devis : ${data.length}`, 15, 45);
-      doc.text(`Total HT : ${formatEuroPdf(ht)}`, 15, 52);
-      doc.text(`TVA collectée : ${formatEuroPdf(tva)}`, 15, 59);
-      doc.setTextColor(accent[0], accent[1], accent[2]);
-      doc.text(`Total TTC : ${formatEuroPdf(ttc)}`, 15, 66);
-
       const rows = data.map(d => [d.number || '', formatDate(d.date), d.clientName || '', d.status || '', formatEuroPdf(devisTotalHT(d)), formatEuroPdf(devisTotalTVA(d)), formatEuroPdf(devisTotalTTC(d))]);
       doc.autoTable({
-        startY: 75,
+        startY: 30,
         head: [['N°', 'Date', 'Client', 'Statut', 'HT', 'TVA', 'TTC']],
         body: rows,
         theme: 'grid',
         headStyles: { fillColor: accent, textColor: 255, fontSize: 8 },
-        bodyStyles: { fontSize: 7.5 },
-        columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } }
+        bodyStyles: { fontSize: 7.5 }
       });
-
       doc.save(`rapport-${$('#reportFrom').value}_${$('#reportTo').value}.pdf`);
       toast('Rapport PDF exporté');
     }
 
+    // ==========================================================
+    // CORBEILLE
+    // ==========================================================
     function renderTrash() {
       purgeOldTrash();
       const list = $('#trashList');
-      const total = state.trash.devis.length + state.trash.clients.length;
+      const total = state.trash.devis.length + state.trash.clients.length + (state.trash.invoices || []).length;
       if (total === 0) {
         list.innerHTML = `<div class="empty"><i class="fas fa-trash-can"></i><h3>Corbeille vide</h3><p>Les éléments supprimés apparaîtront ici</p></div>`;
         return;
@@ -3842,7 +4402,7 @@
           <div class="trash-item">
             <div class="info">
               <div class="title">${escapeHtml(d.number || 'Sans numéro')}</div>
-              <div class="meta">${escapeHtml(d.clientName || '—')} · ${formatEuro(devisTotalTTC(d))} · supprimé le ${new Date(dt).toLocaleDateString('fr-FR')} · purge dans ${daysLeft}j</div>
+              <div class="meta">${escapeHtml(d.clientName || '—')} · supprimé le ${new Date(dt).toLocaleDateString('fr-FR')} · purge dans ${daysLeft}j</div>
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-devis="${d.id}"><i class="fas fa-undo"></i> Restaurer</button>
@@ -3883,11 +4443,7 @@
         toast('Devis restauré');
       }));
       list.querySelectorAll('[data-purge-devis]').forEach(b => b.addEventListener('click', async () => {
-        const ok = await ConfirmDialog.open({
-          title: 'Supprimer définitivement ?',
-          message: 'Cette action est irréversible.',
-          okText: 'Supprimer'
-        });
+        const ok = await ConfirmDialog.open({ title: 'Supprimer définitivement ?', message: 'Action irréversible.', okText: 'Supprimer' });
         if (!ok) return;
         const id = b.dataset.purgeDevis;
         state.trash.devis = state.trash.devis.filter(x => x.id !== id);
@@ -3907,11 +4463,7 @@
         toast('Client restauré');
       }));
       list.querySelectorAll('[data-purge-client]').forEach(b => b.addEventListener('click', async () => {
-        const ok = await ConfirmDialog.open({
-          title: 'Supprimer définitivement ?',
-          message: 'Cette action est irréversible.',
-          okText: 'Supprimer'
-        });
+        const ok = await ConfirmDialog.open({ title: 'Supprimer définitivement ?', message: 'Action irréversible.', okText: 'Supprimer' });
         if (!ok) return;
         const id = b.dataset.purgeClient;
         state.trash.clients = state.trash.clients.filter(x => x.id !== id);
@@ -3924,16 +4476,19 @@
     async function emptyTrash() {
       const ok = await ConfirmDialog.open({
         title: 'Vider la corbeille ?',
-        message: 'Tous les éléments de la corbeille seront définitivement supprimés. Action irréversible.',
+        message: 'Tous les éléments seront définitivement supprimés.',
         okText: 'Vider'
       });
       if (!ok) return;
-      state.trash = { clients: [], devis: [] };
+      state.trash = { clients: [], devis: [], invoices: [] };
       Storage.saveTrash(state.trash);
       updateBadges(); renderTrash();
       toast('Corbeille vidée');
     }
 
+    // ==========================================================
+    // RECHERCHE
+    // ==========================================================
     function openSearchModal() {
       $('#searchModal').classList.add('active');
       $('#globalSearchInput').value = '';
@@ -3951,12 +4506,8 @@
         return;
       }
       const clients = state.clients.filter(c => (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q)).slice(0, 5);
-      const devis = state.devis.filter(d => {
-        const inNum = (d.number || '').toLowerCase().includes(q);
-        const inCli = (d.clientName || '').toLowerCase().includes(q);
-        const inItems = (d.items || []).some(it => (it.description || '').toLowerCase().includes(q));
-        return inNum || inCli || inItems;
-      }).slice(0, 5);
+      const devis = state.devis.filter(d => (d.number || '').toLowerCase().includes(q) || (d.clientName || '').toLowerCase().includes(q)).slice(0, 5);
+      const invoices = state.invoices.filter(i => (i.number || '').toLowerCase().includes(q) || (i.clientName || '').toLowerCase().includes(q)).slice(0, 5);
       const catalog = state.catalog.filter(c => (c.name || '').toLowerCase().includes(q)).slice(0, 5);
 
       let html = '';
@@ -3968,9 +4519,13 @@
         html += `<div class="search-category">Devis</div>`;
         html += devis.map(d => `<div class="search-result" data-search-type="devis" data-id="${d.id}"><i class="fas fa-file-invoice"></i><span>${escapeHtml(d.number)} — ${escapeHtml(d.clientName || '')}</span></div>`).join('');
       }
+      if (invoices.length > 0) {
+        html += `<div class="search-category">Factures</div>`;
+        html += invoices.map(i => `<div class="search-result" data-search-type="invoice" data-id="${i.id}"><i class="fas fa-file-invoice-dollar"></i><span>${escapeHtml(i.number)} — ${escapeHtml(i.clientName || '')}</span></div>`).join('');
+      }
       if (catalog.length > 0) {
         html += `<div class="search-category">Catalogue</div>`;
-        html += catalog.map(c => `<div class="search-result" data-search-type="catalog" data-id="${c.id}"><i class="fas fa-box"></i><span>${escapeHtml(c.name)} — ${formatEuro(c.price)}</span></div>`).join('');
+        html += catalog.map(c => `<div class="search-result" data-search-type="catalog" data-id="${c.id}"><i class="fas fa-box"></i><span>${escapeHtml(c.name)}</span></div>`).join('');
       }
       if (!html) {
         html = `<div style="text-align:center; padding:1.5rem; color:var(--text-light); font-size:0.85rem;"><i class="fas fa-search" style="font-size:1.5rem; margin-bottom:0.4rem; display:block;"></i>Aucun résultat</div>`;
@@ -3988,6 +4543,9 @@
             if (c) { navigateTo('devis-list').then(() => { $('#devisSearch').value = c.name || ''; renderDevisList(); }); }
           } else if (type === 'devis') {
             openEditor(id);
+          } else if (type === 'invoice') {
+            const inv = state.invoices.find(x => x.id === id);
+            if (inv) downloadInvoicePDF(inv);
           } else if (type === 'catalog') {
             navigateTo('catalogue');
             setTimeout(() => { $('#catalogSearch').value = ''; renderCatalogue(); }, 100);
@@ -4013,6 +4571,9 @@
       }
     }
 
+    // ==========================================================
+    // SETTINGS
+    // ==========================================================
     function renderSettings() {
       const s = state.settings;
       $('#companyNameInput').value = s.company.name || '';
@@ -4043,12 +4604,12 @@
         $('#pinSettingInput').value = '';
         $('#pinSettingInput').placeholder = '•••• (défini)';
         $('#removePinBtn').style.display = '';
-        $('#pinSecurityInfo').innerHTML = `<div class="info-note"><i class="fas fa-shield-halved"></i> PIN défini : les données sont chiffrées avec une clé dérivée de votre PIN. Sans le PIN, les données sont illisibles.</div>`;
+        $('#pinSecurityInfo').innerHTML = `<div class="info-note"><i class="fas fa-shield-halved"></i> PIN défini : les données sont chiffrées avec une clé dérivée de votre PIN.</div>`;
         $('#sidebarSecurityLabel').textContent = 'Chiffré (PIN)';
       } else {
         $('#pinSettingInput').placeholder = '4-8 chiffres';
         $('#removePinBtn').style.display = 'none';
-        $('#pinSecurityInfo').innerHTML = `<div class="warn-note"><i class="fas fa-triangle-exclamation"></i> Aucun PIN défini : les données sont chiffrées avec une clé par défaut non sécurisée. Définissez un PIN pour protéger réellement vos données.</div>`;
+        $('#pinSecurityInfo').innerHTML = `<div class="warn-note"><i class="fas fa-triangle-exclamation"></i> Aucun PIN défini : les données sont chiffrées avec une clé par défaut non sécurisée.</div>`;
         $('#sidebarSecurityLabel').textContent = 'Chiffrement local';
       }
 
@@ -4078,7 +4639,8 @@
           policy: $('#insurancePolicyInput').value.trim(),
           coverage: $('#insuranceCoverageInput').value.trim()
         },
-        vatRegime: $('#vatRegimeInput').value
+        vatRegime: $('#vatRegimeInput').value,
+        paymentTerms: state.settings.company.paymentTerms
       };
       state.settings.accent = $('#accentColorInput').value;
       Storage.saveSettings(state.settings);
@@ -4117,7 +4679,7 @@
 
     function handleLogoUpload(file) {
       if (!file) return;
-      if (file.size > 2 * 1024 * 1024) { toast('Image trop lourde (max 2 Mo avant compression)', 'error'); return; }
+      if (file.size > 2 * 1024 * 1024) { toast('Image trop lourde (max 2 Mo)', 'error'); return; }
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
@@ -4145,7 +4707,7 @@
           state.settings.company.logo = dataUrl;
           Storage.saveSettings(state.settings);
           renderSettings();
-          toast(`Logo compressé (${Math.round(dataUrl.length * 3 / 4 / 1024)} Ko)`);
+          toast(`Logo compressé`);
         };
         img.onerror = () => toast('Image invalide', 'error');
         img.src = e.target.result;
@@ -4160,31 +4722,32 @@
       toast('Logo retiré');
     }
 
+    // ==========================================================
+    // PIN / LOCK
+    // ==========================================================
     function savePin() {
       const pin = $('#pinSettingInput').value.trim();
       if (!/^\d{4,8}$/.test(pin)) { toast('PIN : 4 à 8 chiffres', 'error'); return; }
-
       const testData = { test: 'ok_' + Date.now() };
       const testKey = Crypto.deriveKey(pin);
       const enc = Crypto.encrypt(testData, testKey);
       const dec = Crypto.decrypt(enc, testKey, null);
-      if (!dec || dec.test !== testData.test) {
-        toast('Erreur de chiffrement avec ce PIN', 'error');
-        return;
-      }
+      if (!dec || dec.test !== testData.test) { toast('Erreur chiffrement', 'error'); return; }
 
       const oldKey = activeKey;
       activeKey = testKey;
 
       const clients = Crypto.decrypt(localStorage.getItem(Storage.KEY_CLIENTS), oldKey, []);
       const devis = Crypto.decrypt(localStorage.getItem(Storage.KEY_DEVIS), oldKey, []);
+      const invoices = Crypto.decrypt(localStorage.getItem(Storage.KEY_INVOICES), oldKey, []);
       const catalog = Crypto.decrypt(localStorage.getItem(Storage.KEY_CATALOG), oldKey, []);
-      const trash = Crypto.decrypt(localStorage.getItem(Storage.KEY_TRASH), oldKey, { clients: [], devis: [] });
+      const trash = Crypto.decrypt(localStorage.getItem(Storage.KEY_TRASH), oldKey, { clients: [], devis: [], invoices: [] });
       const settings = Crypto.decrypt(localStorage.getItem(Storage.KEY_SETTINGS), oldKey, state.settings);
       const draft = Crypto.decrypt(localStorage.getItem(Storage.KEY_DRAFT), oldKey, null);
 
       state.clients = clients;
       state.devis = devis;
+      state.invoices = invoices;
       state.catalog = catalog;
       state.trash = trash;
       state.settings = settings;
@@ -4193,13 +4756,13 @@
 
       Storage.saveClients(clients);
       Storage.saveDevis(devis);
+      Storage.saveInvoices(invoices);
       Storage.saveCatalog(catalog);
       Storage.saveTrash(trash);
       Storage.saveSettings(state.settings);
       if (draft) Storage.saveDraft(draft);
 
       localStorage.removeItem(PIN_ATTEMPTS_KEY);
-
       renderSettings();
       updateBadges();
       toast('PIN défini et données re-chiffrées');
@@ -4208,9 +4771,8 @@
     async function removePin() {
       const ok = await ConfirmDialog.open({
         title: 'Retirer le code PIN ?',
-        message: 'Les données seront re-chiffrées avec la clé par défaut non sécurisée. Vos données ne seront plus protégées.',
-        okText: 'Retirer',
-        okClass: 'btn-danger'
+        message: 'Les données seront re-chiffrées avec la clé par défaut non sécurisée.',
+        okText: 'Retirer'
       });
       if (!ok) return;
 
@@ -4219,13 +4781,15 @@
 
       const clients = Crypto.decrypt(localStorage.getItem(Storage.KEY_CLIENTS), oldKey, []);
       const devis = Crypto.decrypt(localStorage.getItem(Storage.KEY_DEVIS), oldKey, []);
+      const invoices = Crypto.decrypt(localStorage.getItem(Storage.KEY_INVOICES), oldKey, []);
       const catalog = Crypto.decrypt(localStorage.getItem(Storage.KEY_CATALOG), oldKey, []);
-      const trash = Crypto.decrypt(localStorage.getItem(Storage.KEY_TRASH), oldKey, { clients: [], devis: [] });
+      const trash = Crypto.decrypt(localStorage.getItem(Storage.KEY_TRASH), oldKey, { clients: [], devis: [], invoices: [] });
       const settings = Crypto.decrypt(localStorage.getItem(Storage.KEY_SETTINGS), oldKey, state.settings);
       const draft = Crypto.decrypt(localStorage.getItem(Storage.KEY_DRAFT), oldKey, null);
 
       state.clients = clients;
       state.devis = devis;
+      state.invoices = invoices;
       state.catalog = catalog;
       state.trash = trash;
       state.settings = settings;
@@ -4234,6 +4798,7 @@
 
       Storage.saveClients(clients);
       Storage.saveDevis(devis);
+      Storage.saveInvoices(invoices);
       Storage.saveCatalog(catalog);
       Storage.saveTrash(trash);
       Storage.saveSettings(state.settings);
@@ -4241,7 +4806,7 @@
 
       renderSettings();
       updateBadges();
-      toast('PIN retiré. Données re-chiffrées avec la clé par défaut.', 'warning');
+      toast('PIN retiré.', 'warning');
     }
 
     function lockApp() {
@@ -4278,7 +4843,6 @@
 
     function unlockAppRobust() {
       if (!checkPinCooldown()) return;
-
       const pin = $('#lockPinInput').value.trim();
       if (!pin) return;
 
@@ -4317,15 +4881,15 @@
         attempts.until = Date.now() + PIN_COOLDOWN_LONG_MS;
         attempts.count = 0;
         setPinAttempts(attempts);
-        toast(`Trop de tentatives. Verrouillé 15 minutes.`, 'error');
+        toast(`Verrouillé 15 minutes.`, 'error');
       } else if (attempts.count >= PIN_MAX_ATTEMPTS_BEFORE_COOLDOWN) {
         attempts.until = Date.now() + PIN_COOLDOWN_MS;
         setPinAttempts(attempts);
-        toast(`Trop de tentatives. Verrouillé 1 minute.`, 'error');
+        toast(`Verrouillé 1 minute.`, 'error');
       } else {
         setPinAttempts(attempts);
         const remaining = PIN_MAX_ATTEMPTS_BEFORE_COOLDOWN - attempts.count;
-        toast(`PIN incorrect. ${remaining} tentative(s) restante(s).`, 'error');
+        toast(`PIN incorrect. ${remaining} tentative(s).`, 'error');
       }
       $('#lockPinInput').value = '';
     }
@@ -4341,7 +4905,7 @@
     async function resetAppFromLock() {
       const ok = await ConfirmDialog.open({
         title: 'Réinitialiser l\'application ?',
-        message: 'TOUTES les données locales seront définitivement supprimées. Cette action est irréversible.',
+        message: 'TOUTES les données locales seront définitivement supprimées.',
         okText: 'Tout supprimer'
       });
       if (!ok) return;
@@ -4351,6 +4915,7 @@
 
     function updateBadges() {
       $('#devisCountBadge').textContent = state.devis.length;
+      $('#invoicesCountBadge').textContent = state.invoices.length;
       $('#clientsCountBadge').textContent = state.clients.length;
       $('#catalogCountBadge').textContent = state.catalog.length;
       $('#trashCountBadge').textContent = state.trash.devis.length + state.trash.clients.length;
@@ -4358,8 +4923,12 @@
 
     function exportAll() {
       const data = {
-        clients: state.clients, devis: state.devis, catalog: state.catalog,
-        trash: state.trash, settings: state.settings,
+        clients: state.clients,
+        devis: state.devis,
+        invoices: state.invoices,
+        catalog: state.catalog,
+        trash: state.trash,
+        settings: state.settings,
         version: APP_VERSION,
         exportedAt: new Date().toISOString()
       };
@@ -4370,7 +4939,6 @@
       a.download = `devispro-backup-${todayISO()}.json`;
       a.click();
       URL.revokeObjectURL(url);
-
       state.settings.lastExportAt = Date.now();
       Storage.saveSettings(state.settings);
       renderExportReminder();
@@ -4386,46 +4954,38 @@
 
           let proceed = true;
           if (!data.version) {
-            proceed = await ConfirmDialog.open({
-              title: 'Version inconnue',
-              message: 'Ce fichier ne contient pas d\'indication de version. L\'import peut être incompatible. Continuer ?',
-              okText: 'Continuer',
-              okClass: 'btn-accent'
-            });
+            proceed = await ConfirmDialog.open({ title: 'Version inconnue', message: 'Continuer ?', okText: 'Continuer', okClass: 'btn-accent' });
           } else if (data.version !== APP_VERSION) {
-            proceed = await ConfirmDialog.open({
-              title: 'Version différente',
-              message: `Ce fichier provient de la version ${data.version}, vous utilisez la ${APP_VERSION}. L'import peut nécessiter une migration. Continuer ?`,
-              okText: 'Continuer',
-              okClass: 'btn-accent'
-            });
+            proceed = await ConfirmDialog.open({ title: 'Version différente', message: `Fichier v${data.version}, app v${APP_VERSION}. Continuer ?`, okText: 'Continuer', okClass: 'btn-accent' });
           } else {
-            proceed = await ConfirmDialog.open({
-              title: 'Importer les données ?',
-              message: `Importer ${data.clients.length} clients, ${data.devis.length} devis ? Cela remplacera vos données actuelles.`,
-              okText: 'Importer',
-              okClass: 'btn-accent'
-            });
+            proceed = await ConfirmDialog.open({ title: 'Importer les données ?', message: `Remplacer par ${data.clients.length} clients, ${data.devis.length} devis ?`, okText: 'Importer', okClass: 'btn-accent' });
           }
           if (!proceed) return;
 
           state.clients = data.clients;
           state.devis = data.devis;
+          state.invoices = data.invoices || [];
           state.catalog = data.catalog || [];
-          state.trash = data.trash || { clients: [], devis: [] };
+          state.trash = data.trash || { clients: [], devis: [], invoices: [] };
+          if (!state.trash.invoices) state.trash.invoices = [];
           if (data.settings) {
             state.settings = { ...state.settings, ...data.settings };
             if (!state.settings.nextNumber) state.settings.nextNumber = 1;
-            if (state.settings.lastExportAt === undefined) state.settings.lastExportAt = 0;
+            if (!state.settings.nextInvoiceNumber) state.settings.nextInvoiceNumber = 1;
+            if (!state.settings.nextAvoirNumber) state.settings.nextAvoirNumber = 1;
           }
 
           Storage.saveClients(state.clients);
           Storage.saveDevis(state.devis);
+          Storage.saveInvoices(state.invoices);
           Storage.saveCatalog(state.catalog);
           Storage.saveTrash(state.trash);
           Storage.saveSettings(state.settings);
 
+          migrateLegacyInvoices();
           ensureNextNumber();
+          ensureNextInvoiceNumber();
+          ensureNextAvoirNumber();
           purgeOldTrash();
           updateBadges();
           applyTheme();
@@ -4439,6 +4999,9 @@
       reader.readAsText(file);
     }
 
+    // ==========================================================
+    // AUTOSAVE / DRAFT
+    // ==========================================================
     function startAutosave() {
       stopAutosave();
       if (!state.settings.autosave) return;
@@ -4482,7 +5045,7 @@
       setTimeout(() => {
         if (indicator) {
           indicator.classList.remove('saving');
-          indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Brouillon sauvegardé</span>';
+          indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Sauvegardé</span>';
           setTimeout(() => { indicator.style.display = 'none'; }, 2000);
         }
       }, 400);
@@ -4490,7 +5053,6 @@
 
     function bootApp() {
       const settingsStr = localStorage.getItem(Storage.KEY_SETTINGS);
-
       if (!settingsStr) {
         activeKey = DEFAULT_KEY;
         state.settings = defaultSettings();
@@ -4502,18 +5064,17 @@
         navigateTo('devis-list');
         renderExportReminder();
         setTimeout(() => {
-          toast('Bienvenue ! Pensez à définir un PIN dans les Paramètres pour sécuriser vos données.', 'info');
+          toast('Bienvenue ! Définissez un PIN dans Paramètres pour sécuriser vos données.', 'info');
         }, 600);
         return;
       }
 
       const probe = Crypto.decrypt(settingsStr, DEFAULT_KEY, null);
-
       if (probe) {
         state.settings = { ...defaultSettings(), ...probe };
         if (state.settings.hasPin) {
           activeKey = DEFAULT_KEY;
-          $('#lockSubtitle').textContent = 'Entrez votre code PIN pour accéder à vos données';
+          $('#lockSubtitle').textContent = 'Entrez votre code PIN';
           $('#resetFromLockBtn').style.display = 'none';
           $('#lockScreen').classList.add('active');
           setTimeout(() => $('#lockPinInput').focus(), 100);
@@ -4531,13 +5092,16 @@
         state.settings.hasPin = true;
         state.settings.pinHash = null;
         activeKey = DEFAULT_KEY;
-        $('#lockSubtitle').textContent = 'Données chiffrées. Entrez votre code PIN. Si vous n\'avez jamais défini de PIN, cliquez sur « Réinitialiser ».';
+        $('#lockSubtitle').textContent = 'Données chiffrées. Entrez votre code PIN, ou Réinitialiser si oublié.';
         $('#resetFromLockBtn').style.display = '';
         $('#lockScreen').classList.add('active');
         setTimeout(() => $('#lockPinInput').focus(), 100);
       }
     }
 
+    // ==========================================================
+    // BINDINGS
+    // ==========================================================
     document.addEventListener('DOMContentLoaded', () => {
       const verEl = $('#appVersion');
       if (verEl) verEl.textContent = `v${APP_VERSION}`;
@@ -4578,29 +5142,12 @@
       $('#shareBtn').addEventListener('click', sharePDF);
       $('#printBtn').addEventListener('click', printDevis);
       $('#historyBtn').addEventListener('click', openHistoryModal);
-      $('#duplicateBtn').addEventListener('click', () => {
-        if (!state.currentDevisId) { toast('Enregistrez d\'abord le devis', 'warning'); return; }
-        const original = state.devis.find(d => d.id === state.currentDevisId);
-        if (!original) return;
-        const copy = JSON.parse(JSON.stringify(original));
-        copy.id = uid();
-        copy.number = nextDevisNumber();
-        copy.createdAt = Date.now(); copy.updatedAt = Date.now();
-        copy.status = 'brouillon'; copy.history = []; copy.payments = [];
-        copy.acceptedDate = '';
-        state.devis.push(copy);
-        consumeDevisNumber();
-        Storage.saveDevis(state.devis);
-        updateBadges();
-        openEditor(copy.id);
-        toast('Devis dupliqué');
-      });
+      $('#generateInvoiceBtn').addEventListener('click', emitInvoice);
       $('#cancelEditBtn').addEventListener('click', async () => {
         const ok = await ConfirmDialog.open({
           title: 'Annuler les modifications ?',
           message: 'Le brouillon non enregistré sera perdu.',
-          okText: 'Annuler les modifs',
-          okClass: 'btn-danger'
+          okText: 'Annuler les modifs'
         });
         if (ok) {
           state.currentDevisId = null;
@@ -4624,6 +5171,11 @@
       ['devisSearch', 'devisFilterStatus', 'devisFilterFrom', 'devisFilterTo', 'devisSortBy'].forEach(id => {
         const el = $('#' + id);
         if (el) el.addEventListener(el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input', renderDevisList);
+      });
+
+      ['invoiceSearch', 'invoiceFilterStatus', 'invoiceFilterFrom', 'invoiceFilterTo', 'invoiceSortBy'].forEach(id => {
+        const el = $('#' + id);
+        if (el) el.addEventListener(el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input', renderInvoices);
       });
 
       ['reportFrom', 'reportTo', 'reportStatus'].forEach(id => $('#' + id).addEventListener('change', renderReports));
@@ -4704,6 +5256,61 @@
 
       bootApp();
     });
+
+    function openHistoryModal() {
+      if (!state.currentDevisId) { toast('Enregistrez le devis d\'abord', 'warning'); return; }
+      const d = state.devis.find(d => d.id === state.currentDevisId);
+      if (!d) return;
+      const list = $('#historyList');
+      const hist = d.history || [];
+      if (hist.length === 0) {
+        list.innerHTML = `<div class="empty"><i class="fas fa-history"></i><h3>Aucune version</h3><p>L'historique se remplit à chaque enregistrement.</p></div>`;
+      } else {
+        list.innerHTML = hist.slice().reverse().map(h => `
+          <div class="history-item" data-version-id="${h.version}">
+            <div class="version"><i class="fas fa-code-branch"></i> Version ${h.version}</div>
+            <div class="meta">${new Date(h.savedAt).toLocaleString('fr-FR')} · ${formatEuro(devisTotalTTC({ items: h.snapshot.items || [] }))}</div>
+          </div>
+        `).join('');
+        list.querySelectorAll('.history-item').forEach(el => {
+          el.addEventListener('click', () => restoreVersion(parseInt(el.dataset.versionId)));
+        });
+      }
+      $('#historyModal').classList.add('active');
+    }
+
+    async function restoreVersion(version) {
+      const d = state.devis.find(d => d.id === state.currentDevisId);
+      if (!d) return;
+      if (d.invoiceId) {
+        toast('Ce devis est facturé. Impossible de restaurer une version antérieure.', 'error');
+        closeHistoryModal();
+        return;
+      }
+      const ok = await ConfirmDialog.open({
+        title: `Restaurer la version ${version} ?`,
+        message: 'La version actuelle sera sauvegardée dans l\'historique avant restauration.',
+        okText: 'Restaurer',
+        okClass: 'btn-accent'
+      });
+      if (!ok) return;
+      const h = (d.history || []).find(x => x.version === version);
+      if (!h) return;
+      const snap = h.snapshot;
+      if (!d.history) d.history = [];
+      d.history.push({
+        version: d.history.length + 1, savedAt: Date.now(),
+        snapshot: { number: d.number, date: d.date, status: d.status, notes: d.notes, clientId: d.clientId, clientName: d.clientName, items: JSON.parse(JSON.stringify(d.items || [])), payments: JSON.parse(JSON.stringify(d.payments || [])), depositPercent: d.depositPercent, validityDays: d.validityDays, acceptedDate: d.acceptedDate }
+      });
+      Object.assign(d, snap);
+      d.updatedAt = Date.now();
+      Storage.saveDevis(state.devis);
+      closeHistoryModal();
+      openEditor(d.id);
+      toast(`Version ${version} restaurée`);
+    }
+
+    function closeHistoryModal() { $('#historyModal').classList.remove('active'); }
   </script>
 </body>
 </html>
