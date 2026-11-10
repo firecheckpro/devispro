@@ -27,11 +27,14 @@
       -ms-touch-action: manipulation;
     }
 
+    /* ============================================================
+       PALETTE BLEUE — clair et sombre alignés
+       ============================================================ */
     :root {
-      --primary: #0f172a;
-      --primary-light: #1e293b;
-      --accent: #6366f1;
-      --accent-light: #818cf8;
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --accent: #60a5fa;
+      --accent-light: #93c5fd;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -129,14 +132,13 @@
     }
 
     .logo-icon {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
       width: 40px; height: 40px;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       color: white; font-size: 1.2rem;
       flex-shrink: 0;
     }
-    body.dark .logo-icon { color: #0b1120; }
 
     .logo-text-wrap {
       display: flex;
@@ -522,12 +524,11 @@
     .client-avatar {
       width: 44px; height: 44px;
       border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
       display: flex; align-items: center; justify-content: center;
       color: white; font-weight: 700; font-size: 1rem;
       margin-bottom: 0.6rem;
     }
-    body.dark .client-avatar { color: #0b1120; }
     .client-name { font-weight: 700; font-size: 0.98rem; margin-bottom: 0.2rem; word-break: break-word; }
     .client-info { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.15rem; word-break: break-word; }
     .client-stats {
@@ -577,7 +578,7 @@
     .status-envoye { background: #dbeafe; color: #1d4ed8; }
     .status-accepte { background: #d1fae5; color: #047857; }
     .status-refuse { background: #fee2e2; color: #b91c1c; }
-    .status-facture { background: #e0e7ff; color: #4338ca; }
+    .status-facture { background: #dbeafe; color: #1d4ed8; }
     .status-emise { background: #dbeafe; color: #1d4ed8; }
     .status-payee { background: #d1fae5; color: #047857; }
     .status-partielle { background: #fef3c7; color: #b45309; }
@@ -982,17 +983,6 @@
     .invoice-banner i { font-size: 1.1rem; flex-shrink: 0; }
     .invoice-banner .txt { flex: 1 1 200px; min-width: 0; }
 
-    .invoice-banner.locked {
-      background: linear-gradient(135deg, #fee2e2, #fecaca);
-      border-color: #ef4444;
-      color: #991b1b;
-    }
-    body.dark .invoice-banner.locked {
-      background: linear-gradient(135deg, #7f1d1d, #991b1b);
-      border-color: #ef4444;
-      color: #fecaca;
-    }
-
     .export-reminder {
       background: linear-gradient(135deg, #fef3c7, #fde68a);
       border: 1.5px solid #f59e0b;
@@ -1106,6 +1096,55 @@
       display: block;
       opacity: 1;
     }
+
+    /* Détail facture modal */
+    .invoice-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .invoice-detail-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.78rem;
+    }
+    .invoice-detail-item .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+    .invoice-detail-item .value {
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .integrity-check {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      font-weight: 600;
+    }
+    .integrity-check.valid {
+      background: #d1fae5;
+      color: #047857;
+    }
+    .integrity-check.invalid {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    body.dark .integrity-check.valid { background: #064e3b; color: #6ee7b7; }
+    body.dark .integrity-check.invalid { background: #7f1d1d; color: #fca5a5; }
 
     @media (max-width: 1100px) {
       .app {
@@ -1430,7 +1469,7 @@
         <div class="logo-icon"><i class="fas fa-file-invoice-dollar"></i></div>
         <div class="logo-text-wrap">
           <div class="logo-text">Devis<span>Pro</span></div>
-          <span class="app-version" id="appVersion">v2.8</span>
+          <span class="app-version" id="appVersion">v2.9</span>
         </div>
         <button class="drawer-close" id="drawerCloseBtn" aria-label="Fermer le menu"><i class="fas fa-times"></i></button>
       </div>
@@ -1760,13 +1799,12 @@
             <div class="card">
               <div class="section-title"><i class="fas fa-envelope"></i> Envoi au client</div>
               <div class="info-note">
-                <i class="fas fa-info-circle"></i> L'application n'intègre pas de signature électronique certifiée.
-                Envoyez le PDF par email et demandez au client de le retourner <strong>signé avec la mention « Bon pour accord »</strong>.
+                <i class="fas fa-info-circle"></i> Envoyez le PDF par email et demandez au client de le retourner <strong>signé avec la mention « Bon pour accord »</strong>.
               </div>
               <div style="display:flex; flex-direction:column; gap:0.5rem;">
                 <button class="btn btn-success" id="emailBtn"><i class="fas fa-envelope"></i> Générer le PDF et préparer l'email</button>
                 <button class="btn btn-accent" id="shareBtn"><i class="fas fa-share-nodes"></i> Partager le PDF (mobile)</button>
-                <button class="btn btn-outline" id="printBtn"><i class="fas fa-print"></i> Imprimer (avec zone « Bon pour accord »)</button>
+                <button class="btn btn-outline" id="printBtn"><i class="fas fa-print"></i> Imprimer</button>
               </div>
             </div>
           </div>
@@ -1852,7 +1890,7 @@
             <div class="field-group"><label>Téléphone</label><input type="tel" id="companyPhoneInput" class="input" placeholder="01 23 45 67 89"></div>
             <div class="field-group"><label>SIRET</label><input type="text" id="companySiretInput" class="input" placeholder="123 456 789 00012"></div>
             <div class="field-group"><label>N° TVA intracommunautaire</label><input type="text" id="companyTvaInput" class="input" placeholder="FR 12 123456789"></div>
-            <div class="field-group"><label>Couleur d'accent</label><input type="color" id="accentColorInput" class="input" value="#6366f1" style="height:44px; padding:0.3rem;"></div>
+            <div class="field-group"><label>Couleur d'accent</label><input type="color" id="accentColorInput" class="input" value="#60a5fa" style="height:44px; padding:0.3rem;"></div>
           </div>
           <div class="field-group" style="margin-top:0.75rem;">
             <label>Adresse</label>
@@ -1867,6 +1905,11 @@
               <button class="btn btn-outline btn-sm" id="removeLogoBtn"><i class="fas fa-trash"></i> Retirer</button>
             </div>
             <input type="file" id="logoInput" accept="image/*" style="display:none">
+          </div>
+          <div class="field-group" style="margin-top:1rem;">
+            <label>Délai de paiement (jours)</label>
+            <input type="number" id="paymentDaysInput" class="input" min="1" max="365" step="1" value="30">
+            <div class="validity-info">Utilisé pour calculer l'échéance des factures et les mentions légales</div>
           </div>
           <div style="margin-top:1.25rem; display:flex; justify-content:flex-end;">
             <button class="btn btn-success" id="saveCompanyBtn"><i class="fas fa-save"></i> Enregistrer l'identité</button>
@@ -1991,6 +2034,16 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="invoiceDetailModal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal-header">
+        <h2 id="invoiceDetailTitle"><i class="fas fa-file-invoice-dollar"></i> Détail facture</h2>
+        <button class="modal-close" onclick="closeInvoiceDetail()" aria-label="Fermer"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="invoiceDetailContent"></div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="searchModal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:650px;">
       <div class="search-input-wrap">
@@ -2021,7 +2074,7 @@
   <iframe id="printFrame" title="Impression" aria-hidden="true"></iframe>
 
   <script>
-    const APP_VERSION = '2.8';
+    const APP_VERSION = '2.9';
     const STORAGE_LIMIT_MB = 5;
     const EXPORT_REMINDER_DAYS = 7;
     const PIN_VERIFIER_SALT = 'DevisPro_v2_pin_salt';
@@ -2032,8 +2085,8 @@
     const PIN_MAX_ATTEMPTS_BEFORE_LONG = 10;
     const PIN_COOLDOWN_LONG_MS = 15 * 60 * 1000;
     const PIN_ATTEMPTS_KEY = 'devispro_pin_attempts';
-    const DRAFT_DEBOUNCE_MS = 500;
-    const INVOICE_DUE_DAYS = 30;
+    const DRAFT_DEBOUNCE_MS = 300;
+    const DEFAULT_PAYMENT_DAYS = 30;
 
     const DEFAULT_KEY = 'DevisPro_NO_PIN_INSECURE_DEFAULT_KEY_v2';
 
@@ -2063,6 +2116,10 @@
           if (!text) return fallback;
           return JSON.parse(text);
         } catch { return fallback; }
+      },
+      sha256(str) {
+        try { return CryptoJS.SHA256(str).toString(); }
+        catch { return ''; }
       }
     };
 
@@ -2100,22 +2157,23 @@
       decrypt(str, fallback = null) { return Crypto.decrypt(str, activeKey, fallback); },
 
       loadClients() { return this.decrypt(localStorage.getItem(this.KEY_CLIENTS), []); },
-      saveClients(c) { safeSetItem(this.KEY_CLIENTS, this.encrypt(c)); },
+      saveClients(c) { return safeSetItem(this.KEY_CLIENTS, this.encrypt(c)); },
       loadDevis() { return this.decrypt(localStorage.getItem(this.KEY_DEVIS), []); },
-      saveDevis(d) { safeSetItem(this.KEY_DEVIS, this.encrypt(d)); },
+      saveDevis(d) { return safeSetItem(this.KEY_DEVIS, this.encrypt(d)); },
       loadInvoices() { return this.decrypt(localStorage.getItem(this.KEY_INVOICES), []); },
-      saveInvoices(d) { safeSetItem(this.KEY_INVOICES, this.encrypt(d)); },
+      saveInvoices(d) { return safeSetItem(this.KEY_INVOICES, this.encrypt(d)); },
       loadCatalog() { return this.decrypt(localStorage.getItem(this.KEY_CATALOG), []); },
-      saveCatalog(c) { safeSetItem(this.KEY_CATALOG, this.encrypt(c)); },
+      saveCatalog(c) { return safeSetItem(this.KEY_CATALOG, this.encrypt(c)); },
       loadTrash() { return this.decrypt(localStorage.getItem(this.KEY_TRASH), { clients: [], devis: [], invoices: [] }); },
-      saveTrash(t) { safeSetItem(this.KEY_TRASH, this.encrypt(t)); },
+      saveTrash(t) { return safeSetItem(this.KEY_TRASH, this.encrypt(t)); },
       loadDraft() { return this.decrypt(localStorage.getItem(this.KEY_DRAFT), null); },
       saveDraft(d) {
-        if (d) safeSetItem(this.KEY_DRAFT, this.encrypt(d));
+        if (d) return safeSetItem(this.KEY_DRAFT, this.encrypt(d));
         else localStorage.removeItem(this.KEY_DRAFT);
+        return true;
       },
       loadSettings() { return this.decrypt(localStorage.getItem(this.KEY_SETTINGS), defaultSettings()); },
-      saveSettings(s) { safeSetItem(this.KEY_SETTINGS, this.encrypt(s)); }
+      saveSettings(s) { return safeSetItem(this.KEY_SETTINGS, this.encrypt(s)); }
     };
 
     function defaultSettings() {
@@ -2125,9 +2183,10 @@
           siret: '', tvaNumber: '',
           insurance: { name: '', policy: '', coverage: '' },
           vatRegime: 'normal',
-          paymentTerms: 'Paiement à réception de facture. Pénalités de retard : 3× le taux d\'intérêt légal. Indemnité forfaitaire de recouvrement : 40 €.'
+          paymentDays: DEFAULT_PAYMENT_DAYS,
+          paymentTerms: 'Paiement à réception de facture. En cas de retard de paiement, des pénalités au taux d\'intérêt légal seront appliquées, ainsi qu\'une indemnité forfaitaire de recouvrement de 40 €.'
         },
-        accent: '#6366f1',
+        accent: '#60a5fa',
         dark: false,
         tablet: false,
         autosave: true,
@@ -2196,6 +2255,7 @@
       currentPayments: [],
       editingClientId: null,
       editingCatalogId: null,
+      currentInvoiceId: null,
       currentView: 'devis-list',
       autosaveTimer: null,
       draftDebounceTimer: null,
@@ -2215,6 +2275,11 @@
     const escapeHtml = (t) => {
       if (t === null || t === undefined) return '';
       const d = document.createElement('div'); d.textContent = t; return d.innerHTML;
+    };
+
+    const num = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
     };
 
     const formatEuro = (a) => {
@@ -2243,7 +2308,7 @@
       const parts = dateISO.split('-');
       if (parts.length !== 3) return '';
       const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      d.setDate(d.getDate() + days);
+      d.setDate(d.getDate() + (parseInt(days) || 0));
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
@@ -2256,15 +2321,19 @@
       return addDaysISO(dateISO, n);
     };
 
-    const devisTotalTTC = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice) * (1 + it.tva/100), 0);
-    const devisTotalHT = (d) => (d.items || []).reduce((s, it) => s + (it.quantity * it.unitPrice), 0);
-    const devisTotalTVA = (d) => devisTotalTTC(d) - devisTotalHT(d);
+    const safeTotalHT = (items) => (items || []).reduce((s, it) => s + num(it.quantity) * num(it.unitPrice), 0);
+    const safeTotalTVA = (items) => (items || []).reduce((s, it) => s + num(it.quantity) * num(it.unitPrice) * (num(it.tva) / 100), 0);
+    const safeTotalTTC = (items) => safeTotalHT(items) + safeTotalTVA(items);
+
+    const devisTotalTTC = (d) => safeTotalTTC(d.items);
+    const devisTotalHT = (d) => safeTotalHT(d.items);
+    const devisTotalTVA = (d) => safeTotalTVA(d.items);
 
     function computeTVABreakdown(items) {
       const map = {};
       (items || []).forEach(it => {
-        const rate = Number(it.tva) || 0;
-        const baseHT = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
+        const rate = num(it.tva);
+        const baseHT = num(it.quantity) * num(it.unitPrice);
         const tva = baseHT * rate / 100;
         if (!map[rate]) map[rate] = { baseHT: 0, tva: 0 };
         map[rate].baseHT += baseHT;
@@ -2342,20 +2411,22 @@
       state.trash = Storage.loadTrash();
       if (!state.trash.invoices) state.trash.invoices = [];
       state.settings = Storage.loadSettings();
+      if (!state.settings.company.paymentDays) state.settings.company.paymentDays = DEFAULT_PAYMENT_DAYS;
       state.loaded = true;
       migrateLegacyInvoices();
       ensureNextNumber();
       ensureNextInvoiceNumber();
       ensureNextAvoirNumber();
+      validateInvoiceSequence();
       purgeOldTrash();
     }
 
-    // Migration : les devis avec invoiceNumber deviennent des entités factures
     function migrateLegacyInvoices() {
       let migrated = 0;
       state.devis.forEach(d => {
         if (d.invoiceNumber && !d.invoiceId) {
-          // Créer une entité facture
+          const invDate = d.invoiceDate || d.date || todayISO();
+          const days = state.settings?.company?.paymentDays || DEFAULT_PAYMENT_DAYS;
           const inv = {
             id: uid(),
             number: d.invoiceNumber,
@@ -2363,17 +2434,19 @@
             devisNumber: d.number || '',
             clientId: d.clientId || null,
             clientName: d.clientName || '',
-            date: d.invoiceDate || d.date || todayISO(),
-            dueDate: addDaysISO(d.invoiceDate || d.date || todayISO(), INVOICE_DUE_DAYS),
+            date: invDate,
+            dueDate: addDaysISO(invDate, days),
             status: 'emise',
             items: JSON.parse(JSON.stringify(d.items || [])),
             notes: d.notes || '',
-            depositPercent: d.depositPercent || 0,
+            depositPercent: num(d.depositPercent),
             emittedAt: d.invoiceGeneratedAt || Date.now(),
             locked: true,
             payments: JSON.parse(JSON.stringify(d.payments || [])),
-            originalInvoiceId: null
+            originalInvoiceId: null,
+            contentHash: ''
           };
+          inv.contentHash = computeInvoiceHash(inv);
           state.invoices.push(inv);
           d.invoiceId = inv.id;
           migrated++;
@@ -2428,6 +2501,47 @@
       Storage.saveSettings(state.settings);
     }
 
+    function validateInvoiceSequence() {
+      const facs = state.invoices
+        .filter(i => i.number && i.number.startsWith('FAC-'))
+        .map(i => parseInt((i.number.match(/(\d+)\s*$/) || [])[1] || 0, 10))
+        .filter(n => n > 0)
+        .sort((a, b) => a - b);
+      for (let i = 1; i < facs.length; i++) {
+        if (facs[i] !== facs[i - 1] + 1) {
+          console.warn(`Séquence factures : trou entre FAC-...${String(facs[i-1]).padStart(3, '0')} et FAC-...${String(facs[i]).padStart(3, '0')}`);
+          break;
+        }
+      }
+    }
+
+    function computeInvoiceHash(inv) {
+      const payload = JSON.stringify({
+        number: inv.number,
+        date: inv.date,
+        dueDate: inv.dueDate,
+        clientId: inv.clientId,
+        clientName: inv.clientName,
+        items: (inv.items || []).map(i => ({
+          description: i.description || '',
+          quantity: num(i.quantity),
+          unitPrice: num(i.unitPrice),
+          tva: num(i.tva)
+        })),
+        totalTTC: safeTotalTTC(inv.items),
+        devisNumber: inv.devisNumber || '',
+        isAvoir: !!inv.isAvoir
+      });
+      return Crypto.sha256(payload).substring(0, 32);
+    }
+
+    function verifyInvoiceIntegrity(inv) {
+      if (!inv.contentHash) return { valid: false, reason: 'Pas d\'empreinte' };
+      const recomputed = computeInvoiceHash(inv);
+      if (recomputed !== inv.contentHash) return { valid: false, reason: 'Contenu altéré' };
+      return { valid: true };
+    }
+
     function applyTheme() {
       document.body.classList.toggle('dark', state.settings.dark);
       document.body.classList.toggle('tablet-mode', state.settings.tablet);
@@ -2436,9 +2550,6 @@
       const tbtn = $('#tabletToggleBtn');
       if (tbtn) tbtn.innerHTML = state.settings.tablet ? '<i class="fas fa-mobile-alt"></i> Désactiver' : '<i class="fas fa-tablet-alt"></i> Activer';
       if (state.settings.accent) document.documentElement.style.setProperty('--accent', state.settings.accent);
-      if (state.settings.dark && state.settings.accent === '#6366f1') {
-        document.documentElement.style.setProperty('--accent', '#60a5fa');
-      }
     }
 
     function toggleTheme() {
@@ -2567,8 +2678,8 @@
           <i class="fas fa-triangle-exclamation"></i>
           <div class="txt">
             ${last === 0
-              ? 'Vous n\'avez jamais exporté vos données. Un export régulier vous protège en cas de perte du navigateur.'
-              : `Dernier export il y a ${Math.floor(days)} jour(s). Pensez à sauvegarder vos données.`}
+              ? 'Vous n\'avez jamais exporté vos données.'
+              : `Dernier export il y a ${Math.floor(days)} jour(s).`}
           </div>
           <button class="btn btn-sm btn-primary" id="exportReminderBtn"><i class="fas fa-download"></i> Exporter</button>
         </div>
@@ -2626,8 +2737,7 @@
     function devisItemHTML(d) {
       const total = devisTotalTTC(d);
       const statusLabels = { brouillon: 'Brouillon', envoye: 'Envoyé', accepte: 'Accepté', refuse: 'Refusé' };
-      const paid = (d.payments || []).reduce((s, p) => s + p.amount, 0);
-      const remaining = total - paid;
+      const paid = (d.payments || []).reduce((s, p) => s + num(p.amount), 0);
       const validityDate = d.validityDays && d.date ? computeValidityDate(d.date, d.validityDays) : '';
       const expired = validityDate && validityDate < todayISO();
       return `
@@ -2643,7 +2753,7 @@
             <div class="devis-meta">
               <span><i class="fas fa-user"></i> ${escapeHtml(d.clientName || 'Aucun client')}</span>
               <span><i class="far fa-calendar"></i> ${formatDate(d.date)}</span>
-              <span><i class="fas fa-cubes"></i> ${d.items.length} ligne${d.items.length > 1 ? 's' : ''}</span>
+              <span><i class="fas fa-cubes"></i> ${(d.items || []).length} ligne${(d.items || []).length > 1 ? 's' : ''}</span>
               ${validityDate ? `<span><i class="fas fa-hourglass-half"></i> Valide jusqu'au ${formatDate(validityDate)}</span>` : ''}
               ${d.acceptedDate ? `<span style="color:var(--success);"><i class="fas fa-check-circle"></i> Accepté le ${formatDate(d.acceptedDate)}</span>` : ''}
               ${paid > 0 ? `<span style="color:var(--success);"><i class="fas fa-coins"></i> ${formatEuro(paid)} payé</span>` : ''}
@@ -2675,7 +2785,7 @@
           }
           const ok = await ConfirmDialog.open({
             title: 'Supprimer ce devis ?',
-            message: `Le devis ${d.number || ''} sera placé dans la corbeille (conservé 30 jours).`,
+            message: `Le devis ${d.number || ''} sera placé dans la corbeille.`,
             okText: 'Supprimer'
           });
           if (!ok) return;
@@ -2704,8 +2814,8 @@
     // ==========================================================
     function computeInvoiceStatus(inv) {
       if (inv.status === 'annulee') return 'annulee';
-      const total = devisTotalTTC({ items: inv.items });
-      const paid = (inv.payments || []).reduce((s, p) => s + p.amount, 0);
+      const total = safeTotalTTC(inv.items);
+      const paid = (inv.payments || []).reduce((s, p) => s + num(p.amount), 0);
       if (paid >= total && total > 0) return 'payee';
       if (paid > 0) return 'partielle';
       if (inv.dueDate && inv.dueDate < todayISO()) return 'en_retard';
@@ -2737,8 +2847,8 @@
       list.sort((a, b) => {
         switch (sortBy) {
           case 'date-asc': return (a.date || '').localeCompare(b.date || '');
-          case 'amount-desc': return devisTotalTTC({items: b.items}) - devisTotalTTC({items: a.items});
-          case 'amount-asc': return devisTotalTTC({items: a.items}) - devisTotalTTC({items: b.items});
+          case 'amount-desc': return safeTotalTTC(b.items) - safeTotalTTC(a.items);
+          case 'amount-asc': return safeTotalTTC(a.items) - safeTotalTTC(b.items);
           case 'date-desc':
           default: return (b.date || '').localeCompare(a.date || '');
         }
@@ -2751,10 +2861,11 @@
       if (!list) return;
 
       const all = state.invoices;
-      const totalFacture = all.filter(i => i.status !== 'annulee').reduce((s, i) => s + devisTotalTTC({items: i.items}), 0);
+      const totalFacture = all.filter(i => i.status !== 'annulee' && !i.isAvoir).reduce((s, i) => s + safeTotalTTC(i.items), 0)
+        + all.filter(i => i.isAvoir).reduce((s, i) => s + safeTotalTTC(i.items), 0);
       const totalPaid = all.reduce((s, i) => {
         if (i.status === 'annulee') return s;
-        const p = (i.payments || []).reduce((a, b) => a + b.amount, 0);
+        const p = (i.payments || []).reduce((a, b) => a + num(b.amount), 0);
         return s + p;
       }, 0);
       const totalPending = Math.max(0, totalFacture - totalPaid);
@@ -2780,30 +2891,32 @@
 
       list.innerHTML = filtered.map(inv => {
         const st = computeInvoiceStatus(inv);
-        const total = devisTotalTTC({items: inv.items});
-        const paid = (inv.payments || []).reduce((s, p) => s + p.amount, 0);
+        const total = safeTotalTTC(inv.items);
+        const paid = (inv.payments || []).reduce((s, p) => s + num(p.amount), 0);
         const remaining = Math.max(0, total - paid);
+        const isAvoir = inv.isAvoir || (inv.number || '').startsWith('AV-');
         return `
           <div class="devis-item" data-invoice-id="${inv.id}">
             <div class="devis-info">
               <div class="devis-number">
-                <i class="fas fa-file-invoice-dollar" style="color: var(--accent);"></i>
+                <i class="fas fa-file-invoice-dollar" style="color: ${isAvoir ? 'var(--danger)' : 'var(--accent)'};"></i>
                 ${escapeHtml(inv.number || 'Sans numéro')}
                 <span class="status-badge status-${st}">${statusLabels[st] || st}</span>
+                ${isAvoir ? '<span class="status-badge status-annulee">Avoir</span>' : ''}
               </div>
               <div class="devis-meta">
                 <span><i class="fas fa-user"></i> ${escapeHtml(inv.clientName || '—')}</span>
-                <span><i class="far fa-calendar"></i> Émise le ${formatDate(inv.date)}</span>
-                ${inv.dueDate ? `<span><i class="fas fa-hourglass-half"></i> Échéance ${formatDate(inv.dueDate)}</span>` : ''}
-                ${inv.devisNumber ? `<span><i class="fas fa-link"></i> Devis ${escapeHtml(inv.devisNumber)}</span>` : ''}
+                <span><i class="far fa-calendar"></i> ${formatDate(inv.date)}</span>
+                ${inv.dueDate && !isAvoir ? `<span><i class="fas fa-hourglass-half"></i> Échéance ${formatDate(inv.dueDate)}</span>` : ''}
+                ${inv.devisNumber ? `<span><i class="fas fa-link"></i> ${escapeHtml(inv.devisNumber)}</span>` : ''}
                 ${paid > 0 ? `<span style="color:var(--success);"><i class="fas fa-coins"></i> ${formatEuro(paid)} payé</span>` : ''}
-                ${remaining > 0 && paid > 0 ? `<span style="color:var(--warning);"><i class="fas fa-clock"></i> ${formatEuro(remaining)} restant</span>` : ''}
               </div>
             </div>
             <div class="devis-total">${formatEuro(total)}</div>
             <div style="display:flex; gap:0.25rem;">
-              <button class="btn btn-outline btn-icon btn-sm" data-action="pdf-invoice" title="Télécharger PDF" aria-label="PDF"><i class="fas fa-file-pdf"></i></button>
-              <button class="btn btn-outline btn-icon btn-sm" data-action="cancel-invoice" title="Émettre un avoir" aria-label="Avoir" ${st === 'annulee' ? 'disabled' : ''}><i class="fas fa-ban"></i></button>
+              <button class="btn btn-outline btn-icon btn-sm" data-action="view-invoice" title="Détail" aria-label="Détail"><i class="fas fa-eye"></i></button>
+              <button class="btn btn-outline btn-icon btn-sm" data-action="pdf-invoice" title="PDF" aria-label="PDF"><i class="fas fa-file-pdf"></i></button>
+              ${!isAvoir && st !== 'annulee' ? `<button class="btn btn-outline btn-icon btn-sm" data-action="cancel-invoice" title="Émettre un avoir" aria-label="Avoir"><i class="fas fa-ban"></i></button>` : ''}
             </div>
           </div>
         `;
@@ -2813,16 +2926,9 @@
         const id = el.dataset.invoiceId;
         el.addEventListener('click', (e) => {
           if (e.target.closest('button')) return;
-          const inv = state.invoices.find(x => x.id === id);
-          if (inv) {
-            const devis = state.devis.find(d => d.id === inv.devisId);
-            if (devis) {
-              navigateTo('editor').then(() => openEditor(devis.id));
-            } else {
-              toast('Devis d\'origine introuvable', 'warning');
-            }
-          }
+          openInvoiceDetail(id);
         });
+        el.querySelector('[data-action="view-invoice"]')?.addEventListener('click', () => openInvoiceDetail(id));
         el.querySelector('[data-action="pdf-invoice"]')?.addEventListener('click', () => {
           const inv = state.invoices.find(x => x.id === id);
           if (inv) downloadInvoicePDF(inv);
@@ -2832,6 +2938,151 @@
           if (inv) cancelInvoice(inv.id);
         });
       });
+    }
+
+    function openInvoiceDetail(invoiceId) {
+      const inv = state.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+      state.currentInvoiceId = invoiceId;
+
+      const st = computeInvoiceStatus(inv);
+      const statusLabels = {
+        emise: 'Émise', payee: 'Payée', partielle: 'Partielle',
+        en_retard: 'En retard', annulee: 'Annulée'
+      };
+      const total = safeTotalTTC(inv.items);
+      const paid = (inv.payments || []).reduce((s, p) => s + num(p.amount), 0);
+      const remaining = Math.max(0, total - paid);
+      const integrity = verifyInvoiceIntegrity(inv);
+      const isAvoir = inv.isAvoir || (inv.number || '').startsWith('AV-');
+
+      $('#invoiceDetailTitle').innerHTML = `<i class="fas fa-file-invoice-dollar"></i> ${escapeHtml(inv.number)}`;
+
+      let html = `
+        <div class="invoice-detail-grid">
+          <div class="invoice-detail-item">
+            <div class="label">Client</div>
+            <div class="value">${escapeHtml(inv.clientName || '—')}</div>
+          </div>
+          <div class="invoice-detail-item">
+            <div class="label">Date émission</div>
+            <div class="value">${formatDate(inv.date)}</div>
+          </div>
+          ${!isAvoir ? `<div class="invoice-detail-item">
+            <div class="label">Échéance</div>
+            <div class="value">${formatDate(inv.dueDate)}</div>
+          </div>` : ''}
+          <div class="invoice-detail-item">
+            <div class="label">Statut</div>
+            <div class="value"><span class="status-badge status-${st}">${statusLabels[st]}</span></div>
+          </div>
+          <div class="invoice-detail-item">
+            <div class="label">Total TTC</div>
+            <div class="value" style="color:var(--accent); font-size:1.1rem;">${formatEuro(total)}</div>
+          </div>
+          <div class="invoice-detail-item">
+            <div class="label">Payé</div>
+            <div class="value" style="color:var(--success);">${formatEuro(paid)}</div>
+          </div>
+          <div class="invoice-detail-item">
+            <div class="label">Reste dû</div>
+            <div class="value" style="color:var(--warning);">${formatEuro(remaining)}</div>
+          </div>
+          ${inv.devisNumber ? `<div class="invoice-detail-item">
+            <div class="label">Devis d'origine</div>
+            <div class="value">${escapeHtml(inv.devisNumber)}</div>
+          </div>` : ''}
+        </div>
+
+        <div class="integrity-check ${integrity.valid ? 'valid' : 'invalid'}">
+          <i class="fas ${integrity.valid ? 'fa-shield-halved' : 'fa-triangle-exclamation'}"></i>
+          ${integrity.valid
+            ? `Empreinte valide : ${(inv.contentHash || '').substring(0, 12)}…`
+            : `Empreinte invalide (${integrity.reason})`}
+        </div>
+
+        <div class="section-title" style="margin-top:1rem;"><i class="fas fa-coins"></i> Paiements</div>
+        <div id="invoicePaymentsList" style="margin-bottom:0.75rem;"></div>
+      `;
+
+      if (!isAvoir && st !== 'annulee') {
+        html += `
+          <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap;">
+            <input type="number" id="invPaymentAmount" class="input" placeholder="Montant" step="0.01" min="0" style="flex:1; min-width:120px;">
+            <input type="date" id="invPaymentDate" class="input" style="flex:1; min-width:120px;" value="${todayISO()}">
+            <button class="btn btn-success btn-sm" id="invAddPaymentBtn"><i class="fas fa-plus"></i> Enregistrer paiement</button>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="modal-actions">
+          <button class="btn btn-outline" onclick="closeInvoiceDetail()">Fermer</button>
+          <button class="btn btn-accent" id="invDownloadPdfBtn"><i class="fas fa-file-pdf"></i> Télécharger PDF</button>
+          ${!isAvoir && st !== 'annulee' ? `<button class="btn btn-danger" id="invCancelBtn"><i class="fas fa-ban"></i> Émettre un avoir</button>` : ''}
+        </div>
+      `;
+
+      $('#invoiceDetailContent').innerHTML = html;
+      renderInvoiceDetailPayments(inv);
+
+      $('#invDownloadPdfBtn')?.addEventListener('click', () => downloadInvoicePDF(inv));
+      $('#invCancelBtn')?.addEventListener('click', () => cancelInvoice(inv.id));
+      $('#invAddPaymentBtn')?.addEventListener('click', () => addInvoicePayment(inv.id));
+
+      $('#invoiceDetailModal').classList.add('active');
+    }
+
+    function renderInvoiceDetailPayments(inv) {
+      const c = $('#invoicePaymentsList');
+      if (!c) return;
+      const payments = inv.payments || [];
+      if (payments.length === 0) {
+        c.innerHTML = `<div style="text-align:center; padding:0.5rem; color:var(--text-light); font-size:0.8rem; font-style:italic;">Aucun paiement</div>`;
+        return;
+      }
+      c.innerHTML = payments.map((p, idx) => `
+        <div class="payment-row">
+          <div><strong>${formatEuro(num(p.amount))}</strong><span class="date"> — ${formatDate(p.date)}</span></div>
+          <button class="delete-btn" data-inv-payment-idx="${idx}" style="color:var(--danger);" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
+        </div>
+      `).join('');
+      c.querySelectorAll('[data-inv-payment-idx]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const idx = parseInt(btn.dataset.invPaymentIdx);
+          const ok = await ConfirmDialog.open({
+            title: 'Supprimer ce paiement ?',
+            message: 'Cette action modifiera la facture.',
+            okText: 'Supprimer'
+          });
+          if (!ok) return;
+          inv.payments.splice(idx, 1);
+          Storage.saveInvoices(state.invoices);
+          renderInvoiceDetailPayments(inv);
+          renderInvoices();
+          openInvoiceDetail(inv.id); // refresh
+          toast('Paiement supprimé', 'warning');
+        });
+      });
+    }
+
+    function addInvoicePayment(invoiceId) {
+      const inv = state.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+      const amount = parseFloat($('#invPaymentAmount').value);
+      const date = $('#invPaymentDate').value || todayISO();
+      if (!amount || amount <= 0) { toast('Montant invalide', 'error'); return; }
+      if (!inv.payments) inv.payments = [];
+      inv.payments.push({ id: uid(), amount, date });
+      Storage.saveInvoices(state.invoices);
+      renderInvoices();
+      openInvoiceDetail(inv.id); // refresh
+      toast('Paiement enregistré');
+    }
+
+    function closeInvoiceDetail() {
+      $('#invoiceDetailModal').classList.remove('active');
+      state.currentInvoiceId = null;
     }
 
     // ==========================================================
@@ -2883,7 +3134,7 @@
           if (!c) return;
           const ok = await ConfirmDialog.open({
             title: 'Supprimer ce client ?',
-            message: `Le client "${c.name || ''}" sera placé dans la corbeille (conservé 30 jours).`,
+            message: `Le client "${c.name || ''}" sera placé dans la corbeille.`,
             okText: 'Supprimer'
           });
           if (!ok) return;
@@ -3200,7 +3451,7 @@
 
     function updateDepositInfo() {
       const pct = parseFloat($('#depositPercent').value) || 0;
-      const totalTTC = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (1 + i.tva/100), 0);
+      const totalTTC = state.currentItems.reduce((s, i) => s + num(i.quantity) * num(i.unitPrice) * (1 + num(i.tva)/100), 0);
       const info = $('#depositInfo');
       if (!info) return;
       if (pct > 0 && totalTTC > 0) {
@@ -3268,15 +3519,15 @@
         <div class="invoice-banner">
           <i class="fas fa-file-invoice-dollar"></i>
           <div class="txt">
-            <div style="font-weight:700;">Facture liée : ${escapeHtml(inv.number)}</div>
+            <div style="font-weight:700;">Facture ${escapeHtml(inv.number)}</div>
             <div style="font-size:0.75rem; opacity:0.85;">Émise le ${formatDate(inv.date)} · Échéance ${formatDate(inv.dueDate)}</div>
           </div>
           <button class="btn btn-sm btn-accent" id="viewInvoiceBtn" style="margin-left:auto;">
-            <i class="fas fa-file-pdf"></i> Télécharger
+            <i class="fas fa-eye"></i> Voir
           </button>
         </div>
       `;
-      $('#viewInvoiceBtn').addEventListener('click', () => downloadInvoicePDF(inv));
+      $('#viewInvoiceBtn').addEventListener('click', () => openInvoiceDetail(inv.id));
     }
 
     function renderInvoiceLockBanner() {
@@ -3290,11 +3541,25 @@
           <i class="fas fa-lock"></i>
           <div style="flex:1 1 200px;">
             <strong>Devis facturé.</strong> La facture est immuable (art. L123-22 code de commerce).
-            Toute modification du devis ne met pas à jour la facture.
-            Pour corriger, émettez un avoir depuis l'onglet Factures.
+            Toute modification du devis ne met pas à jour la facture. Pour corriger, émettez un avoir.
           </div>
         </div>
       `;
+    }
+
+    function updateGenerateInvoiceButton() {
+      const btn = $('#generateInvoiceBtn');
+      if (!btn) return;
+      if (!state.currentDevisId) {
+        btn.innerHTML = '<i class="fas fa-file-invoice-dollar"></i> Émettre la facture';
+        return;
+      }
+      const d = state.devis.find(x => x.id === state.currentDevisId);
+      if (d && d.invoiceId) {
+        btn.innerHTML = '<i class="fas fa-file-pdf"></i> Télécharger la facture';
+      } else {
+        btn.innerHTML = '<i class="fas fa-file-invoice-dollar"></i> Émettre la facture';
+      }
     }
 
     function openEditor(devisId = null) {
@@ -3310,7 +3575,7 @@
         $('#invoiceDate').value = d.date || todayISO();
         $('#invoiceStatus').value = d.status || 'brouillon';
         $('#invoiceNotes').value = d.notes || '';
-        $('#paidAmount').value = (d.payments || []).reduce((s, p) => s + p.amount, 0);
+        $('#paidAmount').value = (d.payments || []).reduce((s, p) => s + num(p.amount), 0);
         $('#depositPercent').value = d.depositPercent ?? 30;
         $('#validityDays').value = d.validityDays || 30;
         $('#acceptedDate').value = d.acceptedDate || '';
@@ -3386,6 +3651,7 @@
         updateDepositInfo();
         renderInvoiceBanner();
         renderInvoiceLockBanner();
+        updateGenerateInvoiceButton();
         navigateTo('editor');
         startAutosave();
       }
@@ -3398,14 +3664,14 @@
         return;
       }
       tbody.innerHTML = state.currentItems.map((item, idx) => {
-        const total = item.quantity * item.unitPrice;
+        const total = num(item.quantity) * num(item.unitPrice);
         const isFirst = idx === 0;
         const isLast = idx === state.currentItems.length - 1;
         return `
           <tr data-item-id="${item.id}" draggable="true">
             <td data-label="" style="padding:0.3rem;">
               <div style="display:flex; align-items:center; gap:2px;">
-                <span class="drag-handle" title="Glisser pour réordonner" aria-hidden="true"><i class="fas fa-grip-vertical"></i></span>
+                <span class="drag-handle" title="Glisser" aria-hidden="true"><i class="fas fa-grip-vertical"></i></span>
                 <div class="item-move-btns">
                   <button data-action="move-up" ${isFirst ? 'disabled' : ''} title="Monter" aria-label="Monter"><i class="fas fa-chevron-up"></i></button>
                   <button data-action="move-down" ${isLast ? 'disabled' : ''} title="Descendre" aria-label="Descendre"><i class="fas fa-chevron-down"></i></button>
@@ -3413,8 +3679,8 @@
               </div>
             </td>
             <td data-label="Désignation"><input type="text" class="input-inline" data-field="description" value="${escapeHtml(item.description)}" placeholder="Description..." aria-label="Désignation"></td>
-            <td data-label="Qté"><input type="number" class="input-inline small" data-field="quantity" value="${item.quantity}" min="0" step="1" aria-label="Quantité"></td>
-            <td data-label="Prix HT"><input type="number" class="input-inline small" data-field="unitPrice" value="${item.unitPrice}" min="0" step="0.01" aria-label="Prix HT"></td>
+            <td data-label="Qté"><input type="number" class="input-inline small" data-field="quantity" value="${num(item.quantity)}" min="0" step="1" aria-label="Quantité"></td>
+            <td data-label="Prix HT"><input type="number" class="input-inline small" data-field="unitPrice" value="${num(item.unitPrice)}" min="0" step="0.01" aria-label="Prix HT"></td>
             <td data-label="TVA">
               <select class="input-inline" data-field="tva" aria-label="TVA">
                 <option value="0" ${item.tva == 0 ? 'selected' : ''}>0%</option>
@@ -3426,7 +3692,7 @@
               </select>
             </td>
             <td data-label="Total HT"><strong>${formatEuro(total)}</strong></td>
-            <td data-label=""><button class="delete-btn" data-action="remove-item" aria-label="Supprimer la ligne"><i class="fas fa-trash"></i></button></td>
+            <td data-label=""><button class="delete-btn" data-action="remove-item" aria-label="Supprimer"><i class="fas fa-trash"></i></button></td>
           </tr>
         `;
       }).join('');
@@ -3520,10 +3786,10 @@
       if (!item) return;
       const field = e.target.dataset.field;
       let value = e.target.value;
-      if (field === 'quantity' || field === 'unitPrice' || field === 'tva') value = parseFloat(value) || 0;
+      if (field === 'quantity' || field === 'unitPrice' || field === 'tva') value = num(value);
       item[field] = value;
       const totalCell = row.querySelector('td[data-label="Total HT"]');
-      if (totalCell) totalCell.innerHTML = `<strong>${formatEuro(item.quantity * item.unitPrice)}</strong>`;
+      if (totalCell) totalCell.innerHTML = `<strong>${formatEuro(num(item.quantity) * num(item.unitPrice))}</strong>`;
       updateSummary();
       updatePaymentsSummary();
       updateDepositInfo();
@@ -3531,10 +3797,7 @@
     }
 
     function updateSummary() {
-      let ht = 0;
-      state.currentItems.forEach(i => {
-        ht += (i.quantity || 0) * (i.unitPrice || 0);
-      });
+      const ht = safeTotalHT(state.currentItems);
       const breakdown = computeTVABreakdown(state.currentItems);
       const tvaTotal = breakdown.reduce((s, b) => s + b.tva, 0);
       $('#sumHT').textContent = formatEuro(ht);
@@ -3550,8 +3813,8 @@
       }
       list.innerHTML = state.currentPayments.map((p, idx) => `
         <div class="payment-row">
-          <div><strong>${formatEuro(p.amount)}</strong><span class="date"> — ${formatDate(p.date)}</span></div>
-          <button class="delete-btn" data-payment-idx="${idx}" style="color:var(--danger);" aria-label="Supprimer le paiement"><i class="fas fa-trash"></i></button>
+          <div><strong>${formatEuro(num(p.amount))}</strong><span class="date"> — ${formatDate(p.date)}</span></div>
+          <button class="delete-btn" data-payment-idx="${idx}" style="color:var(--danger);" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
         </div>
       `).join('');
 
@@ -3575,8 +3838,8 @@
     }
 
     function updatePaymentsSummary() {
-      const totalTTC = state.currentItems.reduce((s, i) => s + (i.quantity * i.unitPrice) * (1 + i.tva/100), 0);
-      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
+      const totalTTC = state.currentItems.reduce((s, i) => s + num(i.quantity) * num(i.unitPrice) * (1 + num(i.tva)/100), 0);
+      const paid = state.currentPayments.reduce((s, p) => s + num(p.amount), 0);
       $('#payTotalTTC').textContent = formatEuro(totalTTC);
       $('#payTotalPaid').textContent = formatEuro(paid);
       $('#payRemaining').textContent = formatEuro(Math.max(0, totalTTC - paid));
@@ -3620,7 +3883,6 @@
         const idx = state.devis.findIndex(d => d.id === state.currentDevisId);
         if (idx >= 0) {
           const old = state.devis[idx];
-          // Conserver les refs facture
           if (old.invoiceId) devisData.invoiceId = old.invoiceId;
           if (!old.history) old.history = [];
           old.history.push({
@@ -3647,16 +3909,6 @@
         toast('Devis enregistré');
       }
 
-      // Sync paiements vers facture liée si elle existe
-      const currentDevis = state.devis.find(d => d.id === state.currentDevisId);
-      if (currentDevis && currentDevis.invoiceId) {
-        const inv = state.invoices.find(i => i.id === currentDevis.invoiceId);
-        if (inv) {
-          inv.payments = JSON.parse(JSON.stringify(state.currentPayments));
-          Storage.saveInvoices(state.invoices);
-        }
-      }
-
       Storage.saveDevis(state.devis);
       Storage.saveDraft(null);
       state.editorDirty = false;
@@ -3665,13 +3917,13 @@
       $('#pageSubtitle').textContent = devisData.number;
       renderInvoiceBanner();
       renderInvoiceLockBanner();
+      updateGenerateInvoiceButton();
     }
 
     // ==========================================================
-    // FACTURE : ÉMISSION
+    // ÉMISSION FACTURE
     // ==========================================================
     async function emitInvoice() {
-      // Exiger un devis enregistré
       if (!state.currentDevisId) {
         toast('Enregistrez d\'abord le devis avant d\'émettre la facture.', 'warning');
         const saveBtn = $('#saveBtn');
@@ -3686,41 +3938,50 @@
       const devis = state.devis.find(d => d.id === state.currentDevisId);
       if (!devis) { toast('Devis introuvable', 'error'); return; }
 
+      // Si déjà facturé : télécharger l'original
       if (devis.invoiceId) {
-        // Déjà facturé : confirmer pour télécharger, pas pour régénérer
         const inv = state.invoices.find(i => i.id === devis.invoiceId);
         if (inv) {
-          const ok = await ConfirmDialog.open({
-            title: 'Facture déjà émise',
-            message: `La facture ${inv.number} existe déjà et est immuable. Voulez-vous télécharger le PDF de la facture d'origine ?`,
-            okText: 'Télécharger',
-            okClass: 'btn-accent'
-          });
-          if (ok) downloadInvoicePDF(inv);
+          const check = verifyInvoiceIntegrity(inv);
+          if (!check.valid) {
+            toast(`Attention : ${check.reason}. Le PDF téléchargé reflète le contenu actuel.`, 'warning');
+          }
+          downloadInvoicePDF(inv);
         }
         return;
       }
 
-      // Première émission : confirmer
+      // Vérifier que le client existe
       const client = state.clients.find(c => c.id === devis.clientId);
       if (!client) {
         toast('Sélectionnez un client avant d\'émettre la facture.', 'error');
         return;
       }
-      if (!state.currentItems || state.currentItems.length === 0 || state.currentItems.every(i => !i.description && !i.unitPrice)) {
+      if (!state.currentItems || state.currentItems.length === 0 || state.currentItems.every(i => !i.description && num(i.unitPrice) === 0)) {
         toast('Le devis est vide. Ajoutez des lignes avant de facturer.', 'error');
         return;
       }
 
+      // Avertissement si statut non accepté
+      if (devis.status !== 'accepte') {
+        const confirmNonAccepte = await ConfirmDialog.open({
+          title: 'Devis non accepté',
+          message: `Ce devis est en statut "${devis.status}". Légalement, une facture doit correspondre à une prestation réalisée ou un devis accepté. Émettre quand même ?`,
+          okText: 'Émettre quand même',
+          okClass: 'btn-warning'
+        });
+        if (!confirmNonAccepte) return;
+      }
+
+      const days = state.settings.company.paymentDays || DEFAULT_PAYMENT_DAYS;
       const ok = await ConfirmDialog.open({
         title: 'Émettre la facture ?',
-        message: `Cette action va créer une facture ${nextInvoiceNumber()} et figer définitivement son contenu (immuable après émission). Continuer ?`,
+        message: `Une facture ${nextInvoiceNumber()} va être créée et figée définitivement (échéance à J+${days}). Son contenu sera immuable. Continuer ?`,
         okText: 'Émettre la facture',
         okClass: 'btn-primary'
       });
       if (!ok) return;
 
-      // Créer l'entité facture
       const inv = {
         id: uid(),
         number: nextInvoiceNumber(),
@@ -3729,16 +3990,18 @@
         clientId: devis.clientId,
         clientName: client.name || '',
         date: todayISO(),
-        dueDate: addDaysISO(todayISO(), INVOICE_DUE_DAYS),
+        dueDate: addDaysISO(todayISO(), days),
         status: 'emise',
         items: JSON.parse(JSON.stringify(state.currentItems)),
         notes: $('#invoiceNotes').value.trim(),
         depositPercent: parseFloat($('#depositPercent').value) || 0,
         emittedAt: Date.now(),
         locked: true,
-        payments: JSON.parse(JSON.stringify(state.currentPayments)),
-        originalInvoiceId: null
+        payments: [],
+        originalInvoiceId: null,
+        contentHash: ''
       };
+      inv.contentHash = computeInvoiceHash(inv);
 
       state.invoices.push(inv);
       consumeInvoiceNumber();
@@ -3747,14 +4010,11 @@
       Storage.saveDevis(state.devis);
       updateBadges();
 
-      // Mettre à jour l'interface
       renderInvoiceBanner();
       renderInvoiceLockBanner();
-      renderItems(); // visuellement rien mais recharge
+      updateGenerateInvoiceButton();
 
       toast(`Facture ${inv.number} émise et verrouillée`, 'success');
-
-      // Télécharger le PDF immédiatement
       setTimeout(() => downloadInvoicePDF(inv), 400);
     }
 
@@ -3765,9 +4025,13 @@
         toast('Cette facture est déjà annulée.', 'warning');
         return;
       }
+      if (inv.isAvoir) {
+        toast('Un avoir ne peut pas être annulé par un autre avoir.', 'error');
+        return;
+      }
       const ok = await ConfirmDialog.open({
         title: 'Annuler cette facture ?',
-        message: `Un avoir ${nextAvoirNumber()} sera créé avec le montant négatif. La facture ${inv.number} passera en statut "Annulée". Cette action est irréversible.`,
+        message: `Un avoir ${nextAvoirNumber()} sera créé avec le montant négatif. La facture ${inv.number} passera en statut "Annulée". Action irréversible.`,
         okText: 'Émettre un avoir',
         okClass: 'btn-danger'
       });
@@ -3785,7 +4049,7 @@
         status: 'emise',
         items: inv.items.map(it => ({
           ...it,
-          quantity: -it.quantity
+          quantity: -num(it.quantity)
         })),
         notes: `Avoir sur facture ${inv.number}`,
         depositPercent: 0,
@@ -3793,8 +4057,11 @@
         locked: true,
         payments: [],
         originalInvoiceId: inv.id,
-        isAvoir: true
+        isAvoir: true,
+        contentHash: ''
       };
+      avoir.contentHash = computeInvoiceHash(avoir);
+
       state.invoices.push(avoir);
       consumeAvoirNumber();
       inv.status = 'annulee';
@@ -3802,6 +4069,7 @@
       Storage.saveInvoices(state.invoices);
       updateBadges();
       renderInvoices();
+      closeInvoiceDetail();
       toast(`Avoir ${avoir.number} émis. Facture ${inv.number} annulée.`, 'success');
     }
 
@@ -3812,10 +4080,10 @@
       const clientId = $('#clientSelect').value;
       const client = state.clients.find(c => c.id === clientId);
       const items = state.currentItems;
-      const ht = items.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-      const tva = items.reduce((s, i) => s + (i.quantity * i.unitPrice) * (i.tva/100), 0);
+      const ht = safeTotalHT(items);
+      const tva = safeTotalTVA(items);
       const ttc = ht + tva;
-      const paid = state.currentPayments.reduce((s, p) => s + p.amount, 0);
+      const paid = state.currentPayments.reduce((s, p) => s + num(p.amount), 0);
       const remaining = Math.max(0, ttc - paid);
       const depositPct = parseFloat($('#depositPercent').value) || 0;
       const depositAmount = Math.round(ttc * depositPct) / 100;
@@ -3837,9 +4105,7 @@
     }
 
     function getAccentRgb() {
-      let hex = state.settings.accent || '#6366f1';
-      if (state.settings.dark && hex === '#6366f1') hex = '#60a5fa';
-      return hexToRgb(hex);
+      return hexToRgb(state.settings.accent || '#60a5fa');
     }
 
     function generatePDFDoc() {
@@ -3907,10 +4173,10 @@
       y += 5;
       const rows = data.items.map(i => [
         i.description || '',
-        String(i.quantity),
-        formatEuroPdf(i.unitPrice),
-        i.tva + '%',
-        formatEuroPdf(i.quantity * i.unitPrice)
+        String(num(i.quantity)),
+        formatEuroPdf(num(i.unitPrice)),
+        num(i.tva) + '%',
+        formatEuroPdf(num(i.quantity) * num(i.unitPrice))
       ]);
 
       doc.autoTable({
@@ -3934,7 +4200,7 @@
         const b = data.vatBreakdown[0];
         doc.text(`TVA (${b.rate}%)`, boxX, y);
         doc.text(formatEuroPdf(b.tva), pageW - margin, y, { align: 'right' }); y += 5;
-      } else {
+      } else if (data.vatBreakdown.length > 1) {
         doc.text('TVA', boxX, y);
         doc.text(formatEuroPdf(data.tva), pageW - margin, y, { align: 'right' }); y += 4;
         doc.setFontSize(7.5); doc.setTextColor(130);
@@ -4031,7 +4297,7 @@
     }
 
     // ==========================================================
-    // PDF FACTURE (figée)
+    // PDF FACTURE
     // ==========================================================
     function generateInvoicePDFDoc(invoice) {
       const { jsPDF } = window.jspdf;
@@ -4039,14 +4305,16 @@
       const accent = getAccentRgb();
       const pageW = 210, margin = 15;
       let y = margin;
-      const isAvoir = invoice.isAvoir || invoice.number.startsWith('AV-');
+      const isAvoir = invoice.isAvoir || (invoice.number || '').startsWith('AV-');
+      const isEnRetard = !isAvoir && invoice.dueDate && invoice.dueDate < todayISO()
+        && computeInvoiceStatus(invoice) !== 'payee'
+        && invoice.status !== 'annulee';
 
-      // Données figées à l'émission
       const items = invoice.items || [];
-      const ht = items.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
-      const tva = items.reduce((s, i) => s + (i.quantity * i.unitPrice) * (i.tva/100), 0);
+      const ht = safeTotalHT(items);
+      const tva = safeTotalTVA(items);
       const ttc = ht + tva;
-      const paid = (invoice.payments || []).reduce((s, p) => s + p.amount, 0);
+      const paid = (invoice.payments || []).reduce((s, p) => s + num(p.amount), 0);
       const remaining = Math.max(0, ttc - paid);
       const vatBreakdown = computeTVABreakdown(items);
       const client = state.clients.find(c => c.id === invoice.clientId);
@@ -4100,8 +4368,22 @@
         const orig = state.invoices.find(i => i.id === invoice.originalInvoiceId);
         if (orig) doc.text(`Annule la facture : ${orig.number}`, infoX, y + 29, { align: 'right' });
       }
+      if (invoice.contentHash) {
+        doc.setFontSize(7); doc.setTextColor(160);
+        doc.text(`Empreinte : ${invoice.contentHash.substring(0, 12)}`, infoX, y + 34, { align: 'right' });
+      }
 
-      y = Math.max(cy + 5, y + 30 + logoHeight) + 10;
+      // Tampon EN RETARD
+      if (isEnRetard) {
+        doc.setFontSize(40);
+        doc.setTextColor(239, 68, 68);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(239, 68, 68, 0.35);
+        const stampY = y + 50;
+        doc.text('EN RETARD', pageW / 2, stampY, { align: 'center', angle: 15 });
+      }
+
+      y = Math.max(cy + 5, y + 36 + logoHeight) + 10;
       doc.setDrawColor(titleColor[0], titleColor[1], titleColor[2]); doc.setLineWidth(0.5);
       doc.line(margin, y, pageW - margin, y); y += 8;
       doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
@@ -4117,10 +4399,10 @@
       y += 5;
       const rows = items.map(i => [
         i.description || '',
-        String(i.quantity),
-        formatEuroPdf(i.unitPrice),
-        i.tva + '%',
-        formatEuroPdf(i.quantity * i.unitPrice)
+        String(num(i.quantity)),
+        formatEuroPdf(num(i.unitPrice)),
+        num(i.tva) + '%',
+        formatEuroPdf(num(i.quantity) * num(i.unitPrice))
       ]);
 
       doc.autoTable({
@@ -4162,11 +4444,11 @@
       doc.text(formatEuroPdf(ttc), pageW - margin, y, { align: 'right' }); y += 7;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
 
-      if (!isAvoir && invoice.depositPercent > 0) {
-        const dep = Math.round(ttc * invoice.depositPercent) / 100;
+      if (!isAvoir && num(invoice.depositPercent) > 0) {
+        const dep = Math.round(ttc * num(invoice.depositPercent)) / 100;
         if (dep > 0) {
           doc.setTextColor(100);
-          doc.text(`Acompte (${invoice.depositPercent}%)`, boxX, y);
+          doc.text(`Acompte (${num(invoice.depositPercent)}%)`, boxX, y);
           doc.text(formatEuroPdf(dep), pageW - margin, y, { align: 'right' }); y += 5;
         }
       }
@@ -4182,20 +4464,15 @@
       doc.setFont(undefined, 'normal');
       doc.setTextColor(30);
 
-      // Mentions légales obligatoires
       y = Math.max(y + 6, doc.lastAutoTable.finalY + 45);
       doc.setFontSize(7.5); doc.setTextColor(120);
       let mentions = '';
       if (isAvoir) {
-        mentions = `Avoir émis en annulation de la facture ${(() => {
-          const orig = state.invoices.find(i => i.id === invoice.originalInvoiceId);
-          return orig ? orig.number : '';
-        })()}.`;
+        const orig = state.invoices.find(i => i.id === invoice.originalInvoiceId);
+        mentions = `Avoir émis en annulation de la facture ${orig ? orig.number : ''}.`;
       } else {
-        mentions = state.settings.company.paymentTerms || 'Paiement à réception de facture. En cas de retard de paiement, des pénalités au taux d\'intérêt légal seront appliquées, ainsi qu\'une indemnité forfaitaire de recouvrement de 40 €.';
-        if (invoice.dueDate) {
-          mentions = `Échéance : ${formatDate(invoice.dueDate)}. ` + mentions;
-        }
+        const days = state.settings.company.paymentDays || DEFAULT_PAYMENT_DAYS;
+        mentions = `Paiement à ${days} jours. ` + (state.settings.company.paymentTerms || 'En cas de retard de paiement, des pénalités au taux d\'intérêt légal seront appliquées, ainsi qu\'une indemnité forfaitaire de recouvrement de 40 €.');
       }
       const split = doc.splitTextToSize(mentions, pageW - margin * 2);
       doc.text(split, margin, y);
@@ -4209,6 +4486,10 @@
 
     function downloadInvoicePDF(invoice) {
       try {
+        const check = verifyInvoiceIntegrity(invoice);
+        if (!check.valid && !invoice.isAvoir) {
+          toast(`Attention : facture potentiellement altérée (${check.reason}).`, 'warning');
+        }
         const { doc, filename } = generateInvoicePDFDoc(invoice);
         doc.save(filename);
         toast(`${invoice.number} téléchargée`);
@@ -4237,7 +4518,7 @@
       const subject = encodeURIComponent(`Devis ${data.number} - ${companyName}`);
       const body = `Bonjour ${client.name || ''},\n\nVeuillez trouver ci-joint le devis ${data.number} du ${formatDate(data.date)}.\n\nTotal TTC : ${formatEuro(data.ttc)}\n\nCordialement,\n${companyName}`;
 
-      toast('PDF téléchargé. Attachez-le à l\'email qui s\'ouvre.', 'success');
+      toast('PDF téléchargé. Attachez-le à l\'email.', 'success');
       setTimeout(() => {
         window.location.href = `mailto:${client.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
       }, 800);
@@ -4264,8 +4545,8 @@
 
     function printDevis() {
       const data = buildDevisDataForPDF();
-      const accent = state.settings.accent || '#6366f1';
-      const rows = data.items.map(i => `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${i.quantity}</td><td style="text-align:right">${formatEuro(i.unitPrice)}</td><td style="text-align:center">${i.tva}%</td><td style="text-align:right">${formatEuro(i.quantity * i.unitPrice)}</td></tr>`).join('');
+      const accent = state.settings.accent || '#60a5fa';
+      const rows = data.items.map(i => `<tr><td>${escapeHtml(i.description || '—')}</td><td style="text-align:center">${num(i.quantity)}</td><td style="text-align:right">${formatEuro(num(i.unitPrice))}</td><td style="text-align:center">${num(i.tva)}%</td><td style="text-align:right">${formatEuro(num(i.quantity) * num(i.unitPrice))}</td></tr>`).join('');
 
       const html = `
         <!DOCTYPE html><html><head><title>Devis ${escapeHtml(data.number)}</title>
@@ -4348,7 +4629,7 @@
         const ht = devisTotalHT(d);
         const tva = devisTotalTVA(d);
         const ttc = ht + tva;
-        const paid = (d.payments || []).reduce((s, p) => s + p.amount, 0);
+        const paid = (d.payments || []).reduce((s, p) => s + num(p.amount), 0);
         return [d.number || '', d.date || '', d.clientName || '', d.status || '', ht.toFixed(2), tva.toFixed(2), ttc.toFixed(2), paid.toFixed(2), (ttc - paid).toFixed(2)];
       });
       const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n');
@@ -4406,7 +4687,7 @@
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-devis="${d.id}"><i class="fas fa-undo"></i> Restaurer</button>
-              <button class="btn btn-danger btn-sm" data-purge-devis="${d.id}" aria-label="Supprimer définitivement"><i class="fas fa-times"></i></button>
+              <button class="btn btn-danger btn-sm" data-purge-devis="${d.id}" aria-label="Supprimer"><i class="fas fa-times"></i></button>
             </div>
           </div>
         `}).join('');
@@ -4424,7 +4705,7 @@
             </div>
             <div class="actions">
               <button class="btn btn-outline btn-sm" data-restore-client="${c.id}"><i class="fas fa-undo"></i> Restaurer</button>
-              <button class="btn btn-danger btn-sm" data-purge-client="${c.id}" aria-label="Supprimer définitivement"><i class="fas fa-times"></i></button>
+              <button class="btn btn-danger btn-sm" data-purge-client="${c.id}" aria-label="Supprimer"><i class="fas fa-times"></i></button>
             </div>
           </div>
         `}).join('');
@@ -4544,8 +4825,7 @@
           } else if (type === 'devis') {
             openEditor(id);
           } else if (type === 'invoice') {
-            const inv = state.invoices.find(x => x.id === id);
-            if (inv) downloadInvoicePDF(inv);
+            navigateTo('invoices').then(() => openInvoiceDetail(id));
           } else if (type === 'catalog') {
             navigateTo('catalogue');
             setTimeout(() => { $('#catalogSearch').value = ''; renderCatalogue(); }, 100);
@@ -4582,7 +4862,8 @@
       $('#companyAddressInput').value = s.company.address || '';
       $('#companySiretInput').value = s.company.siret || '';
       $('#companyTvaInput').value = s.company.tvaNumber || '';
-      $('#accentColorInput').value = s.accent || '#6366f1';
+      $('#accentColorInput').value = s.accent || '#60a5fa';
+      $('#paymentDaysInput').value = s.company.paymentDays || DEFAULT_PAYMENT_DAYS;
       const ins = s.company.insurance || {};
       $('#insuranceNameInput').value = ins.name || '';
       $('#insurancePolicyInput').value = ins.policy || '';
@@ -4640,6 +4921,7 @@
           coverage: $('#insuranceCoverageInput').value.trim()
         },
         vatRegime: $('#vatRegimeInput').value,
+        paymentDays: parseInt($('#paymentDaysInput').value) || DEFAULT_PAYMENT_DAYS,
         paymentTerms: state.settings.company.paymentTerms
       };
       state.settings.accent = $('#accentColorInput').value;
@@ -4662,7 +4944,8 @@
           policy: $('#insurancePolicyInput').value.trim(),
           coverage: $('#insuranceCoverageInput').value.trim()
         },
-        vatRegime: $('#vatRegimeInput').value
+        vatRegime: $('#vatRegimeInput').value,
+        paymentDays: parseInt($('#paymentDaysInput').value) || DEFAULT_PAYMENT_DAYS
       };
       state.settings.accent = $('#accentColorInput').value;
       Storage.saveSettings(state.settings);
@@ -4723,7 +5006,7 @@
     }
 
     // ==========================================================
-    // PIN / LOCK
+    // PIN
     // ==========================================================
     function savePin() {
       const pin = $('#pinSettingInput').value.trim();
@@ -4973,6 +5256,7 @@
             if (!state.settings.nextNumber) state.settings.nextNumber = 1;
             if (!state.settings.nextInvoiceNumber) state.settings.nextInvoiceNumber = 1;
             if (!state.settings.nextAvoirNumber) state.settings.nextAvoirNumber = 1;
+            if (!state.settings.company.paymentDays) state.settings.company.paymentDays = DEFAULT_PAYMENT_DAYS;
           }
 
           Storage.saveClients(state.clients);
@@ -4986,6 +5270,7 @@
           ensureNextNumber();
           ensureNextInvoiceNumber();
           ensureNextAvoirNumber();
+          validateInvoiceSequence();
           purgeOldTrash();
           updateBadges();
           applyTheme();
@@ -5000,7 +5285,7 @@
     }
 
     // ==========================================================
-    // AUTOSAVE / DRAFT
+    // AUTOSAVE
     // ==========================================================
     function startAutosave() {
       stopAutosave();
@@ -5041,12 +5326,16 @@
         acceptedDate: $('#acceptedDate').value || '',
         savedAt: Date.now()
       };
-      Storage.saveDraft(draft);
+      const ok = Storage.saveDraft(draft);
       setTimeout(() => {
         if (indicator) {
           indicator.classList.remove('saving');
-          indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Sauvegardé</span>';
-          setTimeout(() => { indicator.style.display = 'none'; }, 2000);
+          if (ok) {
+            indicator.innerHTML = '<i class="fas fa-check-circle"></i> <span>Sauvegardé</span>';
+          } else {
+            indicator.innerHTML = '<i class="fas fa-triangle-exclamation" style="color:var(--warning);"></i> <span>Non sauvegardé (stockage plein)</span>';
+          }
+          setTimeout(() => { indicator.style.display = 'none'; }, 2500);
         }
       }, 400);
     }
@@ -5072,6 +5361,7 @@
       const probe = Crypto.decrypt(settingsStr, DEFAULT_KEY, null);
       if (probe) {
         state.settings = { ...defaultSettings(), ...probe };
+        if (!state.settings.company.paymentDays) state.settings.company.paymentDays = DEFAULT_PAYMENT_DAYS;
         if (state.settings.hasPin) {
           activeKey = DEFAULT_KEY;
           $('#lockSubtitle').textContent = 'Entrez votre code PIN';
@@ -5214,7 +5504,7 @@
       $('#confirmOkBtn').addEventListener('click', () => ConfirmDialog.close(true));
       $('#confirmCancelBtn').addEventListener('click', () => ConfirmDialog.close(false));
 
-      ['clientModal', 'catalogModal', 'catalogPickerModal', 'historyModal', 'searchModal'].forEach(id => {
+      ['clientModal', 'catalogModal', 'catalogPickerModal', 'historyModal', 'searchModal', 'invoiceDetailModal'].forEach(id => {
         const el = $('#' + id);
         if (el) el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); });
       });
@@ -5232,7 +5522,7 @@
         }
         if (e.key === 'Escape') {
           if (state.drawerOpen) { closeDrawer(); return; }
-          ['clientModal','catalogModal','catalogPickerModal','historyModal','searchModal'].forEach(id => $('#'+id).classList.remove('active'));
+          ['clientModal','catalogModal','catalogPickerModal','historyModal','searchModal','invoiceDetailModal'].forEach(id => $('#'+id).classList.remove('active'));
           if ($('#confirmModal').classList.contains('active')) ConfirmDialog.close(false);
         }
         if ((e.ctrlKey || e.metaKey) && e.key === 's' && state.currentView === 'editor') {
@@ -5269,7 +5559,7 @@
         list.innerHTML = hist.slice().reverse().map(h => `
           <div class="history-item" data-version-id="${h.version}">
             <div class="version"><i class="fas fa-code-branch"></i> Version ${h.version}</div>
-            <div class="meta">${new Date(h.savedAt).toLocaleString('fr-FR')} · ${formatEuro(devisTotalTTC({ items: h.snapshot.items || [] }))}</div>
+            <div class="meta">${new Date(h.savedAt).toLocaleString('fr-FR')} · ${formatEuro(safeTotalTTC(h.snapshot.items))}</div>
           </div>
         `).join('');
         list.querySelectorAll('.history-item').forEach(el => {
