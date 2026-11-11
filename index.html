@@ -4199,8 +4199,6 @@
       doc.line(margin + 80, boxY + 24, pageW - margin - 4, boxY + 24);
       doc.text('Signature du client', margin + 80, boxY + 30);
 
-      doc.setFontSize(7); doc.setTextColor(150);
-      doc.text(`Devis généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}`, pageW/2, 290, { align: 'center' });
 
       return { doc, filename: `Devis_${data.number || 'export'}.pdf`, data };
     }
@@ -4418,9 +4416,7 @@
         y += boxH + 4;
       }
 
-      doc.setFontSize(7); doc.setTextColor(150);
-      doc.text(`${title} généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}`, pageW/2, 290, { align: 'center' });
-
+     
       return { doc, filename: `${title}_${invoice.number}.pdf` };
     }
 
