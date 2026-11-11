@@ -112,6 +112,7 @@
       height: fit-content;
       position: sticky;
       top: calc(var(--pad) + var(--safe-top) + 1rem);
+      align-self: start;
       max-height: calc(100vh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
       max-height: calc(100dvh - 2 * var(--pad) - var(--safe-top) - var(--safe-bottom) - 1rem);
       overflow-y: auto;
@@ -1458,8 +1459,6 @@
               <option value="accepte">Accepté</option>
               <option value="refuse">Refusé</option>
             </select>
-            <input type="date" id="devisFilterFrom" class="input" placeholder="Du" aria-label="Date de début">
-            <input type="date" id="devisFilterTo" class="input" placeholder="Au" aria-label="Date de fin">
             <select id="devisSortBy" class="input" aria-label="Trier par">
               <option value="date-desc">Date ↓</option>
               <option value="date-asc">Date ↑</option>
@@ -1494,8 +1493,6 @@
               <option value="en_retard">En retard</option>
               <option value="annulee">Annulée</option>
             </select>
-            <input type="date" id="invoiceFilterFrom" class="input" aria-label="Date de début">
-            <input type="date" id="invoiceFilterTo" class="input" aria-label="Date de fin">
             <select id="invoiceSortBy" class="input" aria-label="Trier par">
               <option value="date-desc">Date ↓</option>
               <option value="date-asc">Date ↑</option>
@@ -1739,7 +1736,7 @@
 
               <div id="invoiceBannerContainer"></div>
 
-              <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;">
+              <div style="display:flex; flex-direction: column; gap:0.5rem; margin-top:1rem;">
                 <button class="btn btn-success" id="saveBtn"><i class="fas fa-save"></i> Enregistrer</button>
                 <button class="btn btn-accent" id="pdfBtn"><i class="fas fa-file-pdf"></i> Export PDF devis</button>
                 <button class="btn btn-primary" id="generateInvoiceBtn"><i class="fas fa-file-invoice-dollar"></i> Émettre la facture</button>
@@ -1800,6 +1797,11 @@
             <label>Adresse</label>
             <textarea id="companyAddressInput" placeholder="Rue, code postal, ville"></textarea>
           </div>
+          <div class="field-group" style="margin-top:0.75rem;">
+            <label>RIB (banque, IBAN, BIC)</label>
+            <input type="text" id="companyRibInput" class="input" placeholder="IBAN FR76 1234 5678 9012 3456 7890 123 - BIC XXXXFRPP">
+            <div class="validity-info">Apparaîtra sur les devis et factures</div>
+          </div>
           <div style="display:flex; align-items:center; gap:0.75rem; margin-top:1rem; flex-wrap:wrap;">
             <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()" role="button" aria-label="Changer le logo"><i class="fas fa-image"></i></div>
             <div>
@@ -1835,7 +1837,7 @@
             <label>Régime</label>
             <select id="vatRegimeInput" class="input">
               <option value="normal">Assujetti à la TVA (normal)</option>
-              <option value="franchise">Franchise en base (TVA non applicable, art. 293 B du CGI)</option>
+              <option value="franchise">Franchise en base</option>
             </select>
           </div>
         </div>
@@ -1863,10 +1865,19 @@
         <button class="modal-close" onclick="closeClientModal()" aria-label="Fermer"><i class="fas fa-times"></i></button>
       </div>
       <div style="display:flex; flex-direction:column; gap:0.75rem;">
-        <div class="field-group"><label>Nom / Raison sociale *</label><input type="text" id="clientNameInput" class="input" placeholder="Ex: Studio Créatif SAS"></div>
-        <div class="field-group"><label>Email</label><input type="email" id="clientEmailInput" class="input" placeholder="contact@exemple.fr"></div>
-        <div class="field-group"><label>Téléphone</label><input type="tel" id="clientPhoneInput" class="input" placeholder="06 12 34 56 78"></div>
-        <div class="field-group"><label>Adresse</label><textarea id="clientAddressInput" placeholder="Rue, code postal, ville"></textarea></div>
+        <div class="grid-2">
+          <div class="field-group"><label>Nom *</label><input type="text" id="clientNameInput" class="input" placeholder="Dupont"></div>
+          <div class="field-group"><label>Prénom</label><input type="text" id="clientFirstNameInput" class="input" placeholder="Jean"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field-group"><label>Code postal</label><input type="text" id="clientPostalCodeInput" class="input" placeholder="75001"></div>
+          <div class="field-group"><label>Ville</label><input type="text" id="clientCityInput" class="input" placeholder="Paris"></div>
+        </div>
+        <div class="field-group"><label>Adresse</label><textarea id="clientAddressInput" placeholder="Rue, numéro"></textarea></div>
+        <div class="grid-2">
+          <div class="field-group"><label>Téléphone</label><input type="tel" id="clientPhoneInput" class="input" placeholder="06 12 34 56 78"></div>
+          <div class="field-group"><label>Email</label><input type="email" id="clientEmailInput" class="input" placeholder="contact@exemple.fr"></div>
+        </div>
         <div class="field-group"><label>Notes internes</label><textarea id="clientNotesInput" placeholder="Infos complémentaires..."></textarea></div>
       </div>
       <div class="modal-actions">
@@ -1985,7 +1996,6 @@
     const DRAFT_DEBOUNCE_MS = 300;
     const DEFAULT_PAYMENT_DAYS = 30;
 
-    // Clé fixe (le chiffrement n'est plus protégé par PIN — obfuscation seulement)
     const STORAGE_KEY = 'DevisPro_LOCAL_KEY_v3';
 
     const Crypto = {
@@ -2060,7 +2070,7 @@
       return {
         company: {
           name: 'DevisPro SAS', email: '', phone: '', address: '', logo: '',
-          siret: '', tvaNumber: '',
+          siret: '', tvaNumber: '', rib: '',
           insurance: { name: '', policy: '', coverage: '' },
           vatRegime: 'normal',
           paymentDays: DEFAULT_PAYMENT_DAYS,
@@ -2290,6 +2300,7 @@
       if (!state.trash.invoices) state.trash.invoices = [];
       state.settings = Storage.loadSettings();
       if (!state.settings.company.paymentDays) state.settings.company.paymentDays = DEFAULT_PAYMENT_DAYS;
+      if (!state.settings.company.rib) state.settings.company.rib = '';
       state.loaded = true;
       migrateLegacyInvoices();
       ensureNextNumber();
@@ -2571,8 +2582,6 @@
     function getFilteredDevis() {
       const search = ($('#devisSearch')?.value || '').toLowerCase().trim();
       const status = $('#devisFilterStatus')?.value || '';
-      const from = $('#devisFilterFrom')?.value || '';
-      const to = $('#devisFilterTo')?.value || '';
       const sortBy = $('#devisSortBy')?.value || 'date-desc';
 
       let list = state.devis.filter(d => {
@@ -2583,8 +2592,6 @@
           if (!inNumber && !inClient && !inItems) return false;
         }
         if (status && d.status !== status) return false;
-        if (from && d.date < from) return false;
-        if (to && d.date > to) return false;
         return true;
       });
 
@@ -2703,8 +2710,6 @@
     function getFilteredInvoices() {
       const search = ($('#invoiceSearch')?.value || '').toLowerCase().trim();
       const status = $('#invoiceFilterStatus')?.value || '';
-      const from = $('#invoiceFilterFrom')?.value || '';
-      const to = $('#invoiceFilterTo')?.value || '';
       const sortBy = $('#invoiceSortBy')?.value || 'date-desc';
 
       let list = state.invoices.filter(i => {
@@ -2717,8 +2722,6 @@
           const autoStatus = computeInvoiceStatus(i);
           if (autoStatus !== status) return false;
         }
-        if (from && i.date < from) return false;
-        if (to && i.date > to) return false;
         return true;
       });
 
@@ -2972,9 +2975,10 @@
         return;
       }
       grid.innerHTML = state.clients.map(c => {
-        const initials = (c.name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        const initials = ((c.name || '?').charAt(0) + (c.firstName || '').charAt(0)).toUpperCase() || '?';
         const clientDevis = state.devis.filter(d => d.clientId === c.id);
         const totalCA = clientDevis.reduce((s, d) => s + devisTotalTTC(d), 0);
+        const fullName = [c.name, c.firstName].filter(Boolean).join(' ');
         return `
           <div class="client-card" data-client-id="${c.id}">
             <div class="client-actions">
@@ -2982,9 +2986,11 @@
               <button class="btn btn-outline btn-icon btn-sm" data-action="delete-client" title="Supprimer" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
             </div>
             <div class="client-avatar">${escapeHtml(initials)}</div>
-            <div class="client-name">${escapeHtml(c.name || 'Sans nom')}</div>
-            ${c.email ? `<div class="client-info"><i class="fas fa-envelope"></i> ${escapeHtml(c.email)}</div>` : ''}
+            <div class="client-name">${escapeHtml(fullName || 'Sans nom')}</div>
+            ${c.address ? `<div class="client-info"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(c.address)}</div>` : ''}
+            ${c.postalCode || c.city ? `<div class="client-info"><i class="fas fa-city"></i> ${escapeHtml(c.postalCode || '')} ${escapeHtml(c.city || '')}</div>` : ''}
             ${c.phone ? `<div class="client-info"><i class="fas fa-phone"></i> ${escapeHtml(c.phone)}</div>` : ''}
+            ${c.email ? `<div class="client-info"><i class="fas fa-envelope"></i> ${escapeHtml(c.email)}</div>` : ''}
             <div class="client-stats">
               <div class="client-stat"><strong>${clientDevis.length}</strong>Devis</div>
               <div class="client-stat"><strong>${formatEuro(totalCA)}</strong>CA</div>
@@ -2999,8 +3005,9 @@
           if (e.target.closest('button')) return;
           const client = state.clients.find(c => c.id === id);
           if (client) {
+            const fullName = [client.name, client.firstName].filter(Boolean).join(' ');
             navigateTo('devis-list').then(() => {
-              $('#devisSearch').value = client.name || '';
+              $('#devisSearch').value = fullName || client.name || '';
               renderDevisList();
             });
           }
@@ -3011,7 +3018,7 @@
           if (!c) return;
           const ok = await ConfirmDialog.open({
             title: 'Supprimer ce client ?',
-            message: `Le client "${c.name || ''}" sera placé dans la corbeille.`,
+            message: `Le client "${[c.name, c.firstName].filter(Boolean).join(' ') || ''}" sera placé dans la corbeille.`,
             okText: 'Supprimer'
           });
           if (!ok) return;
@@ -3044,14 +3051,17 @@
         if (c) {
           title.textContent = 'Modifier le client';
           $('#clientNameInput').value = c.name || '';
-          $('#clientEmailInput').value = c.email || '';
-          $('#clientPhoneInput').value = c.phone || '';
+          $('#clientFirstNameInput').value = c.firstName || '';
+          $('#clientPostalCodeInput').value = c.postalCode || '';
+          $('#clientCityInput').value = c.city || '';
           $('#clientAddressInput').value = c.address || '';
+          $('#clientPhoneInput').value = c.phone || '';
+          $('#clientEmailInput').value = c.email || '';
           $('#clientNotesInput').value = c.notes || '';
         }
       } else {
         title.textContent = 'Nouveau client';
-        ['clientNameInput','clientEmailInput','clientPhoneInput','clientAddressInput','clientNotesInput'].forEach(id => $('#'+id).value = '');
+        ['clientNameInput','clientFirstNameInput','clientPostalCodeInput','clientCityInput','clientAddressInput','clientPhoneInput','clientEmailInput','clientNotesInput'].forEach(id => $('#'+id).value = '');
       }
       modal.classList.add('active');
       setTimeout(() => $('#clientNameInput').focus(), 100);
@@ -3064,9 +3074,12 @@
       if (!name) { toast('Le nom est obligatoire', 'error'); return; }
       const data = {
         name,
-        email: $('#clientEmailInput').value.trim(),
-        phone: $('#clientPhoneInput').value.trim(),
+        firstName: $('#clientFirstNameInput').value.trim(),
+        postalCode: $('#clientPostalCodeInput').value.trim(),
+        city: $('#clientCityInput').value.trim(),
         address: $('#clientAddressInput').value.trim(),
+        phone: $('#clientPhoneInput').value.trim(),
+        email: $('#clientEmailInput').value.trim(),
         notes: $('#clientNotesInput').value.trim()
       };
       let newId = null;
@@ -3309,7 +3322,10 @@
       if (!select) return;
       const currentVal = select.value;
       select.innerHTML = '<option value="">— Sélectionner un client —</option>' +
-        state.clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+        state.clients.map(c => {
+          const fullName = [c.name, c.firstName].filter(Boolean).join(' ');
+          return `<option value="${c.id}">${escapeHtml(fullName || 'Sans nom')}</option>`;
+        }).join('');
       if (currentVal) select.value = currentVal;
     }
 
@@ -3750,7 +3766,7 @@
         status: $('#invoiceStatus').value,
         notes: $('#invoiceNotes').value.trim(),
         clientId: clientId || null,
-        clientName: client ? client.name : '',
+        clientName: client ? [client.name, client.firstName].filter(Boolean).join(' ') : '',
         items: JSON.parse(JSON.stringify(state.currentItems)),
         payments: JSON.parse(JSON.stringify(state.currentPayments)),
         depositPercent: parseFloat($('#depositPercent').value) || 0,
@@ -3996,53 +4012,57 @@
       doc.setFillColor(accent[0], accent[1], accent[2]);
       doc.rect(0, 0, pageW, 4, 'F');
 
+      // Logo centré, légèrement descendu (y + 6), ~15% plus grand
+      const logoBaseY = y + 6;
       let logoHeight = 0;
       if (state.settings.company.logo) {
         try {
           const imgProps = doc.getImageProperties(state.settings.company.logo);
-          const MAX_W = 35, MAX_H = 18;
+          const MAX_W = 40, MAX_H = 21;
           let logoW = MAX_W;
           let logoH = (imgProps.height / imgProps.width) * logoW;
           if (logoH > MAX_H) { logoH = MAX_H; logoW = (imgProps.width / imgProps.height) * logoH; }
-          doc.addImage(state.settings.company.logo, 'PNG', margin, y, logoW, logoH);
-          logoHeight = logoH + 4;
+          const logoX = (pageW - logoW) / 2;
+          doc.addImage(state.settings.company.logo, 'PNG', logoX, logoBaseY, logoW, logoH);
+          logoHeight = logoH + 8;
         } catch (e) { logoHeight = 0; }
       }
 
+      // Bloc entreprise à la même hauteur que "DEVIS xxx"
+      const companyStartY = logoBaseY + logoHeight + 5;
       doc.setFontSize(16); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
-      doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8 + logoHeight);
+      doc.text(state.settings.company.name || 'Mon entreprise', margin, companyStartY);
       doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.setFont(undefined, 'normal');
-      let cy = y + 13 + logoHeight;
+      let cy = companyStartY + 5;
       const compAddr = (state.settings.company.address || '').split('\n');
       compAddr.forEach(l => { if (l.trim()) { doc.text(l, margin, cy); cy += 4; } });
       if (state.settings.company.email) { doc.text(state.settings.company.email, margin, cy); cy += 4; }
       if (state.settings.company.phone) { doc.text(state.settings.company.phone, margin, cy); cy += 4; }
       if (state.settings.company.siret) { doc.text(`SIRET : ${state.settings.company.siret}`, margin, cy); cy += 4; }
-      if (state.settings.company.vatRegime === 'franchise') {
-        doc.text('TVA non applicable, art. 293 B du CGI', margin, cy); cy += 4;
-      } else if (state.settings.company.tvaNumber) {
-        doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4;
-      }
+      if (state.settings.company.tvaNumber) { doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4; }
 
       const infoX = pageW - margin;
+      const infoStartY = companyStartY;
       doc.setFontSize(14); doc.setTextColor(0); doc.setFont(undefined, 'bold');
-      doc.text(`DEVIS ${data.number}`, infoX, y + 8, { align: 'right' });
+      doc.text(`DEVIS ${data.number}`, infoX, infoStartY, { align: 'right' });
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-      doc.text(`Date : ${formatDate(data.date)}`, infoX, y + 14, { align: 'right' });
-      if (data.validityDate) doc.text(`Valable jusqu'au : ${formatDate(data.validityDate)}`, infoX, y + 19, { align: 'right' });
-      doc.text(`Statut : ${data.status}`, infoX, y + 24, { align: 'right' });
+      doc.text(`Date : ${formatDate(data.date)}`, infoX, infoStartY + 6, { align: 'right' });
+      if (data.validityDate) doc.text(`Valable jusqu'au : ${formatDate(data.validityDate)}`, infoX, infoStartY + 11, { align: 'right' });
+      doc.text(`Statut : ${data.status}`, infoX, infoStartY + 16, { align: 'right' });
 
-      y = Math.max(cy + 5, y + 25 + logoHeight) + 10;
+      y = Math.max(cy + 5, infoStartY + 22) + 10;
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.5);
       doc.line(margin, y, pageW - margin, y); y += 8;
       doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
       doc.text('CLIENT', margin, y); y += 6;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
       if (data.client) {
-        doc.text(data.client.name || '', margin, y); y += 4;
-        if (data.client.email) { doc.text(data.client.email, margin, y); y += 4; }
+        doc.text([data.client.name, data.client.firstName].filter(Boolean).join(' ') || '', margin, y); y += 4;
+        if (data.client.address) { doc.text(data.client.address, margin, y); y += 4; }
+        const cpVille = [data.client.postalCode, data.client.city].filter(Boolean).join(' ');
+        if (cpVille) { doc.text(cpVille, margin, y); y += 4; }
         if (data.client.phone) { doc.text(data.client.phone, margin, y); y += 4; }
-        if (data.client.address) data.client.address.split('\n').forEach(l => { doc.text(l, margin, y); y += 4; });
+        if (data.client.email) { doc.text(data.client.email, margin, y); y += 4; }
       } else {
         doc.text('—', margin, y); y += 4;
       }
@@ -4140,7 +4160,30 @@
         y += split.length * 3.5 + 3;
       }
 
-      y = Math.max(y + 6, doc.lastAutoTable.finalY + 55);
+      // RIB encadré (sans fond, cadre fin, texte petit non gras)
+      if (state.settings.company.rib) {
+        y = Math.max(y + 8, doc.lastAutoTable.finalY + 55);
+
+        doc.setFontSize(9); doc.setFont(undefined, 'normal');
+        const ribSplit = doc.splitTextToSize(state.settings.company.rib, pageW - margin * 2 - 10);
+        const boxH = 9 + ribSplit.length * 4;
+
+        if (y + boxH > 270) { doc.addPage(); y = 20; }
+
+        doc.setDrawColor(accent[0], accent[1], accent[2]);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(margin, y, pageW - margin * 2, boxH, 2, 2, 'S');
+
+        doc.setFontSize(8.5); doc.setTextColor(accent[0], accent[1], accent[2]); doc.setFont(undefined, 'bold');
+        doc.text('COORDONNÉES BANCAIRES', margin + 4, y + 5);
+
+        doc.setFontSize(9); doc.setTextColor(30); doc.setFont(undefined, 'normal');
+        doc.text(ribSplit, margin + 4, y + 10);
+
+        y += boxH + 4;
+      }
+
+      y = Math.max(y + 6, doc.lastAutoTable.finalY + 60);
       if (y > 250) { doc.addPage(); y = 20; }
       doc.setDrawColor(accent[0], accent[1], accent[2]); doc.setLineWidth(0.3);
       const boxY = y;
@@ -4202,73 +4245,72 @@
       doc.setFillColor(titleColor[0], titleColor[1], titleColor[2]);
       doc.rect(0, 0, pageW, 4, 'F');
 
+      // Logo centré, légèrement descendu (y + 6), ~15% plus grand
+      const logoBaseY = y + 6;
       let logoHeight = 0;
       if (state.settings.company.logo) {
         try {
           const imgProps = doc.getImageProperties(state.settings.company.logo);
-          const MAX_W = 35, MAX_H = 18;
+          const MAX_W = 40, MAX_H = 21;
           let logoW = MAX_W;
           let logoH = (imgProps.height / imgProps.width) * logoW;
           if (logoH > MAX_H) { logoH = MAX_H; logoW = (imgProps.width / imgProps.height) * logoH; }
-          doc.addImage(state.settings.company.logo, 'PNG', margin, y, logoW, logoH);
-          logoHeight = logoH + 4;
+          const logoX = (pageW - logoW) / 2;
+          doc.addImage(state.settings.company.logo, 'PNG', logoX, logoBaseY, logoW, logoH);
+          logoHeight = logoH + 8;
         } catch (e) { logoHeight = 0; }
       }
 
+      const companyStartY = logoBaseY + logoHeight + 5;
       doc.setFontSize(16); doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]); doc.setFont(undefined, 'bold');
-      doc.text(state.settings.company.name || 'Mon entreprise', margin, y + 8 + logoHeight);
+      doc.text(state.settings.company.name || 'Mon entreprise', margin, companyStartY);
       doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.setFont(undefined, 'normal');
-      let cy = y + 13 + logoHeight;
+      let cy = companyStartY + 5;
       const compAddr = (state.settings.company.address || '').split('\n');
       compAddr.forEach(l => { if (l.trim()) { doc.text(l, margin, cy); cy += 4; } });
       if (state.settings.company.email) { doc.text(state.settings.company.email, margin, cy); cy += 4; }
       if (state.settings.company.phone) { doc.text(state.settings.company.phone, margin, cy); cy += 4; }
       if (state.settings.company.siret) { doc.text(`SIRET : ${state.settings.company.siret}`, margin, cy); cy += 4; }
-      if (state.settings.company.vatRegime === 'franchise') {
-        doc.text('TVA non applicable, art. 293 B du CGI', margin, cy); cy += 4;
-      } else if (state.settings.company.tvaNumber) {
-        doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4;
-      }
+      if (state.settings.company.tvaNumber) { doc.text(`TVA intracom. : ${state.settings.company.tvaNumber}`, margin, cy); cy += 4; }
 
       const infoX = pageW - margin;
+      const infoStartY = companyStartY;
       doc.setFontSize(16); doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]); doc.setFont(undefined, 'bold');
-      doc.text(`${title} ${invoice.number}`, infoX, y + 8, { align: 'right' });
+      doc.text(`${title} ${invoice.number}`, infoX, infoStartY, { align: 'right' });
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-      doc.text(`Date : ${formatDate(invoice.date)}`, infoX, y + 14, { align: 'right' });
+      doc.text(`Date : ${formatDate(invoice.date)}`, infoX, infoStartY + 6, { align: 'right' });
       if (!isAvoir && invoice.dueDate) {
-        doc.text(`Échéance : ${formatDate(invoice.dueDate)}`, infoX, y + 19, { align: 'right' });
+        doc.text(`Échéance : ${formatDate(invoice.dueDate)}`, infoX, infoStartY + 11, { align: 'right' });
       }
       if (invoice.devisNumber) {
-        doc.text(`Réf. devis : ${invoice.devisNumber}`, infoX, y + 24, { align: 'right' });
+        doc.text(`Réf. devis : ${invoice.devisNumber}`, infoX, infoStartY + 16, { align: 'right' });
       }
       if (isAvoir && invoice.originalInvoiceId) {
         const orig = state.invoices.find(i => i.id === invoice.originalInvoiceId);
-        if (orig) doc.text(`Annule la facture : ${orig.number}`, infoX, y + 29, { align: 'right' });
-      }
-      if (invoice.contentHash) {
-        doc.setFontSize(7); doc.setTextColor(160);
-        doc.text(`Empreinte : ${invoice.contentHash.substring(0, 12)}`, infoX, y + 34, { align: 'right' });
+        if (orig) doc.text(`Annule la facture : ${orig.number}`, infoX, infoStartY + 21, { align: 'right' });
       }
 
       if (isEnRetard) {
         doc.setFontSize(40);
         doc.setTextColor(239, 68, 68);
         doc.setFont(undefined, 'bold');
-        const stampY = y + 50;
+        const stampY = companyStartY + 45;
         doc.text('EN RETARD', pageW / 2, stampY, { align: 'center', angle: 15 });
       }
 
-      y = Math.max(cy + 5, y + 36 + logoHeight) + 10;
+      y = Math.max(cy + 5, infoStartY + 26) + 10;
       doc.setDrawColor(titleColor[0], titleColor[1], titleColor[2]); doc.setLineWidth(0.5);
       doc.line(margin, y, pageW - margin, y); y += 8;
       doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
-      doc.text(isAvoir ? 'ÉMIS PAR' : 'FACTURÉ À', margin, y); y += 6;
+      doc.text('CLIENT', margin, y); y += 6;
       doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(30);
       doc.text(invoice.clientName || '—', margin, y); y += 4;
       if (client) {
-        if (client.email) { doc.text(client.email, margin, y); y += 4; }
+        if (client.address) { doc.text(client.address, margin, y); y += 4; }
+        const cpVille = [client.postalCode, client.city].filter(Boolean).join(' ');
+        if (cpVille) { doc.text(cpVille, margin, y); y += 4; }
         if (client.phone) { doc.text(client.phone, margin, y); y += 4; }
-        if (client.address) client.address.split('\n').forEach(l => { doc.text(l, margin, y); y += 4; });
+        if (client.email) { doc.text(client.email, margin, y); y += 4; }
       }
 
       y += 5;
@@ -4353,6 +4395,29 @@
       doc.text(split, margin, y);
       y += split.length * 3.5 + 3;
 
+      // RIB encadré (sans fond, cadre fin, texte petit non gras)
+      if (state.settings.company.rib && !isAvoir) {
+        y = Math.max(y + 8, doc.lastAutoTable.finalY + 55);
+
+        doc.setFontSize(9); doc.setFont(undefined, 'normal');
+        const ribSplit = doc.splitTextToSize(state.settings.company.rib, pageW - margin * 2 - 10);
+        const boxH = 9 + ribSplit.length * 4;
+
+        if (y + boxH > 270) { doc.addPage(); y = 20; }
+
+        doc.setDrawColor(titleColor[0], titleColor[1], titleColor[2]);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(margin, y, pageW - margin * 2, boxH, 2, 2, 'S');
+
+        doc.setFontSize(8.5); doc.setTextColor(titleColor[0], titleColor[1], titleColor[2]); doc.setFont(undefined, 'bold');
+        doc.text('COORDONNÉES BANCAIRES', margin + 4, y + 5);
+
+        doc.setFontSize(9); doc.setTextColor(30); doc.setFont(undefined, 'normal');
+        doc.text(ribSplit, margin + 4, y + 10);
+
+        y += boxH + 4;
+      }
+
       doc.setFontSize(7); doc.setTextColor(150);
       doc.text(`${title} généré par DevisPro v${APP_VERSION} · ${new Date().toLocaleDateString('fr-FR')}`, pageW/2, 290, { align: 'center' });
 
@@ -4390,8 +4455,9 @@
 
       const data = buildDevisDataForPDF();
       const companyName = state.settings.company.name || '';
+      const clientFullName = [client.name, client.firstName].filter(Boolean).join(' ');
       const subject = encodeURIComponent(`Devis ${data.number} - ${companyName}`);
-      const body = `Bonjour ${client.name || ''},\n\nVeuillez trouver ci-joint le devis ${data.number} du ${formatDate(data.date)}.\n\nTotal TTC : ${formatEuro(data.ttc)}\n\nCordialement,\n${companyName}`;
+      const body = `Bonjour ${clientFullName},\n\nVeuillez trouver ci-joint le devis ${data.number} du ${formatDate(data.date)}.\n\nTotal TTC : ${formatEuro(data.ttc)}\n\nCordialement,\n${companyName}`;
 
       toast('PDF téléchargé. Attachez-le à l\'email.', 'success');
       setTimeout(() => {
@@ -4572,10 +4638,11 @@
         html += state.trash.clients.map(c => {
           const dt = c.deletedAt || Date.now();
           const daysLeft = Math.max(0, TRASH_RETENTION_DAYS - Math.floor((Date.now() - dt) / (24 * 60 * 60 * 1000)));
+          const fullName = [c.name, c.firstName].filter(Boolean).join(' ');
           return `
           <div class="trash-item">
             <div class="info">
-              <div class="title">${escapeHtml(c.name || 'Sans nom')}</div>
+              <div class="title">${escapeHtml(fullName || 'Sans nom')}</div>
               <div class="meta">${escapeHtml(c.email || '—')} · supprimé le ${new Date(dt).toLocaleDateString('fr-FR')} · purge dans ${daysLeft}j</div>
             </div>
             <div class="actions">
@@ -4661,7 +4728,10 @@
         container.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-light); font-size:0.85rem;"><i class="fas fa-keyboard" style="font-size:1.5rem; margin-bottom:0.4rem; display:block;"></i>Tapez pour rechercher</div>`;
         return;
       }
-      const clients = state.clients.filter(c => (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q)).slice(0, 5);
+      const clients = state.clients.filter(c => {
+        const fullName = [c.name, c.firstName].filter(Boolean).join(' ').toLowerCase();
+        return fullName.includes(q) || (c.email || '').toLowerCase().includes(q);
+      }).slice(0, 5);
       const devis = state.devis.filter(d => (d.number || '').toLowerCase().includes(q) || (d.clientName || '').toLowerCase().includes(q)).slice(0, 5);
       const invoices = state.invoices.filter(i => (i.number || '').toLowerCase().includes(q) || (i.clientName || '').toLowerCase().includes(q)).slice(0, 5);
       const catalog = state.catalog.filter(c => (c.name || '').toLowerCase().includes(q)).slice(0, 5);
@@ -4669,7 +4739,10 @@
       let html = '';
       if (clients.length > 0) {
         html += `<div class="search-category">Clients</div>`;
-        html += clients.map(c => `<div class="search-result" data-search-type="client" data-id="${c.id}"><i class="fas fa-user"></i><span>${escapeHtml(c.name)}</span></div>`).join('');
+        html += clients.map(c => {
+          const fullName = [c.name, c.firstName].filter(Boolean).join(' ');
+          return `<div class="search-result" data-search-type="client" data-id="${c.id}"><i class="fas fa-user"></i><span>${escapeHtml(fullName)}</span></div>`;
+        }).join('');
       }
       if (devis.length > 0) {
         html += `<div class="search-category">Devis</div>`;
@@ -4696,7 +4769,10 @@
           closeSearchModal();
           if (type === 'client') {
             const c = state.clients.find(x => x.id === id);
-            if (c) { navigateTo('devis-list').then(() => { $('#devisSearch').value = c.name || ''; renderDevisList(); }); }
+            if (c) {
+              const fullName = [c.name, c.firstName].filter(Boolean).join(' ');
+              navigateTo('devis-list').then(() => { $('#devisSearch').value = fullName || ''; renderDevisList(); });
+            }
           } else if (type === 'devis') {
             openEditor(id);
           } else if (type === 'invoice') {
@@ -4737,6 +4813,7 @@
       $('#companyAddressInput').value = s.company.address || '';
       $('#companySiretInput').value = s.company.siret || '';
       $('#companyTvaInput').value = s.company.tvaNumber || '';
+      $('#companyRibInput').value = s.company.rib || '';
       $('#accentColorInput').value = s.accent || '#60a5fa';
       $('#paymentDaysInput').value = s.company.paymentDays || DEFAULT_PAYMENT_DAYS;
       const ins = s.company.insurance || {};
@@ -4777,6 +4854,7 @@
         logo: state.settings.company.logo || '',
         siret: $('#companySiretInput').value.trim(),
         tvaNumber: $('#companyTvaInput').value.trim(),
+        rib: $('#companyRibInput').value.trim(),
         insurance: {
           name: $('#insuranceNameInput').value.trim(),
           policy: $('#insurancePolicyInput').value.trim(),
@@ -4801,6 +4879,7 @@
         address: $('#companyAddressInput').value.trim(),
         siret: $('#companySiretInput').value.trim(),
         tvaNumber: $('#companyTvaInput').value.trim(),
+        rib: $('#companyRibInput').value.trim(),
         insurance: {
           name: $('#insuranceNameInput').value.trim(),
           policy: $('#insurancePolicyInput').value.trim(),
@@ -4931,6 +5010,7 @@
             if (!state.settings.nextInvoiceNumber) state.settings.nextInvoiceNumber = 1;
             if (!state.settings.nextAvoirNumber) state.settings.nextAvoirNumber = 1;
             if (!state.settings.company.paymentDays) state.settings.company.paymentDays = DEFAULT_PAYMENT_DAYS;
+            if (!state.settings.company.rib) state.settings.company.rib = '';
           }
 
           Storage.saveClients(state.clients);
@@ -5095,14 +5175,14 @@
         if (el) el.addEventListener('change', markEditorDirty);
       });
 
-      ['devisSearch', 'devisFilterStatus', 'devisFilterFrom', 'devisFilterTo', 'devisSortBy'].forEach(id => {
+      ['devisSearch', 'devisFilterStatus', 'devisSortBy'].forEach(id => {
         const el = $('#' + id);
-        if (el) el.addEventListener(el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input', renderDevisList);
+        if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', renderDevisList);
       });
 
-      ['invoiceSearch', 'invoiceFilterStatus', 'invoiceFilterFrom', 'invoiceFilterTo', 'invoiceSortBy'].forEach(id => {
+      ['invoiceSearch', 'invoiceFilterStatus', 'invoiceSortBy'].forEach(id => {
         const el = $('#' + id);
-        if (el) el.addEventListener(el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input', renderInvoices);
+        if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', renderInvoices);
       });
 
       ['reportFrom', 'reportTo', 'reportStatus'].forEach(id => $('#' + id).addEventListener('change', renderReports));
